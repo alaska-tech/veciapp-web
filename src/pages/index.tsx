@@ -1,4 +1,13 @@
-import { App, Button, Form, FormProps, Input, Modal, Typography } from "antd";
+import {
+  App,
+  Button,
+  Divider,
+  Form,
+  FormProps,
+  Input,
+  Modal,
+  Typography,
+} from "antd";
 import { ReactElement } from "react";
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import Link from "next/link";
@@ -15,26 +24,38 @@ export default function Home() {
     router.push("/(admin)/home");
     //login.mutateAsync({ body: values });
   };
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] =
-    (errorInfo) => {
-      router.push("/(admin)/home");
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+    errorInfo
+  ) => {
+    router.push("/(admin)/home");
 
-      console.log("Failed:", errorInfo);
-    };
+    console.log("Failed:", errorInfo);
+  };
   return (
-    <main style={{ textAlign: "center" }}>
-      <Typography.Title level={3}>Login</Typography.Title>
+    <main
+      style={{
+        textAlign: "start",
+        width: "50%",
+      }}
+    >
+      <Typography.Title level={3}>Inicio de sesión</Typography.Title>
+      <Typography.Text type="secondary">
+        Pon tu correo y contraseña para entrar!
+      </Typography.Text>
+      <Divider>
+        <Typography.Text type="secondary">or</Typography.Text>
+      </Divider>
       <Form
         name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
         style={{ maxWidth: 1500 }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
+        layout="vertical"
+        requiredMark={false}
       >
         <Form.Item<FieldType>
-          label="Email"
+          label="Email*"
           name="email"
           rules={[
             {
@@ -43,11 +64,11 @@ export default function Home() {
             },
           ]}
         >
-          <Input />
+          <Input placeholder="mail@simple.com" />
         </Form.Item>
 
         <Form.Item<FieldType>
-          label="Password"
+          label="Password*"
           name="password"
           rules={[
             {
@@ -56,32 +77,21 @@ export default function Home() {
             },
           ]}
         >
-          <Input.Password placeholder="Enter your password" />
+          <Input.Password placeholder="Min. 8 caracteres" />
+          <div style={{ textAlign: "end" }}>
+            <ForgotPasswordButton />
+          </div>
         </Form.Item>
         <Form.Item noStyle>
           <Button
             type="primary"
             htmlType="submit"
             //loading={login.isPending}
-            block
           >
             Log in
           </Button>
         </Form.Item>
       </Form>
-      <br />
-      <ForgotPasswordButton />
-      <br />
-      <SignupButton />
-      <hr
-        style={{
-          margin: "15px 0",
-          border: "1px solid #f0f0f0",
-        }}
-      />
-      <Link href="/contact">
-        <Typography>Contact Us</Typography>
-      </Link>
     </main>
   );
 }
@@ -97,7 +107,7 @@ interface FormValues {
 const ForgotPasswordButton = () => {
   const [formInstance] = Form.useForm();
   let modalRef: { destroy: () => void } | null = null;
-  const verifyCode: any = () => { }
+  const verifyCode: any = () => {};
   /* useMutation({
     mutationFn: async (values: FormValues) => {
       const answer = await axios.post(
@@ -137,17 +147,10 @@ const ForgotPasswordButton = () => {
       okButtonProps: { style: { display: "none" } },
       content: (
         <Form<FormValues> form={formInstance}>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[{ required: true }]}
-          >
+          <Form.Item label="Email" name="email" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Button
-            type="primary"
-            onClick={handleSubmit}
-          >
+          <Button type="primary" onClick={handleSubmit}>
             Confirm
           </Button>
         </Form>
@@ -155,16 +158,14 @@ const ForgotPasswordButton = () => {
     });
   }
   return (
-    <Typography.Link onClick={showModal}>
-      Forgot password
-    </Typography.Link>
+    <Typography.Link onClick={showModal}>Olvidé mi contraseña</Typography.Link>
   );
 };
 const SignupButton = () => {
   const [formInstance] = Form.useForm();
   let modalRef: { destroy: () => void } | null = null;
   //const authActions = useAuthAction();
-  const verifyCode: any = () => { }
+  const verifyCode: any = () => {};
   /*   const verifyCode = authActions.logIn({
       onSuccess: (response) => {
         if (response.data.user.resetPassword) {
@@ -199,33 +200,18 @@ const SignupButton = () => {
       maskClosable: false,
       content: (
         <Form<FormValues> form={formInstance}>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[{ required: true }]}
-          >
+          <Form.Item label="Email" name="email" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Code"
-            name="password"
-            rules={[{ required: true }]}
-          >
+          <Form.Item label="Code" name="password" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Button
-            type="primary"
-            onClick={handleSubmit}
-          >
+          <Button type="primary" onClick={handleSubmit}>
             Confirm
           </Button>
         </Form>
       ),
     });
   }
-  return (
-    <Typography.Link onClick={showModal}>
-      Sign up
-    </Typography.Link>
-  );
+  return <Typography.Link onClick={showModal}>Sign up</Typography.Link>;
 };
