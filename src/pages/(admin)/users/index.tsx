@@ -1,4 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout2 from '@/components/layout/DashboardLayout2';
 import { Table, Tag, Space, Button } from 'antd';
 import Column from 'antd/es/table/Column';
 import ColumnGroup from 'antd/es/table/ColumnGroup';
@@ -93,5 +94,5 @@ const Users = () => {
 export default Users
 
 Users.getLayout = function getLayout(page: ReactElement) {
-    return <DashboardLayout> {page}</DashboardLayout>;
+    return <DashboardLayout2> {page}</DashboardLayout2>;
 };

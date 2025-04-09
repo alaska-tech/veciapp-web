@@ -1,4 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout2 from '@/components/layout/DashboardLayout2';
 import { Card, Space } from 'antd';
 import React, { ReactElement } from 'react'
 
@@ -19,5 +20,5 @@ const Home = () => {
 export default Home
 
 Home.getLayout = function getLayout(page: ReactElement) {
-    return <DashboardLayout> {page}</DashboardLayout>;
+    return <DashboardLayout2> {page}</DashboardLayout2>;
 };
