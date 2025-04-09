@@ -145,6 +145,8 @@ const ForgotPasswordButton = () => {
     modalRef = Modal.info({
       title: "Password Recovery",
       okButtonProps: { style: { display: "none" } },
+      closable: true,
+      maskClosable: false,
       content: (
         <Form<FormValues> form={formInstance}>
           <Form.Item label="Email" name="email" rules={[{ required: true }]}>

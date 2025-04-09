@@ -121,9 +121,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <Layout style={{
-      minHeight: 'calc(100vh - 16px)',
-    }}>
+    <Layout>
       <Header
         style={{
           position: 'fixed',
@@ -138,7 +136,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="demo-logo">
           <Image
             alt="logo"
-            src="/images/logo.webp"
+            src="/images/logo.png"
             width={100}
             height={60}
             style={{
