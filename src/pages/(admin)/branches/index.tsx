@@ -1,8 +1,9 @@
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import DashboardLayout2 from "@/components/layout/DashboardLayout2";
 import {
+  AppstoreAddOutlined,
   SearchOutlined,
   TeamOutlined,
-  UserAddOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import {
@@ -15,10 +16,13 @@ import {
   Input,
   InputRef,
   Typography,
+  FloatButtonRef,
   Dropdown,
   Divider,
   Card,
 } from "antd";
+import Column from "antd/es/table/Column";
+import ColumnGroup from "antd/es/table/ColumnGroup";
 import { FilterDropdownProps, FilterRestProps } from "antd/es/table/interface";
 import Link from "next/link";
 import React, { ReactElement, useRef, useState } from "react";
@@ -269,8 +273,8 @@ const Users = () => {
         </Card>
       </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/(admin)/users/newUser" icon={<UserAddOutlined />}>
-          Add User
+        <Button href="/(admin)/branches/newBranches" icon={<AppstoreAddOutlined />}>
+          Nueva tienda
         </Button>
       </Space>
       <Table<DataType> columns={columns} dataSource={data} />

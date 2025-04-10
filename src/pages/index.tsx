@@ -91,6 +91,16 @@ export default function Home() {
             Log in
           </Button>
         </Form.Item>
+        <Form.Item noStyle>
+          <Button
+            type="primary"
+            htmlType="submit"
+            href="/(vendor)/home"
+            //loading={login.isPending}
+          >
+            Log in as vendor
+          </Button>
+        </Form.Item>
       </Form>
     </main>
   );
