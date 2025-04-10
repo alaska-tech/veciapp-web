@@ -202,7 +202,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
           <AutoTitle />
         </Header>
-        <Content style={{ padding: "0px 50px" }}>{children}</Content>
+        <Content style={{ padding: "0px 50px", overflow: "auto" }}>
+          {children}
+        </Content>
         <Footer style={{ textAlign: "center" }}>
           <Title level={5}>Alaska Tech</Title>
           <Text type="secondary">
@@ -273,7 +275,7 @@ const AutoBreadcrumb = () => {
       return {
         key: path,
         title: (
-          <Link href={path}>
+          <Link href={path.slice(1)}>
             {isDynamicSegment ? dynamicSegmentValue : label}
           </Link>
         ),
