@@ -1,14 +1,15 @@
 import LandingPageLayout from '@/components/layout/LandingPageLayout';
+import { Empty } from 'antd';
 import React, { ReactElement } from 'react'
 
 const Index = () => {
   return (
-    <div>Index</div>
+    <Empty></Empty>
   )
 }
 
 export default Index
 
 Index.getLayout = function getLayout(page: ReactElement) {
-    return <LandingPageLayout> {page}</LandingPageLayout>;
+    return <LandingPageLayout backButton> {page}</LandingPageLayout>;
   };

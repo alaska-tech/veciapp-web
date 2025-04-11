@@ -43,7 +43,6 @@ export default function Home() {
         Pon tu correo y contraseña para entrar!
       </Typography.Text>
       <Divider>
-        <Typography.Text type="secondary">or</Typography.Text>
       </Divider>
       <Form
         name="basic"
@@ -79,7 +78,7 @@ export default function Home() {
         >
           <Input.Password placeholder="Min. 8 caracteres" />
           <div style={{ textAlign: "end" }}>
-            <ForgotPasswordButton />
+            <Link href={"/(auth)/forgotPassword"}>Olvidé mi contraseña</Link>
           </div>
         </Form.Item>
         <Form.Item noStyle>
@@ -116,6 +115,7 @@ interface FormValues {
 }
 const ForgotPasswordButton = () => {
   const [formInstance] = Form.useForm();
+  const { modal } = App.useApp();
   let modalRef: { destroy: () => void } | null = null;
   const verifyCode: any = () => {};
   /* useMutation({
@@ -152,7 +152,7 @@ const ForgotPasswordButton = () => {
     }
   };
   function showModal() {
-    modalRef = Modal.info({
+    modalRef = modal.info({
       title: "Password Recovery",
       okButtonProps: { style: { display: "none" } },
       closable: true,
