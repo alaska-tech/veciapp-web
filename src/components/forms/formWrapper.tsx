@@ -9,7 +9,6 @@ interface FormWrapperProps extends Omit<FormProps<any>, "children"> {
   children:
     | React.ReactNode
     | ((formInstance: FormInstance<any>) => React.ReactNode);
-  initialValues?: any;
 }
 const FormWrapper = ({formName, onSubmit, children, initialValues, ...formProps}: FormWrapperProps) => {
   const [formValues, setFormValues] = useLocalStorage(

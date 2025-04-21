@@ -11,7 +11,7 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   return (
-    <Space dir="vertical">
+    <Space direction="vertical">
       <GoBackButton />
       <NewFormDynamic />
     </Space>
