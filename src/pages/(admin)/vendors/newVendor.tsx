@@ -1,15 +1,20 @@
 import DashboardLayout2 from "@/components/layout/DashboardLayout2";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import GoBackButton from "@/components/pure/goBackButton";
+import { Space } from "antd";
+import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
+
+const NewFormDynamic = dynamic(
+  () => import("@/components/forms/newVendorForm").then((mod) => mod.FormElement),
+  { ssr: false }
+);
 
 const Index = () => {
   return (
-    <div>
-      <Button type="link" href="/(admin)/vendors" icon={<ArrowLeftOutlined />}>
-        Back
-      </Button>
-    </div>
+    <Space direction="vertical">
+      <GoBackButton />
+      <NewFormDynamic />
+    </Space>
   );
 };
 

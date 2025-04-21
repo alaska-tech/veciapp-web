@@ -128,6 +128,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             marginLeft: sideMenuCollapsed
               ? siderWidthCollapsed
               : siderWidthExpanded,
+            width: "100%",
           }}
         >
           <Header
@@ -209,7 +210,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </Header>
-          <Content style={{ padding: "12px 50px", overflow: "auto" }}>
+          <Content style={{ padding: "12px 50px", overflow: "auto", alignSelf: "center"}}>
             {children}
           </Content>
           <Footer style={{ textAlign: "center" }}>
@@ -260,6 +261,20 @@ const breadcrumItemTree: TreeStruct[] = [
         ],
       },
       {
+        key: "vendors",
+        value: "Vendedores",
+        children: [
+          {
+            key: "[id]",
+            value: "[{id}]",
+          },
+          {
+            key: "newVendor",
+            value: "Nuevo vendedor",
+          },
+        ],
+      },
+      {
         key: "branches",
         value: "Tiendas",
         children: [
@@ -270,16 +285,6 @@ const breadcrumItemTree: TreeStruct[] = [
           {
             key: "newBranch",
             value: "Nueva tienda",
-          },
-        ],
-      },
-      {
-        key: "vendors",
-        value: "Vendedores",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
           },
         ],
       },

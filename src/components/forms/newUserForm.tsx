@@ -2,22 +2,19 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import {
   Button,
-  Checkbox,
-  Col,
   DatePicker,
   Divider,
   Form,
   Input,
   Modal,
   Radio,
-  Row,
   Select,
   Space,
 } from "antd";
 import React, { useEffect, useState } from "react";
 const { Option } = Select;
 
-export const NewUserForm = (props: { onSubmit?: any }) => {
+export const FormElement = (props: { onSubmit?: any }) => {
   const [formValues, setFormValues] = useLocalStorage(
     "formValues/newUser",
     null

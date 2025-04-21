@@ -1,18 +1,21 @@
 import DashboardLayout2 from "@/components/layout/DashboardLayout2";
-import {
-  Select,
-} from "antd";
+import GoBackButton from "@/components/pure/goBackButton";
+import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
-const { Option } = Select;
 
-const NewUserFormDynamic = dynamic(
-  () => import('@/components/forms/newUserForm').then(mod => mod.NewUserForm),
+const NewFormDynamic = dynamic(
+  () => import("@/components/forms/newUserForm").then((mod) => mod.FormElement),
   { ssr: false }
 );
 
 const Index = () => {
-  return <NewUserFormDynamic />;
+  return (
+    <Space dir="vertical">
+      <GoBackButton />
+      <NewFormDynamic />
+    </Space>
+  );
 };
 
 export default Index;
