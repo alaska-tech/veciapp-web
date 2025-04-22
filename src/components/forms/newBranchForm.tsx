@@ -12,10 +12,16 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import FormWrapper from "./formWrapper";
+import dynamic from "next/dynamic";
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
 const { Option } = Select;
+
+const NewLocationPicker = dynamic(
+  () => import("@/components/pure/LocationPicker"),
+  { ssr: false }
+);
 
 export const FormElement = (props: { onSubmit?: any }) => {
   const onFinish = async (values: any) => {
@@ -269,7 +275,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 },
               ]}
             >
-              <Input />
+              <NewLocationPicker />
             </Form.Item>
           </div>
         </div>
