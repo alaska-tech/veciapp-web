@@ -12,12 +12,21 @@ import { ReactElement } from "react";
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { LoginOutlined } from "@ant-design/icons";
 
 export type LogInForm = {
   email: string;
   password: string;
 };
 type FieldType = LogInForm;
+const styles = {
+  formItem: {
+    flex: "1 1 300px",
+    width: "100%",
+    maxWidth: "300px",
+  },
+};
+
 export default function Home() {
   const router = useRouter();
   const onFinish: FormProps<FieldType>["onFinish"] = () => {
@@ -35,18 +44,15 @@ export default function Home() {
     <main
       style={{
         textAlign: "start",
-        width: "50%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        maxWidth: 1500,
+        flex: '1 1 600px'
       }}
     >
-      <Typography.Title level={3}>Inicio de sesión</Typography.Title>
-      <Typography.Text type="secondary">
-        Pon tu correo y contraseña para entrar!
-      </Typography.Text>
-      <Divider>
-      </Divider>
       <Form
         name="basic"
-        style={{ maxWidth: 1500 }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
@@ -54,7 +60,6 @@ export default function Home() {
         requiredMark={false}
       >
         <Form.Item<FieldType>
-          label="Email*"
           name="email"
           rules={[
             {
@@ -63,11 +68,10 @@ export default function Home() {
             },
           ]}
         >
-          <Input placeholder="mail@simple.com" />
+          <Input placeholder="Ejemplo@email.com" style={styles.formItem} />
         </Form.Item>
 
         <Form.Item<FieldType>
-          label="Password*"
           name="password"
           rules={[
             {
@@ -76,18 +80,19 @@ export default function Home() {
             },
           ]}
         >
-          <Input.Password placeholder="Min. 8 caracteres" />
-          <div style={{ textAlign: "end" }}>
-            <Link href={"/(auth)/forgotPassword"}>Olvidé mi contraseña</Link>
-          </div>
+          <Input.Password placeholder="Contraseña" style={styles.formItem} />
         </Form.Item>
-        <Form.Item noStyle>
+        <Form.Item style={{ textAlign: "start" }}>
+          <Link href={"/(auth)/forgotPassword"}>¿Olvidaste tu contraseña?</Link>
+        </Form.Item>
+        <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
+            icon={<LoginOutlined />}
             //loading={login.isPending}
           >
-            Log in
+            Entrar al panel
           </Button>
         </Form.Item>
         <Form.Item noStyle>

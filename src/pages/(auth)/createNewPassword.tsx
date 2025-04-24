@@ -1,5 +1,5 @@
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
-import { SendOutlined } from "@ant-design/icons";
+import { LockOutlined } from "@ant-design/icons";
 import { Form, Input, Button } from "antd";
 import React, { ReactElement } from "react";
 interface FormValues {
@@ -23,13 +23,15 @@ const Index = () => {
         form={formInstance}
         onFinish={handleSubmit}
         style={{ minWidth: 300 }}
-        requiredMark={false}
       >
-        <Form.Item  name="email" rules={[{ required: true }]}>
-          <Input placeholder="Escribe tu correo electrónico" />
+        <Form.Item label="Email" name="email" rules={[{ required: true }]}>
+          <Input />
         </Form.Item>
-        <Button htmlType="submit" type="primary" icon={<SendOutlined />}>
-          Enviar enlace de recuperación
+        <Form.Item label="Code" name="code" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Button htmlType="submit" type="primary" icon={<LockOutlined />}>
+          Confirm
         </Button>
       </Form>
     </div>
