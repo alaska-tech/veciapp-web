@@ -120,7 +120,7 @@ const titles: Record<string, [string, string, string]> = {
   ],
   "/(public)/setPassAccount": [
     "",
-    "Bienvenido cachón",
+    "Bienvenido! Crea tu contraseña",
     "Todo listo, ahora crea tu contraseña para acceder a tu cuenta",
   ]
 };

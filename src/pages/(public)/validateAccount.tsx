@@ -27,11 +27,11 @@ const Index = () => {
         onFinish={handleSubmit}
         style={{ minWidth: 300 }}
       >
-        <Form.Item label="Email" name="email" rules={[{ required: true }]}>
+        <Form.Item label="Código" name="code" rules={[{ required: true }]}>
         <Input.OTP />
         </Form.Item>
         <Button htmlType="submit" type="primary" icon={<LockOutlined />}>
-          Confirm
+          Siguiente
         </Button>
       </Form>
     </div>
