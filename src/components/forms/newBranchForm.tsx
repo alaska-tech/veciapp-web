@@ -1,7 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
-  DatePicker,
   Divider,
   Form,
   FormInstance,
@@ -25,7 +24,9 @@ const NewLocationPicker = dynamic(
 
 export const FormElement = (props: { onSubmit?: any }) => {
   const onFinish = async (values: any) => {
-    props.onSubmit && props.onSubmit(values);
+    if (props.onSubmit) {
+      props.onSubmit(values);
+    }
   };
   const [customPrefixValue, setCustomPrefixValue] = useState("+");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

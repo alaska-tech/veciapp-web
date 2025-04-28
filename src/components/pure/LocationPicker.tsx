@@ -64,7 +64,10 @@ const LocationPicker = (props: {
   }, []);
 
   useEffect(() => {
-    map && props.onStart && props.onStart(map);
+    if (map && props.onStart) {
+      props.onStart(map);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

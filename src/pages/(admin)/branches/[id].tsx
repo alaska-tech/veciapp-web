@@ -1,4 +1,3 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardLayout2 from '@/components/layout/DashboardLayout2';
 import React, { ReactElement } from 'react'
 

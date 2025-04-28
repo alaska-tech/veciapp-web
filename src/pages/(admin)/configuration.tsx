@@ -1,4 +1,3 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
 import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import { Select, Form, InputNumber, Switch, Radio, Checkbox, Row, Col, Rate, Upload, Button, Space } from 'antd';
 import React, { ReactElement } from 'react'

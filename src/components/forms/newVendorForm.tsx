@@ -17,7 +17,9 @@ const columnMinWidth = "220px";
 
 export const FormElement = (props: { onSubmit?: any }) => {
   const onFinish = async (values: any) => {
-    props.onSubmit && props.onSubmit(values);
+    if (props.onSubmit) {
+      props.onSubmit(values);
+    }
   };
   const [customPrefixValue, setCustomPrefixValue] = useState("+");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

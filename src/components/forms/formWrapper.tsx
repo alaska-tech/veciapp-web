@@ -10,7 +10,13 @@ interface FormWrapperProps extends Omit<FormProps<any>, "children"> {
     | React.ReactNode
     | ((formInstance: FormInstance<any>) => React.ReactNode);
 }
-const FormWrapper = ({formName, onSubmit, children, initialValues, ...formProps}: FormWrapperProps) => {
+const FormWrapper = ({
+  formName,
+  onSubmit,
+  children,
+  initialValues,
+  ...formProps
+}: FormWrapperProps) => {
   const [formValues, setFormValues] = useLocalStorage(
     "formValues/" + formName,
     null
@@ -34,10 +40,13 @@ const FormWrapper = ({formName, onSubmit, children, initialValues, ...formProps}
     if (formValues) {
       showConfirm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onFinish = async (values: any) => {
-    onSubmit && (await onSubmit(values));
+    if (onSubmit) {
+      await onSubmit(values);
+    }
   };
 
   const formStyles: React.CSSProperties = {
@@ -67,12 +76,10 @@ const FormWrapper = ({formName, onSubmit, children, initialValues, ...formProps}
       scrollToFirstError
       labelWrap
       requiredMark={false}
-      layout={"vertical"}   
-      {...formProps}   
+      layout={"vertical"}
+      {...formProps}
     >
-      {typeof children === "function"
-        ? children(form)
-        : children}
+      {typeof children === "function" ? children(form) : children}
       <Form.Item style={{ textAlign: "center" }}>
         <Button
           type="primary"

@@ -5,9 +5,9 @@ import theme from "@/theme/themeConfig";
 import { NextPage } from "next";
 import "@ant-design/v5-patch-for-react-19";
 import es_ES from "antd/locale/es_ES";
-import 'leaflet/dist/leaflet.css'
+import "leaflet/dist/leaflet.css";
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 type AppPropsWithLayout = AppProps & {

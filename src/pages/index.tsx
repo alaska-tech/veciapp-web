@@ -18,7 +18,6 @@ export type LogInForm = {
   email: string;
   password: string;
 };
-type FieldType = LogInForm;
 const styles = {
   formItem: {
     flex: "1 1 300px",
@@ -29,11 +28,11 @@ const styles = {
 
 export default function Home() {
   const router = useRouter();
-  const onFinish: FormProps<FieldType>["onFinish"] = () => {
+  const onFinish: FormProps<LogInForm>["onFinish"] = () => {
     router.push("/(admin)/home");
     //login.mutateAsync({ body: values });
   };
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+  const onFinishFailed: FormProps<LogInForm>["onFinishFailed"] = (
     errorInfo
   ) => {
     router.push("/(admin)/home");
@@ -59,7 +58,7 @@ export default function Home() {
         layout="vertical"
         requiredMark={false}
       >
-        <Form.Item<FieldType>
+        <Form.Item<LogInForm>
           name="email"
           rules={[
             {
@@ -71,7 +70,7 @@ export default function Home() {
           <Input placeholder="Ejemplo@email.com" style={styles.formItem} />
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item<LogInForm>
           name="password"
           rules={[
             {

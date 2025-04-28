@@ -14,7 +14,12 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@forms/*": ["./src/components/forms/*"],
+      "@constants": ["./src/constants/constants.ts"],
+      "@models": ["./src/constants/models.ts"],
+      "@actions/*": ["./src/actions/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

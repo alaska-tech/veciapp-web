@@ -34,14 +34,18 @@ export const FormElement = (props: { onSubmit?: any }) => {
       },
     });
   };
+
   useEffect(() => {
     if (formValues) {
       showConfirm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onFinish = async (values: any) => {
-    props.onSubmit && props.onSubmit(values);
+    if (props.onSubmit) {
+      await props.onSubmit(values);
+    }
   };
   const [customPrefixValue, setCustomPrefixValue] = useState("+");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
