@@ -113,6 +113,16 @@ const titles: Record<string, [string, string, string]> = {
     "Ingresa tu nueva contraseña para continuar",
   ],
   "/access-denied": ["", "Acceso denegado", "No tienes acceso a esta página"],
+  "/(public)/validateAccount": [
+    "",
+    "Ingresa tu codigo",
+    "Ingresa el código unico que te asigno la fundación Maleua",
+  ],
+  "/(public)/setPassAccount": [
+    "",
+    "Bienvenido! Crea tu contraseña",
+    "Todo listo, ahora crea tu contraseña para acceder a tu cuenta",
+  ]
 };
 const AutoTitle = () => {
   const router = useRouter();
