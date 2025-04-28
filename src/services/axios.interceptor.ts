@@ -1,0 +1,42 @@
+import { JWTKey } from '@/constants/constants'
+import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+
+const addJwtToHeader = (request: AxiosRequestConfig) => {
+  const jwt = localStorage.getItem(JWTKey)
+  if (jwt) {
+    const newHeader = {
+      Authorization: `Bearer ${jwt}`,
+      'Content-Type': 'application/json',
+    }
+    request.headers = newHeader
+  }
+  return request
+}
+
+const onRequest = (config: AxiosRequestConfig): any => {
+  //el tipo correcto de retorno es AxiosRequestConfig, pero Axios me lo esta tomando como error
+  const newConfig = addJwtToHeader(config)
+  return newConfig
+}
+
+const onRequestError = (error: AxiosError): Promise<AxiosError> => {
+  return Promise.reject(error)
+}
+
+const onResponse = (response: AxiosResponse): AxiosResponse => {
+  return response
+}
+
+const onResponseError = (error: AxiosError): Promise<AxiosError> => {
+  if (error.response?.status === 403) {
+    localStorage.removeItem(JWTKey)
+    window.location.href = '/'
+  }
+  return Promise.reject(error)
+}
+
+export function addJWTInterceptor(axiosInstance: AxiosInstance): AxiosInstance {
+  axiosInstance.interceptors.request.use(onRequest, onRequestError)
+  axiosInstance.interceptors.response.use(onResponse, onResponseError)
+  return axiosInstance
+}
