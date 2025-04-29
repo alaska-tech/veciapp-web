@@ -1,4 +1,4 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout2";
+import DashboardLayout2 from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";

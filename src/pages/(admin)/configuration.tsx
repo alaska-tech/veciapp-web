@@ -2,7 +2,7 @@ import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import { Select, Form, InputNumber, Switch, Radio, Checkbox, Row, Col, Rate, Upload, Button, Space } from 'antd';
 import React, { ReactElement } from 'react'
 import dynamic from 'next/dynamic';
-import DashboardLayout2 from '@/components/layout/DashboardLayout2';
+import DashboardLayout2 from '@/components/layout/DashboardLayout';
 
 const Slider = dynamic(() => import('antd').then((mod) => mod.Slider), { ssr: false });
 const ColorPicker = dynamic(() => import('antd').then((mod) => mod.ColorPicker), { ssr: false });
