@@ -6,7 +6,7 @@ import { NextPage } from "next";
 import "@ant-design/v5-patch-for-react-19";
 import es_ES from "antd/locale/es_ES";
 import "leaflet/dist/leaflet.css";
-
+import { App as AntdAppProvider } from "antd";
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -18,7 +18,9 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   return (
     <ConfigProvider theme={theme} locale={es_ES}>
-      {getLayout(<Component {...pageProps} />)}
+      <AntdAppProvider>
+        {getLayout(<Component {...pageProps} />)}
+      </AntdAppProvider>
     </ConfigProvider>
   );
 };

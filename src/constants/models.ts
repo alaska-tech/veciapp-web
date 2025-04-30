@@ -1,5 +1,5 @@
-export const Roles = ["admin", "vendor", "user"] as const;
-export type RoleType = typeof Roles;
+export const UserRoles = ["admin", "vendor", "user"] as const;
+export type UserRoleType = typeof UserRoles;
 
 export interface BaseAttributes {
   createdBy: string;
@@ -24,11 +24,24 @@ export interface User extends BaseAttributes {
   email: string;
   foreignPersonId: string;
   foreignPersonType: string;
-  role: RoleType[number];
+  role: UserRoleType[number];
   isActive: boolean;
   refreshToken: string;
   passwordResetToken: string | null;
   passwordResetExpires: string | null;
   hasPasswordChange: string | null;
   lastLoginDate: string;
+}
+
+export const ParameterCategory = ["string","bool","number","array"] as const;
+export type ParameterCategoryType = typeof ParameterCategory;
+
+export interface Parameter extends BaseAttributes {
+  id: string;
+  displayName: string;
+  name: string;
+  description: string;
+  value: string;
+  type: ParameterCategoryType[number];
+  isActive: boolean;
 }

@@ -5,7 +5,10 @@ import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
 
 const NewFormDynamic = dynamic(
-  () => import("@/components/forms/newUserForm").then((mod) => mod.FormElement),
+  () =>
+    import("@/components/forms/newParameterForm").then(
+      (mod) => mod.FormElement
+    ),
   { ssr: false }
 );
 
@@ -13,7 +16,11 @@ const Index = () => {
   return (
     <Space direction="vertical">
       <GoBackButton />
-      <NewFormDynamic />
+      <NewFormDynamic
+        onSubmit={(values: Record<string, any>) => {
+          console.log(values);
+        }}
+      />
     </Space>
   );
 };
