@@ -1,9 +1,9 @@
 import React from "react";
 import FormWrapper from "./formWrapper";
 import {
-  Button,
   Divider,
   Form,
+  FormProps,
   Input,
   InputNumber,
   Radio,
@@ -11,16 +11,19 @@ import {
   Switch,
   Typography,
 } from "antd";
+import { Parameter } from "@models";
 
-export const FormElement = (props: { onSubmit?: any }) => {
-  const [formRef] = Form.useForm();
+export const FormElement = <T extends Parameter>(props: {
+  onFinish?: FormProps<T>["onFinish"];
+}) => {
+  const [formRef] = Form.useForm<T>();
   const selectedParameterType = Form.useWatch("type", formRef);
-  const onFinish = async (values: any) => {
-    if (props.onSubmit) {
-      props.onSubmit(values);
+  const handleFinish = async (values: T) => {
+    if (props.onFinish) {
+      props.onFinish(values);
     }
   };
-  const valueInput: Record<string, any> = {
+  const valueInput: Record<string, React.ReactElement> = {
     string: <Input placeholder="Value" />,
     number: <InputNumber placeholder="Value" />,
     boolean: (
@@ -50,7 +53,11 @@ export const FormElement = (props: { onSubmit?: any }) => {
     ),
   };
   return (
-    <FormWrapper formName={"newBranch"} onSubmit={onFinish} form={formRef}>
+    <FormWrapper<T>
+      formName={"newBranch"}
+      onFinish={handleFinish}
+      form={formRef}
+    >
       <div>
         <Form.Item label="Name" name="name" rules={[{ required: true }]}>
           <Input placeholder="Name" />
@@ -74,7 +81,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
             placeholder="Select a type"
             onChange={() => {
               formRef.setFieldsValue({ value: undefined });
-              if (formRef.isFieldTouched("value")) {
+              if (formRef.isFieldTouched('value' as any)) {
                 formRef.validateFields(["value"]);
               }
             }}

@@ -1,27 +1,27 @@
+import { BaseAttributes } from "@/constants/models";
 import { SaveOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { Button, Form, FormInstance, FormProps, Modal } from "antd";
 import React, { useEffect } from "react";
 
-interface FormWrapperProps extends Omit<FormProps<any>, "children"> {
+interface FormWrapperProps<T> extends Omit<FormProps<any>, "children"> {
   formName: string;
-  onSubmit?: (values: any) => void | Promise<void>;
+  onFinish?: (values: T) => void | Promise<void>;
   children:
     | React.ReactNode
-    | ((formInstance: FormInstance<any>) => React.ReactNode);
+    | ((formInstance: FormInstance<T>) => React.ReactNode);
 }
-const FormWrapper = ({
+const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   formName,
-  onSubmit,
   children,
   initialValues,
   ...formProps
-}: FormWrapperProps) => {
-  const [formValues, setFormValues] = useLocalStorage(
+}: FormWrapperProps<T>) => {
+  const [formValues, setFormValues] = useLocalStorage<T|null>(
     "formValues/" + formName,
     null
   );
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<T>();
 
   const showConfirm = () => {
     Modal.confirm({
@@ -43,9 +43,9 @@ const FormWrapper = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onFinish = async (values: any) => {
-    if (onSubmit) {
-      await onSubmit(values);
+  const onFinish = async (values: T) => {
+    if (formProps.onFinish) {
+      await formProps.onFinish(values);
     }
   };
 
@@ -63,9 +63,8 @@ const FormWrapper = ({
   };
 
   return (
-    <Form
-      form={form}
-      name={formName}
+    <Form<T>
+      form={formProps.form || form}
       onFinish={onFinish}
       onChange={() => {
         const values = form.getFieldsValue();
@@ -79,7 +78,7 @@ const FormWrapper = ({
       layout={"vertical"}
       {...formProps}
     >
-      {typeof children === "function" ? children(form) : children}
+      {typeof children === "function" ? children(formProps.form || form) : children}
       <Form.Item style={{ textAlign: "center" }}>
         <Button
           type="primary"

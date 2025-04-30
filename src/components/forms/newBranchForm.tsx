@@ -78,7 +78,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
   return (
     <FormWrapper
       formName={"newBranch"}
-      onSubmit={onFinish}
+      onFinish={onFinish}
       initialValues={{
         prefix: "57",
       }}

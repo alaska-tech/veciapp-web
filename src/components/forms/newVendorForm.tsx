@@ -71,7 +71,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
   return (
     <FormWrapper
       formName={"newVendor"}
-      onSubmit={onFinish}
+      onFinish={onFinish}
       initialValues={{
         prefix: "57",
         password: "Password123",
