@@ -71,7 +71,7 @@ export default function useAuthAction() {
         });
       },
       onSuccess(data, _variables, _context) {
-        const { token, currentUser } =  data.data;
+        const { token, currentUser } = data.data;
         localStorage.setItem(JWTKey, JSON.stringify(token));
         localStorage.setItem(loggedUserInfoKey, JSON.stringify(currentUser));
         message.success({
@@ -81,45 +81,5 @@ export default function useAuthAction() {
       },
     }
   );
-
-  const updatePassword = mutateEntity<
-    AxiosResponse<User>,
-    AxiosError<ErrorBody>,
-    { body: UpdatePasswordBody }
-  >(
-    () => {
-      return async function mutationFn({ body }) {
-        try {
-          if (!body.password || !body.token) {
-            throw new Error("No body provided");
-          }
-          const response = await authClient.post<User>("/reset-password", {
-            password: body.password,
-            token: body.token,
-          });
-          return response;
-        } catch (error) {
-          throw error;
-        }
-      };
-    },
-    {
-      onSuccess(response, variables, _context) {
-        //queryClient.setQueryData([data.data.userId], data.data)
-        //localStorage.setItem(authSessionKey, variables.body.token as string);
-        if (variables.body.onSuccess) {
-          variables.body.onSuccess(response);
-        }
-      },
-      onError: (error, _variables, _context) => {
-        notification.error({
-          message: "Error",
-          description: error.message,
-          duration: 0,
-        });
-      },
-    }
-  );
-
-  return { logOut, userSession, logIn, updatePassword };
+  return { logOut, userSession, logIn };
 }

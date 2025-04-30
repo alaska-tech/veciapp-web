@@ -13,6 +13,7 @@ import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
+import { JWTKey } from "@/constants/constants";
 
 export type LogInForm = {
   email: string;

@@ -14,16 +14,22 @@ import {
 } from "antd";
 import {
   AppstoreOutlined,
-  DownOutlined,
+  DollarOutlined,
   HomeOutlined,
   LogoutOutlined,
+  ReconciliationOutlined,
   SettingOutlined,
+  ShopOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Image from "next/image";
 import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier, { RoleType } from "../auth/AuthVerifier";
+
+const siderWidthCollapsed = 80;
+const siderWidthExpanded = 200;
 
 const lateralMenuItems: Record<string, MenuProps["items"]> = {
   "(admin)": [
@@ -34,28 +40,61 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       children: undefined,
     },
     {
-      key: `/(admin)/users`,
-      icon: React.createElement(UserOutlined),
-      label: <Link href="/(admin)/users">Usuarios</Link>,
-      children: undefined,
+      key: `sub-users`,
+      label: "Usuarios",
+      type: "group",
+      children: [
+        {
+          key: `/(admin)/vendors`,
+          icon: React.createElement(ShopOutlined),
+          label: <Link href="/(admin)/vendors">Proveedores</Link>,
+          children: undefined,
+        },
+        {
+          key: `/(admin)/users`,
+          icon: React.createElement(TeamOutlined),
+          label: <Link href="/(admin)/users">Clientes</Link>,
+          children: undefined,
+        },
+      ],
     },
     {
-      key: `/(admin)/vendors`,
-      icon: React.createElement(UserOutlined),
-      label: <Link href="/(admin)/vendors">Vendedores</Link>,
-      children: undefined,
+      key: `sub-management`,
+      label: "Gestión",
+      type: "group",
+      children: [
+        {
+          key: `/(admin)/payments`,
+          icon: React.createElement(DollarOutlined),
+          label: <Link href="/(admin)/payments">Pagos</Link>,
+          children: undefined,
+        },
+        {
+          key: `/(admin)/conciliations`,
+          icon: React.createElement(ReconciliationOutlined),
+          label: <Link href="/(admin)/conciliations">Conciliaciones</Link>,
+          children: undefined,
+        },
+        {
+          key: `/(admin)/branches`,
+          icon: React.createElement(AppstoreOutlined),
+          label: <Link href="/(admin)/branches">Sucursales</Link>,
+          children: undefined,
+        },
+      ],
     },
     {
-      key: `/(admin)/branches`,
-      icon: React.createElement(AppstoreOutlined),
-      label: <Link href="/(admin)/branches">Tiendas</Link>,
-      children: undefined,
-    },
-    {
-      key: `/(admin)/configuration`,
-      icon: React.createElement(SettingOutlined),
-      label: <Link href="/(admin)/configuration">Configuración</Link>,
-      children: undefined,
+      key: `sub-configuration`,
+      label: "Configuración",
+      type: "group",
+      children: [
+        {
+          key: `/(admin)/configuration`,
+          icon: React.createElement(SettingOutlined),
+          label: <Link href="/(admin)/configuration">Parámetros</Link>,
+          children: undefined,
+        },
+      ],
     },
   ],
   "(vendor)": [
@@ -68,19 +107,8 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   ],
 };
 
-const siderWidthCollapsed = 80;
-const siderWidthExpanded = 200;
-
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const {
-    token: { borderRadiusLG, colorBgElevated, boxShadowSecondary },
-  } = theme.useToken();
-  const contentStyle = {
-    backgroundColor: colorBgElevated,
-    borderRadius: borderRadiusLG,
-    boxShadow: boxShadowSecondary,
-  };
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
@@ -98,28 +126,33 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           width={siderWidthExpanded}
           style={{
             overflow: "auto",
-            height: "100%",
+            height: "calc(100vh - 50px)",
             position: "fixed",
             top: 0,
             left: 0,
           }}
         >
-          <Image
-            src={"/images/logo.png"}
-            alt={"veciapp-logo"}
-            width={100}
-            height={60}
-            style={{
-              width: "auto",
-              objectFit: "cover",
-              display: "flex",
-              margin: "16px auto",
-            }}
-          ></Image>
-          <Menu
-            mode="inline"
-            items={lateralMenuItems[router.pathname.split("/")[1]]}
-            selectedKeys={[router.pathname.split("/").slice(0, 3).join("/")]}
+          <div>
+            <Image
+              src={"/images/logo.png"}
+              alt={"veciapp-logo"}
+              width={100}
+              height={60}
+              style={{
+                width: "auto",
+                objectFit: "cover",
+                display: "flex",
+                margin: "16px auto",
+              }}
+            ></Image>
+            <Menu
+              mode="inline"
+              items={lateralMenuItems[router.pathname.split("/")[1]]}
+              selectedKeys={[router.pathname.split("/").slice(0, 3).join("/")]}
+            />
+          </div>
+          <ProfileButton
+            width={sideMenuCollapsed ? siderWidthCollapsed : siderWidthExpanded}
           />
         </Sider>
         <Layout
@@ -141,76 +174,22 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <div
               style={{
                 display: "flex",
-                flexDirection: "row-reverse",
+                flexDirection: "column",
                 justifyContent: "space-between",
                 flexWrap: "wrap",
               }}
             >
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: "profile",
-                      label: "Ver perfil",
-                      icon: <UserOutlined />,
-                      onClick: () => {
-                        router.push(
-                          `/${router.pathname.split("/")[1]}/profile`
-                        );
-                        //signOut!()
-                      },
-                    },
-                    {
-                      key: "logout",
-                      label: "Cerrar sesión",
-                      icon: <LogoutOutlined />,
-                      onClick: () => {
-                        router.push("/");
-                        //signOut!()
-                      },
-                    },
-                  ],
-                }}
-                trigger={["click"]}
-                dropdownRender={(menu) => (
-                  <div style={contentStyle}>
-                    <Space
-                      style={{
-                        padding: 8,
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Avatar icon={<UserOutlined />} />
-                      <Typography.Paragraph
-                        strong
-                        style={{ fontSize: "18px", marginBottom: 0 }}
-                      >
-                        John Doe
-                      </Typography.Paragraph>
-                      <Text type="secondary">Compañia ABCDF</Text>
-                    </Space>
-                    <Divider style={{ margin: 0 }} />
-                    {React.cloneElement(menu as React.ReactElement)}
-                  </div>
-                )}
-              >
-                <Button
-                  size="large"
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  <Avatar icon={<UserOutlined />} />
-                  <DownOutlined />
-                </Button>
-              </Dropdown>
-              <div>
-                <AutoBreadcrumb />
-                <AutoTitle />
-              </div>
+              <AutoBreadcrumb />
+              <AutoTitle />
             </div>
           </Header>
-          <Content style={{ padding: "12px 50px", overflow: "auto", alignSelf: "center"}}>
+          <Content
+            style={{
+              padding: "12px 50px",
+              overflow: "auto",
+              alignSelf: "center",
+            }}
+          >
             {children}
           </Content>
           <Footer style={{ textAlign: "center" }}>
@@ -227,6 +206,87 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default DashboardLayout;
+
+const ProfileButton = (props: { width: number }) => {
+  const router = useRouter();
+  const {
+    token: { borderRadiusLG, colorBgElevated, boxShadowSecondary },
+  } = theme.useToken();
+  const contentStyle = {
+    backgroundColor: colorBgElevated,
+    borderRadius: borderRadiusLG,
+    boxShadow: boxShadowSecondary,
+  };
+  const isCollapsed = props.width < 90;
+  return (
+    <Dropdown
+      menu={{
+        items: [
+          {
+            key: "profile",
+            label: "Configuración",
+            icon: <SettingOutlined />,
+            onClick: () => {
+              router.push(`/${router.pathname.split("/")[1]}/profile`);
+              //signOut!()
+            },
+          },
+          {
+            key: "logout",
+            label: "Cerrar sesión",
+            icon: <LogoutOutlined />,
+            onClick: () => {
+              router.push("/");
+              //signOut!()
+            },
+          },
+        ],
+      }}
+      trigger={["click"]}
+      dropdownRender={(menu) => (
+        <div style={contentStyle}>
+          <Space
+            style={{
+              padding: 8,
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography.Text type="secondary">
+              julianangulop@gmail.com
+            </Typography.Text>
+          </Space>
+          <Divider style={{ margin: 0 }} />
+          {React.cloneElement(menu as React.ReactElement)}
+        </div>
+      )}
+    >
+      <Button
+        size="large"
+        type="text"
+        icon={<Avatar icon={<UserOutlined />} />}
+        style={{
+          width: props.width,
+          position: "fixed",
+          bottom: 48,
+          overflow: "hidden",
+          height: 64,
+        }}
+      >
+        <Typography.Text
+          type="secondary"
+          style={{
+            overflow: "hidden",
+            display: isCollapsed ? "none" : "inherit",
+          }}
+        >
+          Julian Angulo
+        </Typography.Text>
+      </Button>
+    </Dropdown>
+  );
+};
 
 interface TreeStruct {
   key: string;
@@ -248,11 +308,11 @@ const breadcrumItemTree: TreeStruct[] = [
       },
       {
         key: "users",
-        value: "Usuarios",
+        value: "Clientes",
         children: [
           {
             key: "newUser",
-            value: "Nuevo usuario",
+            value: "Nuevo cliente",
           },
           {
             key: "[id]",
@@ -262,7 +322,7 @@ const breadcrumItemTree: TreeStruct[] = [
       },
       {
         key: "vendors",
-        value: "Vendedores",
+        value: "Proveedores",
         children: [
           {
             key: "[id]",
@@ -270,13 +330,13 @@ const breadcrumItemTree: TreeStruct[] = [
           },
           {
             key: "newVendor",
-            value: "Nuevo vendedor",
+            value: "Nuevo proveedor",
           },
         ],
       },
       {
         key: "branches",
-        value: "Tiendas",
+        value: "Sucursales",
         children: [
           {
             key: "[id]",
@@ -289,8 +349,16 @@ const breadcrumItemTree: TreeStruct[] = [
         ],
       },
       {
+        key: "payments",
+        value: "Pagos",
+      },
+      {
+        key: "conciliations",
+        value: "Conciliaciones",
+      },
+      {
         key: "configuration",
-        value: "Configuración",
+        value: "Parámetros",
       },
     ],
   },
@@ -365,24 +433,28 @@ const AutoBreadcrumb = () => {
 };
 
 const titles: Record<string, string> = {
-  "/(admin)/home": "Dashboard",
+  "/(admin)/home": "Bienvenido",
   "/(admin)/profile": "Perfil de usuario",
-  "/(admin)/users": "Usuarios",
+  "/(admin)/users": "Clientes",
   "/(admin)/users/newUser": "Nuevo usuario",
-  "/(admin)/branches": "Tiendas",
+  "/(admin)/branches": "Sucursales",
   "/(admin)/vendors": "Vendedores",
-  "/(admin)/configuration": "Configuración",
+  "/(admin)/configuration": "Parámetros",
+  "/(admin)/conciliations": "Conciliaciones",
+  "/(admin)/payments": "Pagos",
   "/(vendor)/home": "Dashboard",
   "/(vendor)/profile": "Perfil de usuario",
 };
 const subtitles: Record<string, string> = {
-  "/(admin)/home": "Esta es la pagina de Inicio",
+  "/(admin)/home": "Resumen general",
   "/(admin)/profile": "Esta es la pagina de perfil de usuario",
-  "/(admin)/users": "Esta es la pagina de Usuarios",
+  "/(admin)/users": "Esta es la pagina de Clientes",
   "/(admin)/users/newUser": "Esta es la pagina de Nuevo usuario",
-  "/(admin)/branches": "Esta es la pagina de tiendas",
+  "/(admin)/branches": "Esta es la pagina de sucursales",
   "/(admin)/vendors": "Esta es la pagina de vendedores",
-  "/(admin)/configuration": "Esta es la pagina de Configuración",
+  "/(admin)/configuration": "Esta es la pagina de Parámetros",
+  "/(admin)/conciliations": "Esta es la pagina de conciliaciones",
+  "/(admin)/payments": "Esta es la pagina de pagos",
   "/(vendor)/home": "Esta es la pagina de Inicio",
   "/(vendor)/profile": "Esta es la pagina de perfil de usuario",
 };
