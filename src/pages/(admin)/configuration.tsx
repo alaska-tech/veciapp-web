@@ -1,20 +1,8 @@
-import {
-  Select,
-  Form,
-  InputNumber,
-  Switch,
-  Radio,
-  Button,
-  App,
-  Input,
-  Typography,
-  Space,
-} from "antd";
 import React, { ReactElement } from "react";
 import DashboardLayout2 from "@/components/layout/DashboardLayout";
-import { Parameter } from "@models";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useParameterAction } from "@/actions/parameter.action";
+import { Button, Space } from 'antd';
 
 const Index = () => {
   const parameterActions = useParameterAction();
