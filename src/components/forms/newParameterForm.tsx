@@ -57,6 +57,7 @@ export const FormElement = <T extends Parameter>(props: {
       formName={"newBranch"}
       onFinish={handleFinish}
       form={formRef}
+      initialValues={{isActive: true}}
     >
       <div>
         <Form.Item label="Name" name="name" rules={[{ required: true }]}>
