@@ -1,3 +1,4 @@
+import useAuthAction from "@/actions/auth.action";
 import { useRouter } from "next/router";
 
 export const Roles = ["admin", "vendor"] as const;
@@ -14,13 +15,13 @@ const AuthChecker = ({
   requireAuth,
   roles = [],
 }: AuthCheckerProps): React.ReactNode => {
-  //const { userSession } = useAuthAction();
-  const { userSession } = {
+  const { userSession } = useAuthAction();
+  /*   const { userSession } = {
     userSession: {
       data: { role: "admin" as RoleType[number] },
       isLoading: false,
     },
-  }; // Simulación de un hook de autenticación
+  }; // Simulación de un hook de autenticación */
   const { data, isLoading } = userSession;
   const router = useRouter();
   if (isLoading) {
@@ -38,7 +39,7 @@ const AuthChecker = ({
     return null;
   }
 
-  if (roles.length > 0 && !!data?.role && !roles.includes(data.role)) {
+  if (roles.length > 0 && !!data?.role && !roles.includes(data.role as RoleType[number])) {
     router.replace("/access-denied");
     return null;
   }

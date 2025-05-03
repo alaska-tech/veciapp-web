@@ -1,11 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { authClient } from "../services/clients";
+import { apiClient } from "../services/clients";
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity } from "./action";
 import { message, notification } from "antd";
 import { JWTKey, loggedUserInfoKey } from "@constants";
-import { ErrorBody, User } from "@models";
+import { User, Response } from "@models";
 import { LogInForm } from "@/pages";
 
 export interface UpdatePasswordBody {
@@ -16,7 +16,7 @@ export interface UpdatePasswordBody {
 }
 export type LogInResponse = {
   token: string;
-  currentUser: User;
+  user: User;
 };
 export default function useAuthAction() {
   const router = useRouter();
@@ -40,8 +40,8 @@ export default function useAuthAction() {
   };
 
   const logIn = mutateEntity<
-    AxiosResponse<LogInResponse>,
-    AxiosError<ErrorBody>,
+    AxiosResponse<Extract<Response<LogInResponse>, { status: "Success" }>>,
+    AxiosError<Extract<Response<LogInResponse>, { status: "Error" }>>,
     { body: LogInForm }
   >(
     () => {
@@ -50,10 +50,9 @@ export default function useAuthAction() {
           if (!body) {
             throw new Error("No body provided");
           }
-          const response = await authClient.post<LogInResponse>(
-            `/api/v1/auth/login`,
-            body
-          );
+          const response = await apiClient.post<
+            Extract<Response<LogInResponse>, { status: "Success" }>
+          >(`/auth/login`, body);
           return response;
         } catch (error) {
           throw error;
@@ -63,19 +62,19 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.message; //TODO: mapear
+        const receivedErrorMessage = error.response?.data.error.message; //TODO: mapear
         notification.error({
           message: "Error",
-          description: receivedErrorMessage || error.message,
+          description: receivedErrorMessage,
           duration: 0,
         });
       },
       onSuccess(data, _variables, _context) {
-        const { token, currentUser } = data.data;
+        const { token, user } = data.data.data;
         localStorage.setItem(JWTKey, JSON.stringify(token));
-        localStorage.setItem(loggedUserInfoKey, JSON.stringify(currentUser));
+        localStorage.setItem(loggedUserInfoKey, JSON.stringify(user));
         message.success({
-          content: "Te logueaste correctamente",
+          content: "Te has logueado correctamente",
           duration: 5,
         });
       },

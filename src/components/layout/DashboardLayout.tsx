@@ -32,11 +32,11 @@ const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
 
 const lateralMenuItems: Record<string, MenuProps["items"]> = {
-  "(admin)": [
+  "a": [
     {
-      key: `/(admin)/home`,
+      key: `/a/home`,
       icon: React.createElement(HomeOutlined),
-      label: <Link href="/(admin)/home">Inicio</Link>,
+      label: <Link href="/a/home">Inicio</Link>,
       children: undefined,
     },
     {
@@ -45,15 +45,15 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/vendors`,
+          key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/(admin)/vendors">Proveedores</Link>,
+          label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/users`,
+          key: `/a/users`,
           icon: React.createElement(TeamOutlined),
-          label: <Link href="/(admin)/users">Clientes</Link>,
+          label: <Link href="/a/users">Clientes</Link>,
           children: undefined,
         },
       ],
@@ -64,21 +64,21 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/payments`,
+          key: `/a/payments`,
           icon: React.createElement(DollarOutlined),
-          label: <Link href="/(admin)/payments">Pagos</Link>,
+          label: <Link href="/a/payments">Pagos</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/conciliations`,
+          key: `/a/conciliations`,
           icon: React.createElement(ReconciliationOutlined),
-          label: <Link href="/(admin)/conciliations">Conciliaciones</Link>,
+          label: <Link href="/a/conciliations">Conciliaciones</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/branches`,
+          key: `/a/branches`,
           icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/(admin)/branches">Sucursales</Link>,
+          label: <Link href="/a/branches">Sucursales</Link>,
           children: undefined,
         },
       ],
@@ -89,34 +89,40 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/configuration`,
+          key: `/a/configuration`,
           icon: React.createElement(SettingOutlined),
-          label: <Link href="/(admin)/configuration">Parámetros</Link>,
+          label: <Link href="/a/configuration">Parámetros</Link>,
           children: undefined,
         },
       ],
     },
   ],
-  "(vendor)": [
+  "b": [
     {
-      key: `/(vendor)/home`,
+      key: `/b/home`,
       icon: React.createElement(HomeOutlined),
-      label: <Link href="/(vendor)/home">Inicio</Link>,
+      label: <Link href="/b/home">Inicio</Link>,
       children: undefined,
     },
   ],
 };
+
+const roleKeyMap: Record<string, string> = {
+  "a": "admin",
+  "v": "vendor",
+}
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
-
+  const primaryUrlSegment = router.pathname.split("/")[1]
+  const rolesAllowed = roleKeyMap[primaryUrlSegment]||undefined;
   return (
     <AuthVerifier
-      requireAuth={false}
-      roles={[router.pathname.split("/")[1] as RoleType[number]]}
+      requireAuth={primaryUrlSegment !== "p"}
+      roles={[rolesAllowed as RoleType[number]]}
     >
       <Layout>
         <Sider
@@ -295,7 +301,7 @@ interface TreeStruct {
 }
 const breadcrumItemTree: TreeStruct[] = [
   {
-    key: "(admin)",
+    key: "a",
     value: null,
     children: [
       {
@@ -363,7 +369,7 @@ const breadcrumItemTree: TreeStruct[] = [
     ],
   },
   {
-    key: "(vendor)",
+    key: "b",
     value: null,
     children: [
       {
@@ -383,7 +389,7 @@ const AutoBreadcrumb = () => {
   const getBreadcrumItems = (): BreadcrumbProps["items"] => {
     const pathSegments = router.pathname.split("/").slice(1);
     const items = pathSegments.map((segment, index, segments) => {
-      if (segment.startsWith("(") && segment.endsWith(")")) return null;
+      if (index===0) return null;
       let currentBreadcrumbBranch = breadcrumItemTree;
       for (let count = 0; count < index; count++) {
         const newBreadcrumbBranch = currentBreadcrumbBranch.find(
@@ -433,30 +439,30 @@ const AutoBreadcrumb = () => {
 };
 
 const titles: Record<string, string> = {
-  "/(admin)/home": "Bienvenido",
-  "/(admin)/profile": "Perfil de usuario",
-  "/(admin)/users": "Clientes",
-  "/(admin)/users/newUser": "Nuevo usuario",
-  "/(admin)/branches": "Sucursales",
-  "/(admin)/vendors": "Vendedores",
-  "/(admin)/configuration": "Parámetros",
-  "/(admin)/conciliations": "Conciliaciones",
-  "/(admin)/payments": "Pagos",
-  "/(vendor)/home": "Dashboard",
-  "/(vendor)/profile": "Perfil de usuario",
+  "/a/home": "Bienvenido",
+  "/a/profile": "Perfil de usuario",
+  "/a/users": "Clientes",
+  "/a/users/newUser": "Nuevo usuario",
+  "/a/branches": "Sucursales",
+  "/a/vendors": "Vendedores",
+  "/a/configuration": "Parámetros",
+  "/a/conciliations": "Conciliaciones",
+  "/a/payments": "Pagos",
+  "/b/home": "Dashboard",
+  "/b/profile": "Perfil de usuario",
 };
 const subtitles: Record<string, string> = {
-  "/(admin)/home": "Resumen general",
-  "/(admin)/profile": "Esta es la pagina de perfil de usuario",
-  "/(admin)/users": "Esta es la pagina de Clientes",
-  "/(admin)/users/newUser": "Esta es la pagina de Nuevo usuario",
-  "/(admin)/branches": "Esta es la pagina de sucursales",
-  "/(admin)/vendors": "Esta es la pagina de vendedores",
-  "/(admin)/configuration": "Esta es la pagina de Parámetros",
-  "/(admin)/conciliations": "Esta es la pagina de conciliaciones",
-  "/(admin)/payments": "Esta es la pagina de pagos",
-  "/(vendor)/home": "Esta es la pagina de Inicio",
-  "/(vendor)/profile": "Esta es la pagina de perfil de usuario",
+  "/a/home": "Resumen general",
+  "/a/profile": "Esta es la pagina de perfil de usuario",
+  "/a/users": "Esta es la pagina de Clientes",
+  "/a/users/newUser": "Esta es la pagina de Nuevo usuario",
+  "/a/branches": "Esta es la pagina de sucursales",
+  "/a/vendors": "Esta es la pagina de vendedores",
+  "/a/configuration": "Esta es la pagina de Parámetros",
+  "/a/conciliations": "Esta es la pagina de conciliaciones",
+  "/a/payments": "Esta es la pagina de pagos",
+  "/b/home": "Esta es la pagina de Inicio",
+  "/b/profile": "Esta es la pagina de perfil de usuario",
 };
 const AutoTitle = () => {
   const router = useRouter();

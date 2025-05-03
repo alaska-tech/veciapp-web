@@ -7,17 +7,18 @@ export interface BaseAttributes {
   updatedBy?: string;
   updatedAt?: number; //format "2025-04-27T03:02:53.862Z"
 }
-export interface ErrorBody {
-  message: string;
-  data: {
-    message: string;
+export type Response<T> = {
+  status: "Success";
+  data: T;
+  error: null;
+} | {
+  status: "Error";
+  data: null;
+  error: {
+    message?: string;
+    detail?: string;
   };
 }
-export interface succesResponse<T> {
-    status: number
-    data: T | null
-  }
-  
 export interface User extends BaseAttributes {
   id: string;
   fullName: string;
@@ -33,7 +34,7 @@ export interface User extends BaseAttributes {
   lastLoginDate: string;
 }
 
-export const ParameterCategory = ["string","bool","number","array"] as const;
+export const ParameterCategory = ["string", "bool", "number", "array"] as const;
 export type ParameterCategoryType = typeof ParameterCategory;
 
 export interface Parameter extends BaseAttributes {
