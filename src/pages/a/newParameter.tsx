@@ -17,7 +17,6 @@ const NewFormDynamic = dynamic(
 const Index = () => {
   const parameterActions = useParameterAction();
   const createParameter = parameterActions.createParameter();
-  const router = useRouter();
   return (
     <Space direction="vertical">
       <GoBackButton />
@@ -25,13 +24,13 @@ const Index = () => {
         onFinish={async (values) => {
           console.log("Creating parameter:", values);
           try {
-            await createParameter.mutateAsync({body: values});
-            router.push("/(admin)/configuration");
+            /*  await new Promise(resolve => setTimeout(resolve, 4000)); */
+            await createParameter.mutateAsync({ body: values });
           } catch (error) {
             console.error("Error creating parameter:", error);
-            
           }
         }}
+        loading={createParameter.isPending}
       />
     </Space>
   );

@@ -13,51 +13,62 @@ import {
 } from "antd";
 import { Parameter } from "@models";
 
+export const valueInput: Record<string, React.ReactElement> = {
+  string: <Input placeholder="Value" />,
+  number: <InputNumber placeholder="Value" />,
+  boolean: (
+    <Radio.Group>
+      <Radio value={true}>True</Radio>
+      <Radio value={false}>False</Radio>
+    </Radio.Group>
+  ),
+  array: (
+    <Select
+      mode="tags"
+      popupMatchSelectWidth={false}
+      dropdownRender={(menu) => (
+        <>
+          <Typography.Text type="secondary" style={{ padding: "8px" }}>
+            Escriba el item y oprima Enter para agregarlo
+          </Typography.Text>
+          <Divider
+            style={{
+              margin: "4px 0",
+            }}
+          />
+          {menu}
+        </>
+      )}
+    />
+  ),
+};
+
 export const FormElement = <T extends Parameter>(props: {
   onFinish?: FormProps<T>["onFinish"];
+  loading?: boolean;
 }) => {
   const [formRef] = Form.useForm<T>();
   const selectedParameterType = Form.useWatch("type", formRef);
   const handleFinish = async (values: T) => {
+    if(values.type === "number"){
+      values.value = parseFloat(values.value as string)
+    }
+    if (values.type === "bool") {
+      values.value = values.value === "true" ? true : false;
+    }
     if (props.onFinish) {
       props.onFinish(values);
     }
   };
-  const valueInput: Record<string, React.ReactElement> = {
-    string: <Input placeholder="Value" />,
-    number: <InputNumber placeholder="Value" />,
-    boolean: (
-      <Radio.Group>
-        <Radio value={true}>True</Radio>
-        <Radio value={false}>False</Radio>
-      </Radio.Group>
-    ),
-    array: (
-      <Select
-        mode="tags"
-        popupMatchSelectWidth={false}
-        dropdownRender={(menu) => (
-          <>
-            <Typography.Text type="secondary" style={{ padding: "8px" }}>
-              Escriba el item y oprima Enter para agregarlo
-            </Typography.Text>
-            <Divider
-              style={{
-                margin: "4px 0",
-              }}
-            />
-            {menu}
-          </>
-        )}
-      />
-    ),
-  };
+
   return (
     <FormWrapper<T>
-      formName={"newBranch"}
+      formName={"newParameter"}
       onFinish={handleFinish}
       form={formRef}
-      initialValues={{isActive: true}}
+      initialValues={{ isActive: true }}
+      routeTo="/a/configuration"
+      loading={props.loading}
     >
       <div>
         <Form.Item label="Name" name="name" rules={[{ required: true }]}>
@@ -82,7 +93,7 @@ export const FormElement = <T extends Parameter>(props: {
             placeholder="Select a type"
             onChange={() => {
               formRef.setFieldsValue({ value: undefined });
-              if (formRef.isFieldTouched('value' as any)) {
+              if (formRef.isFieldTouched("value" as any)) {
                 formRef.validateFields(["value"]);
               }
             }}
@@ -93,7 +104,11 @@ export const FormElement = <T extends Parameter>(props: {
             <Select.Option value="array">Array</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Value" name="value" rules={[{ required: true }]}>
+        <Form.Item
+          label="Value"
+          name="value"
+          rules={[{ required: true }]}
+        >
           {valueInput[selectedParameterType] || (
             <Input placeholder="Value" disabled={!selectedParameterType} />
           )}

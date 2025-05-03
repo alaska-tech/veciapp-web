@@ -41,7 +41,7 @@ export default function useAuthAction() {
 
   const logIn = mutateEntity<
     AxiosResponse<Extract<Response<LogInResponse>, { status: "Success" }>>,
-    AxiosError<Extract<Response<LogInResponse>, { status: "Error" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
     { body: LogInForm }
   >(
     () => {
