@@ -8,6 +8,8 @@ import es_ES from "antd/locale/es_ES";
 import "leaflet/dist/leaflet.css";
 import { App as AntdAppProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { addJWTInterceptor } from "@/services/axios.interceptor";
+import { apiClient } from "@/services/clients";
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -17,6 +19,7 @@ type AppPropsWithLayout = AppProps & {
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => page);
   const queryClient = new QueryClient();
+  addJWTInterceptor(apiClient);
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider theme={theme} locale={es_ES}>

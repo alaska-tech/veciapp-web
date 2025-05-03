@@ -43,9 +43,9 @@ export default function Home() {
     login.mutateAsync({ body: values }).then(
       (response) => {
         if (response.data.data.user.role === "admin") {
-          router.push("/(admin)/home");
+          router.push("/a/home");
         } else if (response.data.data.user.role === "vendor") {
-          router.push("/(vendor)/home");
+          router.push("/v/home");
         } else {
           message.error("No tienes permisos para acceder a esta sección", 10);
         }

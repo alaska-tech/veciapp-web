@@ -28,7 +28,7 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
-  if (error.response?.status === 403) {
+  if (error.response?.status === 403) { //TODO: Comprobar que el error es 403 para cuando el usuario no tenga permisos
     localStorage.removeItem(JWTKey)
     window.location.href = '/'
   }
