@@ -1,5 +1,5 @@
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
-import { mutateEntity, queryEntity } from "./action";
+import { mutateEntity, queryEntity, queryMultipleEntitiesById } from "./action";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseAttributes, Parameter, Response } from "@models";
 import { apiClient } from "@/services/clients";
@@ -101,6 +101,27 @@ export const useParameterAction = <T extends object>() => {
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEY, variables.id],
         });
+        queryClient.setQueryData([QUERY_KEY + "s"], (oldData: any) => {
+          if (!oldData) return oldData;
+
+          const updatedParameters = oldData.data.parameters.map(
+            (param: Parameter) =>
+              param.id === variables.id
+                ? { ...param, ...data.data.data }
+                : param
+          );
+
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              parameters: updatedParameters,
+            },
+          };
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY + "s"],
+        });
         message.success({
           content: "Parámetro actualizado correctamente",
           duration: 4,
@@ -169,6 +190,26 @@ export const useParameterAction = <T extends object>() => {
       },
     }
   );
-
-  return { createParameter, getParameters, updateParameter, toggleIsActive };
+  const getParametersByName = queryMultipleEntitiesById<
+    AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY] as QueryKey, (name) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<Parameter>, { status: "Success" }>
+        >(`/parameters/get-by-name/${name}`);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  return {
+    createParameter,
+    getParameters,
+    updateParameter,
+    toggleIsActive,
+    getParametersByName,
+  };
 };
