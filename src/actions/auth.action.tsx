@@ -31,13 +31,47 @@ export default function useAuthAction() {
       return JSON.parse(loggedUserInfo) as User;
     },
   });
-  const logOut = () => {
-    localStorage.removeItem(JWTKey);
-    localStorage.removeItem(loggedUserInfoKey);
-    queryClient.removeQueries({ queryKey: [JWTKey] });
-    queryClient.removeQueries({ queryKey: [loggedUserInfoKey] });
-    router.push("/");
-  };
+
+  const logOut = mutateEntity<
+    AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body?: null }
+  >(
+    () => {
+      return async function mutationFn() {
+        try {
+          const response = await apiClient.post<
+            Extract<Response<null>, { status: "Success" }>
+          >(`/auth/logout`);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, _variables, _context) => {
+        const receivedErrorMessage = error.response?.data.error.message; //TODO: mapear
+        notification.error({
+          message: "Error",
+          description: receivedErrorMessage,
+          duration: 0,
+        });
+      },
+      onSuccess(data, _variables, _context) {
+        message.success({
+          content: "Te has deslogueado correctamente",
+          duration: 5,
+        });
+        localStorage.removeItem(JWTKey);
+        localStorage.removeItem(loggedUserInfoKey);
+        queryClient.removeQueries({ queryKey: [JWTKey] });
+        queryClient.removeQueries({ queryKey: [loggedUserInfoKey] });
+        router.push("/");
+      },
+    }
+  );
 
   const logIn = mutateEntity<
     AxiosResponse<Extract<Response<LogInResponse>, { status: "Success" }>>,
@@ -71,7 +105,7 @@ export default function useAuthAction() {
       },
       onSuccess(data, _variables, _context) {
         const { token, user } = data.data.data;
-        localStorage.setItem(JWTKey, JSON.stringify(token));
+        localStorage.setItem(JWTKey, token);
         localStorage.setItem(loggedUserInfoKey, JSON.stringify(user));
         message.success({
           content: "Te has logueado correctamente",

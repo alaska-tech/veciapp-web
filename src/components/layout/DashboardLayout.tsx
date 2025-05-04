@@ -27,12 +27,13 @@ import Image from "next/image";
 import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier, { RoleType } from "../auth/AuthVerifier";
+import useAuthAction from "@/actions/auth.action";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
 
 const lateralMenuItems: Record<string, MenuProps["items"]> = {
-  "a": [
+  a: [
     {
       key: `/a/home`,
       icon: React.createElement(HomeOutlined),
@@ -97,7 +98,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       ],
     },
   ],
-  "b": [
+  b: [
     {
       key: `/b/home`,
       icon: React.createElement(HomeOutlined),
@@ -108,17 +109,17 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
 };
 
 const roleKeyMap: Record<string, string> = {
-  "a": "admin",
-  "v": "vendor",
-}
+  a: "admin",
+  v: "vendor",
+};
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
-  const primaryUrlSegment = router.pathname.split("/")[1]
-  const rolesAllowed = roleKeyMap[primaryUrlSegment]||undefined;
+  const primaryUrlSegment = router.pathname.split("/")[1];
+  const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
   return (
     <AuthVerifier
       requireAuth={primaryUrlSegment !== "p"}
@@ -214,6 +215,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 export default DashboardLayout;
 
 const ProfileButton = (props: { width: number }) => {
+  const authActions = useAuthAction();
+  const currentUser = authActions.userSession;
+  const logout = authActions.logOut();
   const router = useRouter();
   const {
     token: { borderRadiusLG, colorBgElevated, boxShadowSecondary },
@@ -242,8 +246,7 @@ const ProfileButton = (props: { width: number }) => {
             label: "Cerrar sesión",
             icon: <LogoutOutlined />,
             onClick: () => {
-              router.push("/");
-              //signOut!()
+              logout.mutateAsync({ body: null });
             },
           },
         ],
@@ -260,7 +263,7 @@ const ProfileButton = (props: { width: number }) => {
             }}
           >
             <Typography.Text type="secondary">
-              julianangulop@gmail.com
+              {currentUser.data?.email || "Email desconocido"}
             </Typography.Text>
           </Space>
           <Divider style={{ margin: 0 }} />
@@ -287,7 +290,7 @@ const ProfileButton = (props: { width: number }) => {
             display: isCollapsed ? "none" : "inherit",
           }}
         >
-          Julian Angulo
+          {currentUser.data?.fullName || "Usuario desconocido"}
         </Typography.Text>
       </Button>
     </Dropdown>
@@ -389,7 +392,7 @@ const AutoBreadcrumb = () => {
   const getBreadcrumItems = (): BreadcrumbProps["items"] => {
     const pathSegments = router.pathname.split("/").slice(1);
     const items = pathSegments.map((segment, index, segments) => {
-      if (index===0) return null;
+      if (index === 0) return null;
       let currentBreadcrumbBranch = breadcrumItemTree;
       for (let count = 0; count < index; count++) {
         const newBreadcrumbBranch = currentBreadcrumbBranch.find(
