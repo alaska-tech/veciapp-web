@@ -59,10 +59,20 @@ const RenderParameter = ({ parameter }: { parameter: Parameter }) => {
           htmlType="submit"
           icon={<SaveOutlined />}
           onClick={async () => {
+            let mappedValue = value;
+            if (parameter.type === "number") {
+              mappedValue = parseFloat(value as string);
+            }
+            if (parameter.type === "boolean") {
+              mappedValue = value === "true" ? true : false;
+            }
+            if (parameter.type === "json") {
+              mappedValue = JSON.stringify(value);
+            }
             try {
               await updateParameter.mutateAsync({
                 id: parameter.id,
-                body: { value },
+                body: { value: mappedValue },
               });
               setHasNewValue(false);
             } catch (error) {
@@ -74,7 +84,9 @@ const RenderParameter = ({ parameter }: { parameter: Parameter }) => {
             transform: hasNewValue ? "translateY(0)" : "translateY(-4px)",
             transition: "visibility 0.3s ease, transform 0.3s ease",
             visibility: hasNewValue ? "visible" : "hidden",
+            marginLeft: "1rem",
           }}
+          loading={updateParameter.isPending}
         >
           Guardar
         </Button>
@@ -85,7 +97,12 @@ const RenderParameter = ({ parameter }: { parameter: Parameter }) => {
     >
       <Card.Meta description={parameter.description} />
       <Form
-        initialValues={{ value: parameter.value }}
+        initialValues={{
+          value:
+            parameter.type === "json"
+              ? JSON.parse(parameter.value as string)
+              : parameter.value,
+        }}
         form={form}
         onChange={(e) => {
           console.log(e);

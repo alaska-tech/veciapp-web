@@ -53,7 +53,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
 
   const onFinish = async (values: T) => {
     if (!!formProps.onFinish) {
-      formProps.onFinish(values).then(
+      await formProps.onFinish(values).then(
         () => {
           resetForm();
           if (formProps.routeTo) {

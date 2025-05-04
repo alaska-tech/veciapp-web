@@ -34,7 +34,7 @@ export interface User extends BaseAttributes {
   lastLoginDate: string;
 }
 
-export const ParameterCategory = ["string", "bool", "number", "array"] as const;
+export const ParameterCategory = ["string", "boolean", "number", "json"] as const;
 export type ParameterCategoryType = typeof ParameterCategory;
 
 export interface Parameter extends BaseAttributes {
@@ -42,7 +42,7 @@ export interface Parameter extends BaseAttributes {
   displayName: string;
   name: string;
   description: string;
-  value: string | number | boolean | Array<string>
+  value: string | number | boolean 
   type: ParameterCategoryType[number];
   isActive: boolean;
 }

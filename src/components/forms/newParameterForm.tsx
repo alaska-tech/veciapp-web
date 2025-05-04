@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { Parameter } from "@models";
 
-export const valueInput: Record<string, React.ReactElement> = {
+export const valueInput: Record<Parameter['type'], React.ReactElement> = {
   string: <Input placeholder="Value" />,
   number: <InputNumber placeholder="Value" />,
   boolean: (
@@ -22,7 +22,7 @@ export const valueInput: Record<string, React.ReactElement> = {
       <Radio value={false}>False</Radio>
     </Radio.Group>
   ),
-  array: (
+  json: (
     <Select
       mode="tags"
       popupMatchSelectWidth={false}
@@ -44,20 +44,23 @@ export const valueInput: Record<string, React.ReactElement> = {
 };
 
 export const FormElement = <T extends Parameter>(props: {
-  onFinish?: FormProps<T>["onFinish"];
+  onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
 }) => {
   const [formRef] = Form.useForm<T>();
   const selectedParameterType = Form.useWatch("type", formRef);
   const handleFinish = async (values: T) => {
-    if(values.type === "number"){
-      values.value = parseFloat(values.value as string)
+    if (values.type === "number") {
+      values.value = parseFloat(values.value as string);
     }
-    if (values.type === "bool") {
+    if (values.type === "boolean") {
       values.value = values.value === "true" ? true : false;
     }
+    if (values.type === "json") {
+      values.value = JSON.stringify(values.value);
+    }
     if (props.onFinish) {
-      props.onFinish(values);
+      await props.onFinish(values);
     }
   };
 
@@ -101,14 +104,10 @@ export const FormElement = <T extends Parameter>(props: {
             <Select.Option value="string">String</Select.Option>
             <Select.Option value="number">Number</Select.Option>
             <Select.Option value="boolean">Boolean</Select.Option>
-            <Select.Option value="array">Array</Select.Option>
+            <Select.Option value="json">Array</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item
-          label="Value"
-          name="value"
-          rules={[{ required: true }]}
-        >
+        <Form.Item label="Value" name="value" rules={[{ required: true }]}>
           {valueInput[selectedParameterType] || (
             <Input placeholder="Value" disabled={!selectedParameterType} />
           )}

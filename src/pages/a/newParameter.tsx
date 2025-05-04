@@ -21,14 +21,8 @@ const Index = () => {
     <Space direction="vertical">
       <GoBackButton />
       <NewFormDynamic
-        onFinish={async (values) => {
-          console.log("Creating parameter:", values);
-          try {
-            /*  await new Promise(resolve => setTimeout(resolve, 4000)); */
-            await createParameter.mutateAsync({ body: values });
-          } catch (error) {
-            console.error("Error creating parameter:", error);
-          }
+        onFinish={(values) => {
+          return createParameter.mutateAsync({ body: values });
         }}
         loading={createParameter.isPending}
       />
