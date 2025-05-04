@@ -108,6 +108,67 @@ export const useParameterAction = <T extends object>() => {
       },
     }
   );
+  const toggleIsActive = mutateEntity<
+    AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string }
+  >(
+    () => {
+      return async function mutationFn({ id }) {
+        try {
+          const response = await apiClient.patch<
+            Extract<Response<Parameter>, { status: "Success" }>
+          >(`/parameters/toggle-status/${id}`);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess(data, variables, context) {
+        queryClient.setQueryData([QUERY_KEY, variables.id], data.data.data);
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY, variables.id],
+        });
+        queryClient.setQueryData([QUERY_KEY + "s"], (oldData: any) => {
+          if (!oldData) return oldData;
 
-  return { createParameter, getParameters, updateParameter };
+          const updatedParameters = oldData.data.parameters.map(
+            (param: Parameter) =>
+              param.id === variables.id
+                ? { ...param, ...data.data.data }
+                : param
+          );
+
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              parameters: updatedParameters,
+            },
+          };
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY + "s"],
+        });
+        message.success({
+          content: `Parámetro ${
+            data.data.data.isActive ? "activado" : "desactivado"
+          } correctamente`,
+          duration: 4,
+        });
+      },
+    }
+  );
+
+  return { createParameter, getParameters, updateParameter, toggleIsActive };
 };

@@ -13,11 +13,15 @@ import {
 } from "antd";
 import { Parameter } from "@models";
 
-export const valueInput: Record<Parameter['type'], React.ReactElement> = {
+export const valueInput: Record<Parameter["type"], React.ReactElement> = {
   string: <Input placeholder="Value" />,
   number: <InputNumber placeholder="Value" />,
   boolean: (
-    <Radio.Group>
+    <Radio.Group
+      onChange={(e) => {
+        console.log(e.target.value);
+      }}
+    >
       <Radio value={true}>True</Radio>
       <Radio value={false}>False</Radio>
     </Radio.Group>
@@ -52,9 +56,6 @@ export const FormElement = <T extends Parameter>(props: {
   const handleFinish = async (values: T) => {
     if (values.type === "number") {
       values.value = parseFloat(values.value as string);
-    }
-    if (values.type === "boolean") {
-      values.value = values.value === "true" ? true : false;
     }
     if (values.type === "json") {
       values.value = JSON.stringify(values.value);
