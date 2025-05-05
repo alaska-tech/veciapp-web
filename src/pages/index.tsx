@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
-import { JWTKey } from "@/constants/constants";
+import { JWT_KEY } from "@/constants/constants";
 
 export type LogInForm = {
   email: string;
@@ -26,7 +26,7 @@ export default function Home() {
   const { message } = App.useApp();
 
   useEffect(() => {
-      const jwt = localStorage.getItem(JWTKey)
+      const jwt = localStorage.getItem(JWT_KEY)
       if (jwt) {
         const user = JSON.parse(atob(jwt.split(".")[1]));
         if (user.role === "admin") {

@@ -1,8 +1,8 @@
-import { JWTKey } from '@/constants/constants'
+import { JWT_KEY } from '@/constants/constants'
 import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 const addJwtToHeader = (request: AxiosRequestConfig) => {
-  const jwt = localStorage.getItem(JWTKey)
+  const jwt = localStorage.getItem(JWT_KEY)
   if (jwt) {
     const newHeader = {
       Authorization: `Bearer ${jwt}`,
@@ -29,7 +29,7 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
   if (error.response?.status === 403) { //TODO: Comprobar que el error es 403 para cuando el usuario no tenga permisos
-    localStorage.removeItem(JWTKey)
+    localStorage.removeItem(JWT_KEY)
     window.location.href = '/'
   }
   return Promise.reject(error)

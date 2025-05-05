@@ -4,7 +4,7 @@ import { apiClient } from "../services/clients";
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity } from "./action";
 import { message, notification } from "antd";
-import { JWTKey, loggedUserInfoKey } from "@constants";
+import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@constants";
 import { User, Response } from "@models";
 import { LogInForm } from "@/pages";
 
@@ -22,9 +22,9 @@ export default function useAuthAction() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const userSession = useQuery<User | null>({
-    queryKey: [loggedUserInfoKey],
+    queryKey: [LOGGED_USER_INFO_KEY],
     queryFn: () => {
-      const loggedUserInfo = localStorage.getItem(loggedUserInfoKey);
+      const loggedUserInfo = localStorage.getItem(LOGGED_USER_INFO_KEY);
       if (!loggedUserInfo) {
         return null;
       }
@@ -64,10 +64,10 @@ export default function useAuthAction() {
           content: "Te has deslogueado correctamente",
           duration: 5,
         });
-        localStorage.removeItem(JWTKey);
-        localStorage.removeItem(loggedUserInfoKey);
-        queryClient.removeQueries({ queryKey: [JWTKey] });
-        queryClient.removeQueries({ queryKey: [loggedUserInfoKey] });
+        localStorage.removeItem(JWT_KEY);
+        localStorage.removeItem(LOGGED_USER_INFO_KEY);
+        queryClient.removeQueries({ queryKey: [JWT_KEY] });
+        queryClient.removeQueries({ queryKey: [LOGGED_USER_INFO_KEY] });
         router.push("/");
       },
     }
@@ -105,8 +105,8 @@ export default function useAuthAction() {
       },
       onSuccess(data, _variables, _context) {
         const { token, user } = data.data.data;
-        localStorage.setItem(JWTKey, token);
-        localStorage.setItem(loggedUserInfoKey, JSON.stringify(user));
+        localStorage.setItem(JWT_KEY, token);
+        localStorage.setItem(LOGGED_USER_INFO_KEY, JSON.stringify(user));
         message.success({
           content: "Te has logueado correctamente",
           duration: 5,

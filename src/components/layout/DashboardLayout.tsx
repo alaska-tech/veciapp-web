@@ -26,8 +26,9 @@ import {
 import Image from "next/image";
 import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
-import AuthVerifier, { RoleType } from "../auth/AuthVerifier";
+import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
+import { UserRoleType } from "@/constants/models";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
@@ -115,6 +116,8 @@ const roleKeyMap: Record<string, string> = {
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const authActions = useAuthAction();
+  const { userSession } = authActions;
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
@@ -123,7 +126,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthVerifier
       requireAuth={primaryUrlSegment !== "p"}
-      roles={[rolesAllowed as RoleType[number]]}
+      roles={[rolesAllowed as UserRoleType[number]]}
+      user={userSession.data || undefined}
     >
       <Layout>
         <Sider

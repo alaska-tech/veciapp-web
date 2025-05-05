@@ -1,4 +1,4 @@
-export const UserRoles = ["admin", "vendor", "user"] as const;
+export const UserRoles = ["admin", "vendor", "customer"] as const;
 export type UserRoleType = typeof UserRoles;
 
 export interface BaseAttributes {
