@@ -52,7 +52,7 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.error.message; //TODO: mapear
+        const receivedErrorMessage = error.response?.data.error.message; 
         notification.error({
           message: "Error",
           description: receivedErrorMessage,
@@ -96,7 +96,7 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.error.message; //TODO: mapear
+        const receivedErrorMessage = error.response?.data.error.message; 
         notification.error({
           message: "Error",
           description: receivedErrorMessage,

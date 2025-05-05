@@ -23,16 +23,19 @@ interface ParameterCardProps {
   onClickOnSave?: (
     value: string | number | boolean,
     parameter: Parameter
-  ) => void;
-  onClickOnToggle?: (parameter: Parameter) => void;
+  ) => Promise<void>;
+  onClickOnToggle?: (parameter: Parameter) => Promise<void>;
+  loading?: boolean;
 }
-const ParameterCard = ({ parameter, onClickOnSave, onClickOnToggle }: ParameterCardProps) => {
+const ParameterCard = ({
+  parameter,
+  onClickOnSave,
+  onClickOnToggle,
+  loading,
+}: ParameterCardProps) => {
   const [form] = Form.useForm();
   const value = Form.useWatch("value", form);
   const [hasNewValue, setHasNewValue] = useState(false);
-  const parameterActions = useParameterAction();
-  const updateParameter = parameterActions.updateParameter();
-  const toggleIsActive = parameterActions.toggleIsActive();
   return (
     <Card
       title={
@@ -53,8 +56,8 @@ const ParameterCard = ({ parameter, onClickOnSave, onClickOnToggle }: ParameterC
             htmlType="submit"
             icon={<SaveOutlined />}
             onClick={async () => {
-               await onClickOnSave?.(value, parameter);
-                setHasNewValue(false);
+              await onClickOnSave?.(value, parameter);
+              setHasNewValue(false);
             }}
             style={{
               opacity: hasNewValue ? 1 : 0,
@@ -63,12 +66,18 @@ const ParameterCard = ({ parameter, onClickOnSave, onClickOnToggle }: ParameterC
               visibility: hasNewValue ? "visible" : "hidden",
               marginLeft: "1rem",
             }}
-            loading={updateParameter.isPending}
+            loading={loading}
           >
             Guardar
           </Button>
         ) : (
-          <Tag icon={<MinusCircleOutlined />} color="default">
+          <Tag
+            icon={<MinusCircleOutlined />}
+            color="default"
+            style={{
+              marginLeft: "1rem",
+            }}
+          >
             Inactivo
           </Tag>
         )
@@ -109,7 +118,9 @@ const ParameterCard = ({ parameter, onClickOnSave, onClickOnToggle }: ParameterC
               >
                 <Form.Item noStyle name="value">
                   {React.cloneElement(
-                    valueInput[parameter.type] as React.ReactElement<{
+                    (valueInput[parameter.type] || (
+                      <React.Fragment />
+                    )) as React.ReactElement<{
                       onChange?: (
                         e: React.ChangeEvent<HTMLInputElement>
                       ) => void;
@@ -167,7 +178,7 @@ const ParameterCard = ({ parameter, onClickOnSave, onClickOnToggle }: ParameterC
                       setHasNewValue(false);
                     }}
                     style={{ marginLeft: "1rem" }}
-                    loading={toggleIsActive.isPending}
+                    loading={loading}
                   >
                     {parameter.isActive ? "Desactivar" : "Activar"}
                   </Button>

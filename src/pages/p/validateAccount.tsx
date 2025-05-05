@@ -4,37 +4,29 @@ import { Form, Input, Button } from "antd";
 import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 interface FormValues {
-  email: string;
   code: string;
 }
 const Index = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [formInstance] = Form.useForm();
-  const handleSubmit = async () => {
-    router.push("/(public)/setPassAccount");
-    try {
-      const values = formInstance.getFieldsValue();
-      //await formInstance.validateFields();
-      //await verifyCode.mutateAsync(values);
-    } catch (error) {
-      console.error(error);
-    }
+  const { h } = router.query;
+  const handleSubmit = async (values: FormValues) => {
+    router.push("/p/setPassAccount?h=" + h + "&code=" + values.code);
   };
   return (
-    <div>
-      <Form<FormValues>
-        form={formInstance}
-        onFinish={handleSubmit}
-        style={{ minWidth: 300 }}
-      >
-        <Form.Item label="Código" name="code" rules={[{ required: true }]}>
-        <Input.OTP />
-        </Form.Item>
-        <Button htmlType="submit" type="primary" icon={<LockOutlined />}>
-          Siguiente
-        </Button>
-      </Form>
-    </div>
+    <Form<FormValues>
+      form={formInstance}
+      onFinish={handleSubmit}
+      style={{ minWidth: 300 }}
+      layout="vertical"
+    >
+      <Form.Item label="Código" name="code" rules={[{ required: true }]}>
+        <Input style={{ fontSize: "large", letterSpacing: "0.5em" }} />
+      </Form.Item>
+      <Button htmlType="submit" type="primary" icon={<LockOutlined />}>
+        Siguiente
+      </Button>
+    </Form>
   );
 };
 

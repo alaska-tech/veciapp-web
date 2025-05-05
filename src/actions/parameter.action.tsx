@@ -1,14 +1,15 @@
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 import { mutateEntity, queryEntity, queryMultipleEntitiesById } from "./action";
 import { AxiosError, AxiosResponse } from "axios";
-import { BaseAttributes, Parameter, Response } from "@models";
+import { BaseAttributes, PaginatedResult, Parameter, Response } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 
-const QUERY_KEY = "parameters" as const;
+export const QUERY_KEY_PARAMETER = "parameters" as const;
 export const useParameterAction = <T extends object>() => {
   const queryClient = useQueryClient();
   const { notification, message } = App.useApp();
+
   const createParameter = mutateEntity<
     AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
@@ -48,25 +49,52 @@ export const useParameterAction = <T extends object>() => {
       },
     }
   );
-  interface PaginatedResult<T> {
-    parameters: T[];
-    count: number;
-  }
+
   const getParameters = queryEntity<
     AxiosResponse<
       Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
     >["data"],
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY + "s"] as QueryKey, async () => {
-    try {
-      const response = await apiClient.get<
-        Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
-      >("/parameters/list?limit=50&page=0");
-      return response.data;
-    } catch (error) {
-      throw error;
+  >(
+    [QUERY_KEY_PARAMETER + "s"] as QueryKey,
+    async () => {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
+        >("/parameters/list?limit=50&page=0");
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    {
+      select: (data) => {
+        const parameters = data.data.parameters.map((parameter) => {
+          if (parameter.type === "number") {
+            parameter.value = parseFloat(parameter.value as string);
+          }
+          if (parameter.type === "json") {
+            parameter.value = JSON.parse(parameter.value as string);
+          }
+          if (parameter.type === "boolean") {
+            parameter.value =
+              (parameter.value as string) === "true" || parameter.value == true
+                ? true
+                : false;
+          }
+          return parameter;
+        });
+        return {
+          ...data,
+          data: {
+            ...data.data,
+            parameters,
+          },
+        };
+      },
     }
-  });
+  );
+
   const updateParameter = mutateEntity<
     AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
@@ -97,30 +125,36 @@ export const useParameterAction = <T extends object>() => {
         });
       },
       onSuccess(data, variables, context) {
-        queryClient.setQueryData([QUERY_KEY, variables.id], data.data.data);
+        queryClient.setQueryData(
+          [QUERY_KEY_PARAMETER, variables.id],
+          data.data.data
+        );
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY, variables.id],
+          queryKey: [QUERY_KEY_PARAMETER, variables.id],
         });
-        queryClient.setQueryData([QUERY_KEY + "s"], (oldData: any) => {
-          if (!oldData) return oldData;
+        queryClient.setQueryData(
+          [QUERY_KEY_PARAMETER + "s"],
+          (oldData: any) => {
+            if (!oldData) return oldData;
 
-          const updatedParameters = oldData.data.parameters.map(
-            (param: Parameter) =>
-              param.id === variables.id
-                ? { ...param, ...data.data.data }
-                : param
-          );
+            const updatedParameters = oldData.data.parameters.map(
+              (param: Parameter) =>
+                param.id === variables.id
+                  ? { ...param, ...data.data.data }
+                  : param
+            );
 
-          return {
-            ...oldData,
-            data: {
-              ...oldData.data,
-              parameters: updatedParameters,
-            },
-          };
-        });
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                parameters: updatedParameters,
+              },
+            };
+          }
+        );
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY + "s"],
+          queryKey: [QUERY_KEY_PARAMETER + "s"],
         });
         message.success({
           content: "Parámetro actualizado correctamente",
@@ -129,10 +163,11 @@ export const useParameterAction = <T extends object>() => {
       },
     }
   );
+
   const toggleIsActive = mutateEntity<
     AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
-    { id: string }
+    { id: string; name: string }
   >(
     () => {
       return async function mutationFn({ id }) {
@@ -155,31 +190,37 @@ export const useParameterAction = <T extends object>() => {
           duration: 0,
         });
       },
-      onSuccess(data, variables, context) {
-        queryClient.setQueryData([QUERY_KEY, variables.id], data.data.data);
+      onSuccess: (data, variables, context) => {
+        queryClient.setQueryData(
+          [QUERY_KEY_PARAMETER, variables.id],
+          data.data.data
+        );
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY, variables.id],
+          queryKey: [QUERY_KEY_PARAMETER, variables.id],
         });
-        queryClient.setQueryData([QUERY_KEY + "s"], (oldData: any) => {
-          if (!oldData) return oldData;
+        queryClient.setQueryData(
+          [QUERY_KEY_PARAMETER + "s"],
+          (oldData: any) => {
+            if (!oldData) return oldData;
 
-          const updatedParameters = oldData.data.parameters.map(
-            (param: Parameter) =>
-              param.id === variables.id
-                ? { ...param, ...data.data.data }
-                : param
-          );
+            const updatedParameters = oldData.data.parameters.map(
+              (param: Parameter) =>
+                param.id === variables.id
+                  ? { ...param, ...data.data.data }
+                  : param
+            );
 
-          return {
-            ...oldData,
-            data: {
-              ...oldData.data,
-              parameters: updatedParameters,
-            },
-          };
-        });
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                parameters: updatedParameters,
+              },
+            };
+          }
+        );
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY + "s"],
+          queryKey: [QUERY_KEY_PARAMETER + "s"],
         });
         message.success({
           content: `Parámetro ${
@@ -190,10 +231,11 @@ export const useParameterAction = <T extends object>() => {
       },
     }
   );
+
   const getParametersByName = queryMultipleEntitiesById<
     AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY] as QueryKey, (name) => {
+  >([QUERY_KEY_PARAMETER, "byName"] as QueryKey, (name) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<

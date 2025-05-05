@@ -7,17 +7,23 @@ export interface BaseAttributes {
   updatedBy?: string;
   updatedAt?: number; //format "2025-04-27T03:02:53.862Z"
 }
-export type Response<T> = {
-  status: "Success";
-  data: T;
-  error: null;
-} | {
-  status: "Error";
-  data: null;
-  error: {
-    message?: string;
-    detail?: string;
-  };
+export type Response<T> =
+  | {
+      status: "Success";
+      data: T;
+      error: null;
+    }
+  | {
+      status: "Error";
+      data: null;
+      error: {
+        message?: string;
+        detail?: string;
+      };
+    };
+export interface PaginatedResult<T> {
+  parameters: T[];
+  count: number;
 }
 export interface User extends BaseAttributes {
   id: string;
@@ -34,7 +40,12 @@ export interface User extends BaseAttributes {
   lastLoginDate: string;
 }
 
-export const ParameterCategory = ["string", "boolean", "number", "json"] as const;
+export const ParameterCategory = [
+  "string",
+  "boolean",
+  "number",
+  "json",
+] as const;
 export type ParameterCategoryType = typeof ParameterCategory;
 
 export interface Parameter extends BaseAttributes {
@@ -42,7 +53,7 @@ export interface Parameter extends BaseAttributes {
   displayName: string;
   name: string;
   description: string;
-  value: string | number | boolean 
+  value: string | number | boolean;
   type: ParameterCategoryType[number];
   isActive: boolean;
 }
