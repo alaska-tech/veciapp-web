@@ -1,21 +1,28 @@
 import useAuthAction from "@/actions/auth.action";
+import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@constants";
 import { User, UserRoleType } from "@models";
 import { useRouter } from "next/router";
 
-interface AuthCheckerProps {
-  requireAuth: boolean; // ¿Es necesario que el usuario esté autenticado?
+interface AuthVerifierProps {
+  requireAuth: boolean;
   children: React.ReactNode;
-  roles?: UserRoleType[number][]; // Roles necesarios para acceder a la página
+  roles?: UserRoleType[number][];
   user?: User;
+  isLoading?: boolean;
 }
 
-const AuthChecker = ({
+const AuthVerifier = ({
   children,
   requireAuth,
   roles = [],
   user = undefined,
-}: AuthCheckerProps): React.ReactNode => {
+  isLoading = false,
+}: AuthVerifierProps): React.ReactNode => {
   const router = useRouter();
+  if (isLoading) {
+    // Mostrar un mensaje de carga o spinner mientras se verifica la autenticación
+    return <p>Loading...</p>;
+  }
   if (typeof window === "undefined" || !requireAuth) {
     // SSR: Si estamos en el servidor, simplemente retornamos el componente sin cambios.
     return <>{children}</>;
@@ -23,6 +30,8 @@ const AuthChecker = ({
 
   if (requireAuth && !user) {
     // Si requireAuth es true y el usuario no está autenticado, redirigir al inicio de sesión.
+    localStorage.removeItem(JWT_KEY);
+    localStorage.removeItem(LOGGED_USER_INFO_KEY);
     router.replace("/");
     return null;
   }
@@ -40,4 +49,4 @@ const AuthChecker = ({
   return <>{children}</>;
 };
 
-export default AuthChecker;
+export default AuthVerifier;

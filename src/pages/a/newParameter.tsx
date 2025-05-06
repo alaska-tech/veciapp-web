@@ -21,8 +21,8 @@ const Index = () => {
     <Space direction="vertical">
       <GoBackButton />
       <NewFormDynamic
-        onFinish={(values) => {
-          return createParameter.mutateAsync({ body: values });
+        onFinish={async (values) => {
+          await createParameter.mutateAsync({ body: values });
         }}
         loading={createParameter.isPending}
       />

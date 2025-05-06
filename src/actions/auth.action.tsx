@@ -52,7 +52,7 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.error.message; 
+        const receivedErrorMessage = error.response?.data.error.message;
         notification.error({
           message: "Error",
           description: receivedErrorMessage,
@@ -64,6 +64,8 @@ export default function useAuthAction() {
           content: "Te has deslogueado correctamente",
           duration: 5,
         });
+      },
+      onSettled(data, error, variables, context) {
         localStorage.removeItem(JWT_KEY);
         localStorage.removeItem(LOGGED_USER_INFO_KEY);
         queryClient.removeQueries({ queryKey: [JWT_KEY] });
@@ -96,7 +98,7 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.error.message; 
+        const receivedErrorMessage = error.response?.data.error.message;
         notification.error({
           message: "Error",
           description: receivedErrorMessage,

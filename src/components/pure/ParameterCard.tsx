@@ -14,11 +14,12 @@ import {
   Tag,
   Collapse,
   Descriptions,
+  CardProps,
 } from "antd";
 import React, { useState } from "react";
 import { valueInput } from "../forms/newParameterForm";
 
-interface ParameterCardProps {
+interface ParameterCardProps extends CardProps {
   parameter: Parameter;
   onClickOnSave?: (
     value: string | number | boolean,
@@ -31,7 +32,7 @@ const ParameterCard = ({
   parameter,
   onClickOnSave,
   onClickOnToggle,
-  loading,
+  ...cardProps
 }: ParameterCardProps) => {
   const [form] = Form.useForm();
   const value = Form.useWatch("value", form);
@@ -66,7 +67,7 @@ const ParameterCard = ({
               visibility: hasNewValue ? "visible" : "hidden",
               marginLeft: "1rem",
             }}
-            loading={loading}
+            loading={cardProps.loading}
           >
             Guardar
           </Button>
@@ -92,6 +93,7 @@ const ParameterCard = ({
           padding: 0,
         },
       }}
+      {...cardProps}
     >
       <Collapse
         ghost
@@ -103,15 +105,12 @@ const ParameterCard = ({
             label: (
               <Form
                 initialValues={{
-                  value:
-                    parameter.type === "json"
-                      ? JSON.parse(parameter.value as string)
-                      : parameter.value,
+                  value: JSON.parse(parameter.value),
                 }}
                 form={form}
-                onChange={(e) => {
+                /* onChange={(e) => {
                   console.log(e);
-                }}
+                }} */
                 style={{
                   padding: 0,
                 }}
@@ -178,7 +177,7 @@ const ParameterCard = ({
                       setHasNewValue(false);
                     }}
                     style={{ marginLeft: "1rem" }}
-                    loading={loading}
+                    loading={cardProps.loading}
                   >
                     {parameter.isActive ? "Desactivar" : "Activar"}
                   </Button>

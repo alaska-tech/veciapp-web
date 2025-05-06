@@ -9,12 +9,13 @@ import { App, Button, Space } from "antd";
 import { Parameter } from "@models";
 import ParameterCard from "@/components/pure/ParameterCard";
 import { useQueryClient } from "@tanstack/react-query";
+import { Card } from "antd/lib";
 
 const DEFAULT_PARAMETER_NAMES = [
-  "salesComission",
-  "systemCurrency",
-  "generalUserState",
-  "productCategories",
+  "comission", //number
+  "currency2", //string
+  "userState", //boolean
+  "categories", //json
 ];
 const Index = () => {
   const queryClient = useQueryClient();
@@ -73,13 +74,7 @@ const Index = () => {
     value: string | number | boolean,
     parameter: Parameter
   ) => {
-    let mappedValue = value;
-    if (parameter.type === "number") {
-      mappedValue = parseFloat(value as string);
-    }
-    if (parameter.type === "json") {
-      mappedValue = JSON.stringify(value);
-    }
+    const mappedValue: Parameter["value"] = JSON.stringify(value);
     try {
       await updateParameter.mutateAsync({
         id: parameter.id,
@@ -107,25 +102,32 @@ const Index = () => {
         </Button>
       </Space>
       <Space wrap style={{ gap: "1rem" }}>
-        {parameterQueries
-          .map((queryResult) => {
-            const data = queryResult.data?.data.data;
-            if (!data) return null;
-            return data;
-          })
-          .filter((e) => {
-            return e !== null;
-          })
-          .map((parameter: Parameter) => (
-            <div key={parameter.id}>
-              <ParameterCard
-                parameter={parameter}
-                onClickOnSave={handleClickOnSave}
-                onClickOnToggle={handleClickOnToggle}
-                loading={updateParameter.isPending || toggleIsActive.isPending}
-              />
-            </div>
-          ))}
+        {parameterQueries.map((queryResult, index) => {
+          const parameter = queryResult.data?.data.data;
+          if (!parameter) {
+            return (
+              <Card
+                style={{ textAlign: "center" }}
+                key={`unavailable-${index}`}
+              >
+                <p>El parámetro no esta disponible</p>
+              </Card>
+            );
+          }
+          return (
+            <ParameterCard
+              parameter={parameter}
+              onClickOnSave={handleClickOnSave}
+              onClickOnToggle={handleClickOnToggle}
+              loading={
+                updateParameter.isPending ||
+                toggleIsActive.isPending ||
+                queryResult.isLoading
+              }
+              key={parameter.id}
+            />
+          );
+        })}
       </Space>
     </div>
   );

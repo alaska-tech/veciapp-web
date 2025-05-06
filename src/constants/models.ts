@@ -53,7 +53,8 @@ export interface Parameter extends BaseAttributes {
   displayName: string;
   name: string;
   description: string;
-  value: string | number | boolean;
+  value: string;
   type: ParameterCategoryType[number];
   isActive: boolean;
+  data: string
 }

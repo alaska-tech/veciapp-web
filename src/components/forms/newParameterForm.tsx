@@ -54,13 +54,8 @@ export const FormElement = <T extends Parameter>(props: {
   const [formRef] = Form.useForm<T>();
   const selectedParameterType = Form.useWatch("type", formRef);
   const handleFinish = async (values: T) => {
-    if (values.type === "number") {
-      values.value = parseFloat(values.value as string);
-    }
-    if (values.type === "json") {
-      values.value = JSON.stringify(values.value);
-    }
     if (props.onFinish) {
+      values.value = JSON.stringify(values.value);
       await props.onFinish(values);
     }
   };
@@ -115,6 +110,9 @@ export const FormElement = <T extends Parameter>(props: {
         </Form.Item>
         <Form.Item label="Is Active" name="isActive" valuePropName="checked">
           <Switch defaultChecked />
+        </Form.Item>
+        <Form.Item label="data" name="data">
+          <Input.TextArea placeholder="data" rows={4} />
         </Form.Item>
       </div>
     </FormWrapper>

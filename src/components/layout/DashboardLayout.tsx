@@ -28,7 +28,7 @@ import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
-import { UserRoleType } from "@/constants/models";
+import { User, UserRoleType } from "@/constants/models";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
@@ -128,6 +128,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       requireAuth={primaryUrlSegment !== "p"}
       roles={[rolesAllowed as UserRoleType[number]]}
       user={userSession.data || undefined}
+      isLoading={userSession.isLoading}
     >
       <Layout>
         <Sider
