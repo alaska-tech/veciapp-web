@@ -48,6 +48,68 @@ function DraggableMarker() {
   );
 }
 
+const FullscreenControl = (props: any) => {
+  const map = props.map;
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const container = map.getContainer();
+
+    try {
+      if (!isFullscreen) {
+        await container.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (error) {
+      console.error('Error toggling fullscreen:', error);
+    }
+  }, [isFullscreen, map]);
+
+  useEffect(() => {
+    const handleFullscreenChange = (e: Event) => {
+      e.stopPropagation();
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  return (
+    <div className="leaflet-control-container" onClick={e => e.stopPropagation()}>
+      <div className="leaflet-top leaflet-right">
+        <div className="leaflet-control-fullscreen leaflet-bar leaflet-control">
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            style={{
+              width: "30px",
+              height: "30px",
+              backgroundColor: "white",
+              border: "2px solid rgba(0,0,0,0.2)",
+              borderRadius: "4px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isFullscreen ? "⤓" : "⤢"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LocationPicker = (props: {
   onStart?: (map: L.Map) => void;
   width?: number | string;
@@ -86,6 +148,7 @@ const LocationPicker = (props: {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <DraggableMarker />
+      <FullscreenControl map={map} />
     </MapContainer>
   );
 };
