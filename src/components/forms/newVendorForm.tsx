@@ -1,35 +1,42 @@
 import { Divider, Form, Input, InputNumber, Radio } from "antd";
 import React from "react";
-import { VendorGenders } from "@models";
+import { Vendor, VendorGenders } from "@models";
 import FormWrapper from "./formWrapper";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 
 const columnMinWidth = "220px";
-
-export const FormElement = (props: { onSubmit?: any }) => {
-  const onFinish = async (values: any) => {
+interface vendorWithAuxProps extends Vendor {
+  prefix: string;
+  confirmPassword: string;
+}
+export const FormElement = <T extends vendorWithAuxProps>(props: {
+  onFinish?: (values: T) => Promise<void>;
+  loading?: boolean;
+}) => {
+  const handleFinish = async (values: T) => {
     const { cellphone, prefix, confirmPassword, ...rest } = values;
-    const mappedCellphone =
-      !!prefix && !!cellphone ? prefix + cellphone : undefined;
+    const mappedCellphone = !!prefix && !!cellphone ? prefix + cellphone : "";
     const mappedValues = {
       ...rest,
       cellphone: mappedCellphone,
-    };
-    if (props.onSubmit) {
-      props.onSubmit(mappedValues);
+    } as T;
+    if (props.onFinish) {
+      await props.onFinish(mappedValues);
     }
   };
 
   return (
     <FormWrapper
       formName={"newVendor"}
-      onFinish={onFinish}
+      onFinish={handleFinish}
       initialValues={{
         prefix: "57",
         password: "Password123",
         isHabeasDataConfirm: false,
       }}
       requiredMark={true}
+      routeTo="/a/vendors"
+      loading={props.loading}
     >
       {(formInstance) => (
         <div
@@ -106,7 +113,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
             >
               <Input
                 addonBefore={
-                  <Form.Item name="prefix" noStyle>
+                  <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
                     <CustomSelectWithInput
                       selectProps={{
                         options: [
@@ -350,6 +357,7 @@ export const FormElement = (props: { onSubmit?: any }) => {
                       value: "Corriente",
                     },
                   ],
+                  allowClear: true,
                 }}
                 inputProps={{
                   placeholder: "Escriba...",

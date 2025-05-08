@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity, queryEntity } from "./action";
-import { PaginatedResult, Response, Vendor } from "@models";
+import { BaseAttributes, Response, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
@@ -86,7 +86,7 @@ export const useVendorAction = () => {
           throw error;
         }
       };
-    },    
+    },
     {
       onMutate: (res) => res,
       onError: (error, variables, context) => {
@@ -104,5 +104,45 @@ export const useVendorAction = () => {
       },
     }
   );
-  return { validateAccount, getVendors, deleteVendor };
+  const createVendor = mutateEntity<
+    AxiosResponse<Extract<Response<Vendor>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: Omit<Vendor, keyof BaseAttributes & "id"> }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.post<
+            Extract<Response<Vendor>, { status: "Success" }>
+          >("/vendors", body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        const vendor = data.data.data;
+        message.success({
+          content: `Vendor ${vendor.fullName || ""} ( ${
+            vendor.email
+          } ) was created successfully`,
+          duration: 4,
+        });
+      },
+    }
+  );
+  return { validateAccount, getVendors, deleteVendor, createVendor };
 };
