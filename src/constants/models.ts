@@ -53,23 +53,6 @@ export type VendorGendersType = typeof VendorStates;
 
 export interface Vendor extends BaseAttributes {
   id: string;
-  fullName: string;
-  email: string;
-  foreignPersonId: string;
-  foreignPersonType: string;
-  role: UserRoleType[number];
-  isActive: boolean;
-  refreshToken: string;
-  passwordResetToken: string | null;
-  passwordResetExpires: string | null;
-  hasPasswordChange: string | null;
-  lastLoginDate: string;
-  cellphone: string;
-  state: VendorStatesType[number];
-}
-
-export interface Vendor2 extends BaseAttributes {
-  id: string;
   internalCode: string; // max length 100
   fullName: string; // max length 255
   identification: string; // max length 100

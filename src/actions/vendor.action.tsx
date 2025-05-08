@@ -90,6 +90,14 @@ export const useVendorAction = () => {
     {
       onMutate: (res) => res,
       onError: (error, variables, context) => {
+        if (error.code === "404") {
+          notification.error({
+            message: "Link no válido",
+            description: error.response?.data.error.message || error.message,
+            duration: 0,
+          });
+          return;
+        }
         notification.error({
           message: "Error",
           description: error.response?.data.error.message || error.message,

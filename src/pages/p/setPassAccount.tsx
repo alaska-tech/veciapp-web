@@ -4,6 +4,7 @@ import { Form, Input, Button } from "antd";
 import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import { useVendorAction } from "@/actions/vendor.action";
+import { AxiosError } from "axios";
 
 interface FormValues {
   confirmPassword: string;
@@ -29,9 +30,13 @@ const Index = () => {
       })
       .then(
         () => {
-          router.push("/");
+          router.push("/p/successVerified");
         },
-        () => {}
+        (res: AxiosError) => {
+          if (res.code === "404") {
+            router.push("/p/validateAccount");
+          }
+        }
       );
   };
   return (
