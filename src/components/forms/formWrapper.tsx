@@ -1,7 +1,7 @@
 import { BaseAttributes } from "@/constants/models";
 import { SaveOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { Button, Form, FormInstance, FormProps, Modal } from "antd";
+import { App, Button, Form, FormInstance, FormProps, Modal } from "antd";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
@@ -27,13 +27,14 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   );
   const [form] = Form.useForm<T>();
   const router = useRouter();
+  const { modal } = App.useApp();
   const resetForm = () => {
     setFormValues(null);
     const actualFormInstance = formProps.form || form;
     actualFormInstance.resetFields();
   };
   const showConfirm = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "Sigamos por donde lo dejaste",
       content:
         "Hay cambios no guardados desde la última vez que estuviste aqui",

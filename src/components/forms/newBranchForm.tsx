@@ -1,86 +1,44 @@
-import { PlusOutlined } from "@ant-design/icons";
 import {
-  Button,
   Divider,
   Form,
-  FormInstance,
   Input,
   Radio,
   Select,
-  Space,
 } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
+import CustomSelectWithInput from "../pure/CustomSelectWithInput";
+import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
-const { Option } = Select;
 
 const NewLocationPicker = dynamic(
   () => import("@/components/pure/LocationPicker"),
   { ssr: false }
 );
 
-export const FormElement = (props: { onSubmit?: any }) => {
-  const onFinish = async (values: any) => {
-    if (props.onSubmit) {
-      props.onSubmit(values);
+export const FormElement = (props: { onFinish?: any }) => {
+  const handleFinish = async (values: any) => {
+    const { cellphonePrefix, managerPhonePrefix, ...rest } = values;
+    const mappedValues = {
+      cellphone: cellphonePrefix + rest.cellphone,
+      managerPhone: managerPhonePrefix + rest.managerPhone,
+      ...rest,
+    };
+    if (props.onFinish) {
+      await props.onFinish(mappedValues);
     }
   };
-  const [customPrefixValue, setCustomPrefixValue] = useState("+");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const prefixSelector = (form: FormInstance) => (
-    <Form.Item name="prefix" noStyle>
-      <Select
-        style={{ width: 75 }}
-        open={isDropdownOpen}
-        onDropdownVisibleChange={setIsDropdownOpen}
-        popupMatchSelectWidth={false}
-        dropdownRender={(menu) => {
-          const handleConfirm = () => {
-            form.setFieldValue("prefix", customPrefixValue);
-            setIsDropdownOpen(false);
-          };
-          return (
-            <>
-              {menu}
-              <Divider style={{ margin: "8px 0" }} />
-              <Space>
-                <Input
-                  placeholder="Please enter item"
-                  onKeyDown={(e) => e.stopPropagation()}
-                  value={customPrefixValue}
-                  onChange={(e) => {
-                    setCustomPrefixValue(e.target.value);
-                  }}
-                  style={{
-                    width: 65,
-                  }}
-                  onPressEnter={handleConfirm}
-                />
-                <Button
-                  type="text"
-                  icon={<PlusOutlined />}
-                  onClick={handleConfirm}
-                >
-                  Guardar
-                </Button>
-              </Space>
-            </>
-          );
-        }}
-      >
-        <Option value="57">+57</Option>
-      </Select>
-    </Form.Item>
-  );
   return (
     <FormWrapper
       formName={"newBranch"}
-      onFinish={onFinish}
+      onFinish={handleFinish}
       initialValues={{
-        prefix: "57",
+        managerPhonePrefix: "57",
+        cellphonePrefix: "57",
+        location: SANTA_MARTA_LOCATION_OBJECT,
       }}
     >
       {(formInstance) => (
@@ -215,7 +173,32 @@ export const FormElement = (props: { onSubmit?: any }) => {
               ]}
             >
               <Input
-                addonBefore={prefixSelector(formInstance)}
+                addonBefore={
+                  <Form.Item
+                    name="managerPhonePrefix"
+                    rules={[{ required: true }]}
+                    noStyle
+                  >
+                    <CustomSelectWithInput
+                      selectProps={{
+                        options: [
+                          {
+                            value: "57",
+                            label: "+57",
+                          },
+                        ],
+                        style: { width: 75 },
+                        popupMatchSelectWidth: false,
+                      }}
+                      inputProps={{
+                        placeholder: "Escriba...",
+                        style: {
+                          width: 65,
+                        },
+                      }}
+                    />
+                  </Form.Item>
+                }
                 style={{ width: "100%" }}
               />
             </Form.Item>
@@ -251,7 +234,32 @@ export const FormElement = (props: { onSubmit?: any }) => {
               ]}
             >
               <Input
-                addonBefore={prefixSelector(formInstance)}
+                addonBefore={
+                  <Form.Item
+                    name="cellphonePrefix"
+                    rules={[{ required: true }]}
+                    noStyle
+                  >
+                    <CustomSelectWithInput
+                      selectProps={{
+                        options: [
+                          {
+                            value: "57",
+                            label: "+57",
+                          },
+                        ],
+                        style: { width: 75 },
+                        popupMatchSelectWidth: false,
+                      }}
+                      inputProps={{
+                        placeholder: "Escriba...",
+                        style: {
+                          width: 65,
+                        },
+                      }}
+                    />
+                  </Form.Item>
+                }
                 style={{ width: "100%" }}
               />
             </Form.Item>
@@ -268,8 +276,8 @@ export const FormElement = (props: { onSubmit?: any }) => {
               <Input />
             </Form.Item>
             <Form.Item
-              name={["location", "lat"]}
               label="Ubicación"
+              name={"location"}
               rules={[
                 {
                   required: true,

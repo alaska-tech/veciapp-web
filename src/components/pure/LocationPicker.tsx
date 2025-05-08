@@ -11,15 +11,15 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const SANTA_MARTA_LOCATION_TUPLE: [number, number] = [11.225966, -74.190294];
-const SANTA_MARTA_LOCATION_OBJECT = {
+export const SANTA_MARTA_LOCATION_OBJECT = {
   lat: 11.225966,
   lng: -74.190294,
 };
+const SANTA_MARTA_LOCATION_TUPLE: [number, number] = [11.225966, -74.190294];
 const DEFAULT_CONTAINER_WIDTH = 300;
 const DEFAULT_CONTAINER_HEIGHT = 300;
 
-function DraggableMarker() {
+function DraggableMarker({ onChange }: { onChange?: (pos: { lat: number; lng: number }) => void }) {
   const [position, setPosition] = useState(SANTA_MARTA_LOCATION_OBJECT);
   const markerRef = useRef<L.Marker>(null);
   const eventHandlers = useMemo(
@@ -27,11 +27,13 @@ function DraggableMarker() {
       dragend() {
         const marker = markerRef.current;
         if (marker != null) {
-          setPosition(marker.getLatLng());
+          const newPos = marker.getLatLng();
+          setPosition(newPos);
+          onChange?.(newPos);
         }
       },
     }),
-    []
+    [onChange]
   );
 
   return (
@@ -111,7 +113,7 @@ const FullscreenControl = (props: any) => {
 };
 
 const LocationPicker = (props: {
-  onStart?: (map: L.Map) => void;
+  onChange?: (position: { lat: number; lng: number }) => void;
   width?: number | string;
   height?: number | string;
 }) => {
@@ -123,13 +125,6 @@ const LocationPicker = (props: {
       shadowUrl: "/images/marker-shadow.png",
       iconRetinaUrl: "/images/marker-icon-2x.png",
     });
-  }, []);
-
-  useEffect(() => {
-    if (map && props.onStart) {
-      props.onStart(map);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -147,7 +142,7 @@ const LocationPicker = (props: {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <DraggableMarker />
+      <DraggableMarker  onChange={props.onChange} />
       <FullscreenControl map={map} />
     </MapContainer>
   );
