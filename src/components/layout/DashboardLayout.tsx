@@ -28,7 +28,7 @@ import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
-import { User, UserRoleType } from "@/constants/models";
+import { UserRoleType } from "@/constants/models";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;

@@ -55,19 +55,16 @@ export const useParameterAction = <T extends object>() => {
       Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
     >["data"],
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >(
-    [QUERY_KEY_PARAMETER + "s"] as QueryKey,
-    async () => {
-      try {
-        const response = await apiClient.get<
-          Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
-        >("/parameters/list?limit=50&page=0");
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
+  >([QUERY_KEY_PARAMETER + "s"] as QueryKey, async () => {
+    try {
+      const response = await apiClient.get<
+        Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
+      >("/parameters/list?limit=50&page=0");
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-  );
+  });
 
   const updateParameter = mutateEntity<
     AxiosResponse<Extract<Response<Parameter>, { status: "Success" }>>,

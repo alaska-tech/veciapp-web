@@ -3,7 +3,6 @@ import FormWrapper from "./formWrapper";
 import {
   Divider,
   Form,
-  FormProps,
   Input,
   InputNumber,
   Radio,
