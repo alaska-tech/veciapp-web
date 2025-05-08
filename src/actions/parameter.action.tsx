@@ -66,32 +66,6 @@ export const useParameterAction = <T extends object>() => {
       } catch (error) {
         throw error;
       }
-    },
-    {
-      select: (data) => {
-        const parameters = data.data.parameters.map((parameter) => {
-          if (parameter.type === "number") {
-            parameter.value = parseFloat(parameter.value as string);
-          }
-          if (parameter.type === "json") {
-            parameter.value = JSON.parse(parameter.value as string);
-          }
-          if (parameter.type === "boolean") {
-            parameter.value =
-              (parameter.value as string) === "true" || parameter.value == true
-                ? true
-                : false;
-          }
-          return parameter;
-        });
-        return {
-          ...data,
-          data: {
-            ...data.data,
-            parameters,
-          },
-        };
-      },
     }
   );
 
