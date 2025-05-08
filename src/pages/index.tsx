@@ -26,19 +26,38 @@ export default function Home() {
   const { message } = App.useApp();
 
   useEffect(() => {
-      const jwt = localStorage.getItem(JWT_KEY)
-      if (jwt) {
-        const user = JSON.parse(atob(jwt.split(".")[1]));
-        if (user.role === "admin") {
-          router.push("/a/home");
-        } else if (user.role === "vendor") {
-          router.push("/v/home");
-        } else {
-          message.error("No tienes permisos para acceder a esta sección", 10);
-        }
+    //solo para dev, eliminar para produccion
+    login
+      .mutateAsync({
+        body: { email: "julianangulop@gmail.com", password: "123456" },
+      })
+      .then(
+        (response) => {
+          if (response.data.data.user.role === "admin") {
+            router.push("/a/home");
+          } else if (response.data.data.user.role === "vendor") {
+            router.push("/v/home");
+          } else {
+            message.error("No tienes permisos para acceder a esta sección", 10);
+          }
+        },
+        () => {}
+      );
+    return;
+    //hasta aqui
+    /* const jwt = localStorage.getItem(JWT_KEY);
+    if (jwt) {
+      const user = JSON.parse(atob(jwt.split(".")[1]));
+      if (user.role === "admin") {
+        router.push("/a/home");
+      } else if (user.role === "vendor") {
+        router.push("/v/home");
+      } else {
+        message.error("No tienes permisos para acceder a esta sección", 10);
       }
-  }, [])
-  
+    } */
+  }, []);
+
   const onFinish: FormProps<LogInForm>["onFinish"] = (values) => {
     login.mutateAsync({ body: values }).then(
       (response) => {

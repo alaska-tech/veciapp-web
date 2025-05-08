@@ -39,6 +39,30 @@ export interface User extends BaseAttributes {
   hasPasswordChange: string | null;
   lastLoginDate: string;
 }
+export enum vendorState {
+  CREATED = "created",
+  VERIFIED = "verified",
+  SUSPENDED = "suspended",
+}
+export const VendorStates = ["created", "verified", "suspended"] as const;
+export type VendorStatesType = typeof VendorStates;
+
+export interface Vendor extends BaseAttributes {
+  id: string;
+  fullName: string;
+  email: string;
+  foreignPersonId: string;
+  foreignPersonType: string;
+  role: UserRoleType[number];
+  isActive: boolean;
+  refreshToken: string;
+  passwordResetToken: string | null;
+  passwordResetExpires: string | null;
+  hasPasswordChange: string | null;
+  lastLoginDate: string;
+  cellphone: string;
+  state: VendorStatesType[number];
+}
 
 export const ParameterCategory = [
   "string",
@@ -56,5 +80,5 @@ export interface Parameter extends BaseAttributes {
   value: string;
   type: ParameterCategoryType[number];
   isActive: boolean;
-  data: string
+  data: string;
 }
