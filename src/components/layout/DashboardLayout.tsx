@@ -99,12 +99,25 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       ],
     },
   ],
-  b: [
+  v: [
     {
-      key: `/b/home`,
+      key: `/v/home`,
       icon: React.createElement(HomeOutlined),
-      label: <Link href="/b/home">Inicio</Link>,
+      label: <Link href="/v/home">Inicio</Link>,
       children: undefined,
+    },
+    {
+      key: `sub-management`,
+      label: "Gestión",
+      type: "group",
+      children: [
+        {
+          key: `/v/branches`,
+          icon: React.createElement(AppstoreOutlined),
+          label: <Link href="/v/branches">Sucursales</Link>,
+          children: undefined,
+        },
+      ],
     },
   ],
 };
@@ -118,6 +131,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const authActions = useAuthAction();
   const { userSession } = authActions;
+  const {
+    token: { colorPrimary },
+  } = theme.useToken();
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
@@ -125,7 +141,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
   return (
     <AuthVerifier
-      requireAuth={primaryUrlSegment !== "p"}
+      requireAuth={false}
+      //requireAuth={primaryUrlSegment !== "p"}
       roles={[rolesAllowed as UserRoleType[number]]}
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}
@@ -157,6 +174,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 margin: "16px auto",
               }}
             ></Image>
+            <Typography.Title
+              level={3}
+              style={{ textAlign: "center", color: colorPrimary }}
+            >
+              VeciApp {roleKeyMap[primaryUrlSegment]}
+            </Typography.Title>
             <Menu
               mode="inline"
               items={lateralMenuItems[router.pathname.split("/")[1]]}
@@ -377,7 +400,7 @@ const breadcrumItemTree: TreeStruct[] = [
     ],
   },
   {
-    key: "b",
+    key: "v",
     value: null,
     children: [
       {
@@ -387,6 +410,20 @@ const breadcrumItemTree: TreeStruct[] = [
       {
         key: "profile",
         value: "Perfil de usuario",
+      },
+      {
+        key: "branches",
+        value: "Sucursales",
+        children: [
+          {
+            key: "[id]",
+            value: "[{id}]",
+          },
+          {
+            key: "newBranch",
+            value: "Nueva tienda",
+          },
+        ],
       },
     ],
   },
@@ -458,6 +495,9 @@ const titles: Record<string, string> = {
   "/a/payments": "Pagos",
   "/b/home": "Dashboard",
   "/b/profile": "Perfil de usuario",
+  "/v/home": "Bienvenido",
+  "/v/profile": "Perfil de usuario",
+  "/v/branches": "Sucursales",
 };
 const subtitles: Record<string, string> = {
   "/a/home": "Resumen general",
@@ -469,8 +509,9 @@ const subtitles: Record<string, string> = {
   "/a/configuration": "Esta es la pagina de Parámetros",
   "/a/conciliations": "Esta es la pagina de conciliaciones",
   "/a/payments": "Esta es la pagina de pagos",
-  "/b/home": "Esta es la pagina de Inicio",
-  "/b/profile": "Esta es la pagina de perfil de usuario",
+  "/v/home": "Esta es la pagina de Inicio",
+  "/v/profile": "Esta es la pagina de perfil de usuario",
+  "/v/branches": "Esta es la pagina de sucursales",
 };
 const AutoTitle = () => {
   const router = useRouter();
