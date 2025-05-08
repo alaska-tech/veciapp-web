@@ -6,7 +6,7 @@ const CustomSelectWithInput = ({
   onChange,
   selectProps,
   inputProps,
-}: any) => {
+}: any) => { //TODO: quitar ese any
   const { status } = Form.Item.useStatus();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleConfirm = () => {
