@@ -131,7 +131,11 @@ const Users = () => {
       </Space>
       <Table<Vendor>
         columns={columns}
-        dataSource={vendorQuery.data?.data ?? ([] as Vendor[])}
+        dataSource={vendorQuery.data?.data?.data}
+        loading={vendorQuery.isLoading}
+        style={{
+          overflow: "auto",
+        }}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity, queryEntity } from "./action";
-import { BaseAttributes, Response, Vendor } from "@models";
+import { BaseAttributes, PaginatedResult, Response, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
@@ -53,12 +53,14 @@ export const useVendorAction = () => {
     }
   );
   const getVendors = queryEntity<
-    AxiosResponse<Extract<Response<Vendor[]>, { status: "Success" }>>["data"],
+    AxiosResponse<
+      Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
+    >["data"],
     AxiosError<Extract<Response<null>, { status: "Error" }>>
   >([QUERY_KEY_VENDOR + "s"] as QueryKey, async () => {
     try {
       const response = await apiClient.get<
-        Extract<Response<Vendor[]>, { status: "Success" }>
+        Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
       >("/vendors/list?limit=50&page=0");
       return response.data;
     } catch (error) {

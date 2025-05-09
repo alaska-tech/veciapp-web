@@ -97,6 +97,23 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
               <Input />
             </Form.Item>
             <Form.Item
+              name="email"
+              label="E-mail"
+              rules={[
+                {
+                  type: "email",
+                },
+                {
+                  required: true,
+                },
+                {
+                  max: 150,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name="cellphone"
               label="Teléfono celular"
               tooltip="Escriba el número de celular sin puntos ni espacios"
@@ -182,87 +199,6 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
             </Form.Item>
             <Form.Item name={"bio"} label="Biografía" rules={[]}>
               <Input.TextArea />
-            </Form.Item>
-          </div>
-          <div style={{ flex: `1 1 ${columnMinWidth}` }}>
-            <Divider>Información general</Divider>
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                },
-                {
-                  required: true,
-                },
-                {
-                  max: 150,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                  message:
-                    "La contraseña no cumple con las reglas de seguridad",
-                },
-                {
-                  required: true,
-                },
-              ]}
-              hasFeedback
-              help={
-                <div style={{ whiteSpace: "normal", maxWidth: columnMinWidth }}>
-                  La contraseña debe tener al menos 8 caracteres, una letra
-                  mayúscula, una letra minúscula y un número
-                </div>
-              }
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              name="confirmPassword"
-              label="Repita el password"
-              dependencies={["password"]}
-              rules={[
-                {
-                  required: true,
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("Las contraseñas no coinciden")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              name={["isHabeasDataConfirm"]}
-              label="Consentimiento de Habeas Data"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Radio.Group
-                options={[
-                  { value: true, label: "Si" },
-                  { value: false, label: "No" },
-                ]}
-              />
             </Form.Item>
           </div>
           <div style={{ flex: `1 1 ${columnMinWidth}` }}>

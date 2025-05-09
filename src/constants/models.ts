@@ -23,8 +23,13 @@ export type Response<T> =
       };
     };
 export interface PaginatedResult<T> {
-  parameters: T[];
-  count: number;
+  data: T[];
+  meta: {
+    lastPage: number;
+    limit: number;
+    page: number;
+    total: number;
+  };
 }
 export interface User extends BaseAttributes {
   id: string;
@@ -48,7 +53,7 @@ export enum vendorState {
 export const VendorStates = ["created", "verified", "suspended"] as const;
 export type VendorStatesType = typeof VendorStates;
 
-export const VendorGenders = ["M","F","O"] as const;
+export const VendorGenders = ["M", "F", "O"] as const;
 export type VendorGendersType = typeof VendorStates;
 
 export interface Vendor extends BaseAttributes {
@@ -67,15 +72,15 @@ export interface Vendor extends BaseAttributes {
   avatar?: string;
   isHabeasDataConfirm: boolean; //default false
   state: vendorState;
-  stateHistory: Array<{ state: vendorState; changedAt: Date, reason: string }>; //default []
+  stateHistory: Array<{ state: vendorState; changedAt: Date; reason: string }>; //default []
   isActive: boolean; //default true
   isReadyToSell: boolean; //default false
   rank: number; //default 0
   incomes: string; //default 0
   bankAccount?: {
-      number: string;
-      entity: string;
-      type: 'Ahorros' | 'Corriente' | string;
+    number: string;
+    entity: string;
+    type: "Ahorros" | "Corriente" | string;
   };
   commercialRegistry?: string; // max length 255
   rut?: string; // max length 255
