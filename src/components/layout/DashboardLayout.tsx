@@ -80,7 +80,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/a/branches`,
           icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/a/branches">Sucursales</Link>,
+          label: <Link href="/a/branches">Tiendas</Link>,
           children: undefined,
         },
       ],
@@ -114,7 +114,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/v/branches`,
           icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/v/branches">Sucursales</Link>,
+          label: <Link href="/v/branches">Tiendas</Link>,
           children: undefined,
         },
       ],
@@ -373,7 +373,7 @@ const breadcrumItemTree: TreeStruct[] = [
       },
       {
         key: "branches",
-        value: "Sucursales",
+        value: "Tiendas",
         children: [
           {
             key: "[id]",
@@ -413,7 +413,7 @@ const breadcrumItemTree: TreeStruct[] = [
       },
       {
         key: "branches",
-        value: "Sucursales",
+        value: "Tiendas",
         children: [
           {
             key: "[id]",
@@ -488,7 +488,8 @@ const titles: Record<string, string> = {
   "/a/profile": "Perfil de usuario",
   "/a/users": "Clientes",
   "/a/users/newUser": "Nuevo usuario",
-  "/a/branches": "Sucursales",
+  "/a/branches": "Tiendas",
+  "/a/branches/newBranch": "Crear nueva tienda",
   "/a/vendors": "Vendedores",
   "/a/configuration": "Parámetros",
   "/a/conciliations": "Conciliaciones",
@@ -497,21 +498,22 @@ const titles: Record<string, string> = {
   "/b/profile": "Perfil de usuario",
   "/v/home": "Bienvenido",
   "/v/profile": "Perfil de usuario",
-  "/v/branches": "Sucursales",
+  "/v/branches": "Tiendas",
 };
 const subtitles: Record<string, string> = {
   "/a/home": "Resumen general",
   "/a/profile": "Esta es la pagina de perfil de usuario",
   "/a/users": "Esta es la pagina de Clientes",
   "/a/users/newUser": "Esta es la pagina de Nuevo usuario",
-  "/a/branches": "Esta es la pagina de sucursales",
+  "/a/branches": "Esta es la pagina de tiendas",
+  "/a/branches/newBranch": "Esta es la pagina para crear una nueva tienda",
   "/a/vendors": "Esta es la pagina de vendedores",
   "/a/configuration": "Esta es la pagina de Parámetros",
   "/a/conciliations": "Esta es la pagina de conciliaciones",
   "/a/payments": "Esta es la pagina de pagos",
   "/v/home": "Esta es la pagina de Inicio",
   "/v/profile": "Esta es la pagina de perfil de usuario",
-  "/v/branches": "Esta es la pagina de sucursales",
+  "/v/branches": "Esta es la pagina de tiendas",
 };
 const AutoTitle = () => {
   const router = useRouter();

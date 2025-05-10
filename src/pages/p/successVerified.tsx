@@ -1,6 +1,6 @@
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Typography, Spin } from "antd";
+import { Typography, Spin, Button } from "antd";
 import { ReactElement, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -9,8 +9,7 @@ const { Title, Text } = Typography;
 
 const SuccessVerified = () => {
   const router = useRouter();
-  const username = router.query.username || "Usuario";
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(12);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,7 +18,7 @@ const SuccessVerified = () => {
 
     const redirectTimer = setTimeout(() => {
       router.replace("/");
-    }, 5000);
+    }, 12000);
 
     return () => {
       clearInterval(timer);
@@ -28,32 +27,22 @@ const SuccessVerified = () => {
   }, [router]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      padding: '2rem',
-      gap: '2rem'
-    }}>
-      <Image
-        src="/images/logo.png"
-        alt="Logo"
-        width={100}
-        height={100}
-        priority
-      />
-      
-      <Title level={2}>
-        Bienvenido, {username}
-      </Title>
-
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "2rem",
+      }}
+    >
+      <Title level={4}>Todo listo</Title>
       <Text>
-        Todo listo, ahora puedes iniciar sesión, serás redireccionado en {countdown} segundos
+        Muchas gracias, ahora seras dirigido a la aplicación en {countdown}{" "}
+        segundos.
       </Text>
-
-      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+      <Button loading={true} block type="primary" size="large" />
     </div>
   );
 };

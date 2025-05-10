@@ -8,7 +8,7 @@ import { AxiosError } from "axios";
 
 interface FormValues {
   confirmPassword: string;
-  pass: string;
+  password: string;
   code: string;
   hash: string;
 }
@@ -25,7 +25,7 @@ const Index = () => {
         body: {
           hash: h as string,
           code: code as string,
-          pass: values.pass,
+          pass: values.password,
         },
       })
       .then(

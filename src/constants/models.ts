@@ -105,3 +105,71 @@ export interface Parameter extends BaseAttributes {
   isActive: boolean;
   data: string;
 }
+
+export const BranchState = [
+  "active",
+  "temporarily_closed",
+  "maintenance",
+  "inactive",
+] as const;
+export type BranchStateType = typeof BranchState;
+
+export const BranchBusiness = ["individual", "company"] as const;
+export type BranchBusinessType = typeof BranchBusiness;
+
+export const weekDay = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+] as const;
+export type weekDayType = typeof weekDay;
+
+export const WEEKDAY_LABEL: Record<weekDayType[number], string> = {
+  monday: "Lunes",
+  tuesday: "Martes",
+  wednesday: "Miércoles",
+  thursday: "Jueves",
+  friday: "Viernes",
+  saturday: "Sábado",
+  sunday: "Domingo",
+};
+export interface Branch extends BaseAttributes {
+  id: string;
+  vendorId: string;
+  name: string; //max 255
+  location: {
+    lat: number;
+    lng: number;
+  };
+  address: string; //max 255
+  country: string; //max 100
+  city: string; //max 100
+  phone: string; //max 20
+  email: string; //max 150
+  rank: number; //default 0
+  state: BranchStateType[number]; //default active
+  businessType: BranchBusinessType[number]; //default individual
+  operatingHours?: Record<
+    weekDayType[number],
+    {
+      open: string; //hora en formato hh:mm, como 19:00 o 14:30
+      close: string;
+      isOpen: boolean;
+    }
+  >;
+  logo?: string; //max 255
+  deliveryRadius: number; //default 0 min 0
+  deliveryFee: string; // default 0 min 0
+  estimatedDeliveryTime: number; //default 0 min 0
+  managerName?: string; //max 255
+  managerPhone?: string; //max 20
+  images: string[]; //default []
+  isPickupAvailable: boolean; //default false
+  isDeliveryAvailable: boolean; //default false
+  availablePaymentMethods: string[]; //default []
+  description?: string;
+}
