@@ -1,7 +1,7 @@
-const { name: APP_NAME, version: APP_VERSION } = require("../../package.json");
+import { name as APP_NAME, version as APP_VERSION } from "../../package.json";
 const ENVIRONMENT = process.env.NODE_ENV ?? "";
 
-export const loggedUserInfoKey =
+export const LOGGED_USER_INFO_KEY =
   APP_NAME + " " + APP_VERSION + " " + ENVIRONMENT + " " + "loggedUserInfoKey";
-export const JWTKey =
+export const JWT_KEY =
   APP_NAME + " " + APP_VERSION + " " + ENVIRONMENT + " " + "JWTKey";

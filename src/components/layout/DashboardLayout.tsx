@@ -26,17 +26,22 @@ import {
 import Image from "next/image";
 import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
-import AuthVerifier, { RoleType } from "../auth/AuthVerifier";
+import AuthVerifier from "../auth/AuthVerifier";
+import useAuthAction from "@/actions/auth.action";
+import { UserRoleType } from "@/constants/models";
+import GoBackButton from "../pure/goBackButton";
+import { subtitles, titles } from "@/constants/titles";
+import { breadcrumItemTree } from "@/constants/breadcrumbItems";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
 
 const lateralMenuItems: Record<string, MenuProps["items"]> = {
-  "(admin)": [
+  a: [
     {
-      key: `/(admin)/home`,
+      key: `/a/home`,
       icon: React.createElement(HomeOutlined),
-      label: <Link href="/(admin)/home">Inicio</Link>,
+      label: <Link href="/a/home">Inicio</Link>,
       children: undefined,
     },
     {
@@ -45,15 +50,15 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/vendors`,
+          key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/(admin)/vendors">Proveedores</Link>,
+          label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/users`,
+          key: `/a/users`,
           icon: React.createElement(TeamOutlined),
-          label: <Link href="/(admin)/users">Clientes</Link>,
+          label: <Link href="/a/users">Clientes</Link>,
           children: undefined,
         },
       ],
@@ -64,21 +69,21 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/payments`,
+          key: `/a/payments`,
           icon: React.createElement(DollarOutlined),
-          label: <Link href="/(admin)/payments">Pagos</Link>,
+          label: <Link href="/a/payments">Pagos</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/conciliations`,
+          key: `/a/conciliations`,
           icon: React.createElement(ReconciliationOutlined),
-          label: <Link href="/(admin)/conciliations">Conciliaciones</Link>,
+          label: <Link href="/a/conciliations">Conciliaciones</Link>,
           children: undefined,
         },
         {
-          key: `/(admin)/branches`,
+          key: `/a/branches`,
           icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/(admin)/branches">Sucursales</Link>,
+          label: <Link href="/a/branches">Tiendas</Link>,
           children: undefined,
         },
       ],
@@ -89,34 +94,68 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/(admin)/configuration`,
+          key: `/a/configuration`,
           icon: React.createElement(SettingOutlined),
-          label: <Link href="/(admin)/configuration">Parámetros</Link>,
+          label: <Link href="/a/configuration">Parámetros</Link>,
           children: undefined,
         },
       ],
     },
   ],
-  "(vendor)": [
+  v: [
     {
-      key: `/(vendor)/home`,
+      key: `/v/home`,
       icon: React.createElement(HomeOutlined),
-      label: <Link href="/(vendor)/home">Inicio</Link>,
+      label: <Link href="/v/home">Inicio</Link>,
       children: undefined,
+    },
+    {
+      key: `sub-management`,
+      label: "Gestión",
+      type: "group",
+      children: [
+        {
+          key: `/v/branches`,
+          icon: React.createElement(AppstoreOutlined),
+          label: <Link href="/v/branches">Tiendas</Link>,
+          children: undefined,
+        },
+      ],
     },
   ],
 };
 
-function DashboardLayout({ children }: { children: React.ReactNode }) {
+const roleKeyMap: Record<string, string> = {
+  a: "admin",
+  v: "vendor",
+};
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  backButton?: boolean;
+}
+function DashboardLayout({
+  children,
+  backButton = false,
+}: DashboardLayoutProps) {
   const router = useRouter();
+  const authActions = useAuthAction();
+  const { userSession } = authActions;
+  const {
+    token: { colorPrimary },
+  } = theme.useToken();
   const { Header, Content, Sider, Footer } = Layout;
   const { Text, Title } = Typography;
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
-
+  const primaryUrlSegment = router.pathname.split("/")[1];
+  const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
   return (
     <AuthVerifier
-      requireAuth={false}
-      roles={[router.pathname.split("/")[1] as RoleType[number]]}
+      //requireAuth={false}
+      requireAuth={primaryUrlSegment !== "p"}
+      roles={[rolesAllowed as UserRoleType[number]]}
+      user={userSession.data || undefined}
+      isLoading={userSession.isLoading}
     >
       <Layout>
         <Sider
@@ -145,6 +184,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 margin: "16px auto",
               }}
             ></Image>
+            <Typography.Title
+              level={3}
+              style={{ textAlign: "center", color: colorPrimary }}
+            >
+              VeciApp {roleKeyMap[primaryUrlSegment]}
+            </Typography.Title>
             <Menu
               mode="inline"
               items={lateralMenuItems[router.pathname.split("/")[1]]}
@@ -179,8 +224,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 flexWrap: "wrap",
               }}
             >
-              <AutoBreadcrumb />
-              <AutoTitle />
+              <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} />
+              {backButton && <GoBackButton />}
+              <AutoTitle titles={titles} subtitles={subtitles} />
             </div>
           </Header>
           <Content
@@ -208,6 +254,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 export default DashboardLayout;
 
 const ProfileButton = (props: { width: number }) => {
+  const authActions = useAuthAction();
+  const currentUser = authActions.userSession;
+  const logout = authActions.logOut();
   const router = useRouter();
   const {
     token: { borderRadiusLG, colorBgElevated, boxShadowSecondary },
@@ -236,8 +285,7 @@ const ProfileButton = (props: { width: number }) => {
             label: "Cerrar sesión",
             icon: <LogoutOutlined />,
             onClick: () => {
-              router.push("/");
-              //signOut!()
+              logout.mutateAsync({ body: null });
             },
           },
         ],
@@ -254,7 +302,7 @@ const ProfileButton = (props: { width: number }) => {
             }}
           >
             <Typography.Text type="secondary">
-              julianangulop@gmail.com
+              {currentUser.data?.email || "Email desconocido"}
             </Typography.Text>
           </Space>
           <Divider style={{ margin: 0 }} />
@@ -281,109 +329,27 @@ const ProfileButton = (props: { width: number }) => {
             display: isCollapsed ? "none" : "inherit",
           }}
         >
-          Julian Angulo
+          {currentUser.data?.fullName || "Usuario desconocido"}
         </Typography.Text>
       </Button>
     </Dropdown>
   );
 };
 
-interface TreeStruct {
+export interface TreeStruct {
   key: string;
   value: any;
   children?: TreeStruct[];
 }
-const breadcrumItemTree: TreeStruct[] = [
-  {
-    key: "(admin)",
-    value: null,
-    children: [
-      {
-        key: "home",
-        value: "Inicio",
-      },
-      {
-        key: "profile",
-        value: "Perfil de usuario",
-      },
-      {
-        key: "users",
-        value: "Clientes",
-        children: [
-          {
-            key: "newUser",
-            value: "Nuevo cliente",
-          },
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-        ],
-      },
-      {
-        key: "vendors",
-        value: "Proveedores",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
-            key: "newVendor",
-            value: "Nuevo proveedor",
-          },
-        ],
-      },
-      {
-        key: "branches",
-        value: "Sucursales",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
-            key: "newBranch",
-            value: "Nueva tienda",
-          },
-        ],
-      },
-      {
-        key: "payments",
-        value: "Pagos",
-      },
-      {
-        key: "conciliations",
-        value: "Conciliaciones",
-      },
-      {
-        key: "configuration",
-        value: "Parámetros",
-      },
-    ],
-  },
-  {
-    key: "(vendor)",
-    value: null,
-    children: [
-      {
-        key: "home",
-        value: "Inicio",
-      },
-      {
-        key: "profile",
-        value: "Perfil de usuario",
-      },
-    ],
-  },
-];
-
-const AutoBreadcrumb = () => {
+interface AutoBreadcrumbProps {
+  breadcrumItemTree: TreeStruct[];
+}
+const AutoBreadcrumb = ({ breadcrumItemTree }: AutoBreadcrumbProps) => {
   const router = useRouter();
   const getBreadcrumItems = (): BreadcrumbProps["items"] => {
     const pathSegments = router.pathname.split("/").slice(1);
     const items = pathSegments.map((segment, index, segments) => {
-      if (segment.startsWith("(") && segment.endsWith(")")) return null;
+      if (index === 0) return null;
       let currentBreadcrumbBranch = breadcrumItemTree;
       for (let count = 0; count < index; count++) {
         const newBreadcrumbBranch = currentBreadcrumbBranch.find(
@@ -431,42 +397,29 @@ const AutoBreadcrumb = () => {
     </>
   );
 };
-
-const titles: Record<string, string> = {
-  "/(admin)/home": "Bienvenido",
-  "/(admin)/profile": "Perfil de usuario",
-  "/(admin)/users": "Clientes",
-  "/(admin)/users/newUser": "Nuevo usuario",
-  "/(admin)/branches": "Sucursales",
-  "/(admin)/vendors": "Vendedores",
-  "/(admin)/configuration": "Parámetros",
-  "/(admin)/conciliations": "Conciliaciones",
-  "/(admin)/payments": "Pagos",
-  "/(vendor)/home": "Dashboard",
-  "/(vendor)/profile": "Perfil de usuario",
-};
-const subtitles: Record<string, string> = {
-  "/(admin)/home": "Resumen general",
-  "/(admin)/profile": "Esta es la pagina de perfil de usuario",
-  "/(admin)/users": "Esta es la pagina de Clientes",
-  "/(admin)/users/newUser": "Esta es la pagina de Nuevo usuario",
-  "/(admin)/branches": "Esta es la pagina de sucursales",
-  "/(admin)/vendors": "Esta es la pagina de vendedores",
-  "/(admin)/configuration": "Esta es la pagina de Parámetros",
-  "/(admin)/conciliations": "Esta es la pagina de conciliaciones",
-  "/(admin)/payments": "Esta es la pagina de pagos",
-  "/(vendor)/home": "Esta es la pagina de Inicio",
-  "/(vendor)/profile": "Esta es la pagina de perfil de usuario",
-};
-const AutoTitle = () => {
+interface AutoTitleProps {
+  titles: Record<string, string>;
+  subtitles: Record<string, string>;
+}
+const AutoTitle = ({ titles, subtitles }: AutoTitleProps) => {
   const router = useRouter();
+
+  const replacePlaceholders = (text: string): string => {
+    return text.replace(/\${(\w+)}/g, (_, key) => 
+      String(router.query[key] || `\${${key}}`)
+    );
+  };
+
+  const title = titles[router.pathname] || '';
+  const subtitle = subtitles[router.pathname] || '';
+
   return (
     <>
       <Typography.Title level={2} style={{ margin: 0 }}>
-        {titles[router.pathname]}
+        {replacePlaceholders(title)}
       </Typography.Title>
       <Typography.Text type="secondary">
-        {subtitles[router.pathname]}
+        {replacePlaceholders(subtitle)}
       </Typography.Text>
     </>
   );

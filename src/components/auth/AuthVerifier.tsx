@@ -1,27 +1,23 @@
+import useAuthAction from "@/actions/auth.action";
+import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@constants";
+import { User, UserRoleType } from "@models";
 import { useRouter } from "next/router";
 
-export const Roles = ["admin", "vendor"] as const;
-export type RoleType = typeof Roles;
-
-interface AuthCheckerProps {
-  requireAuth: boolean; // ¿Es necesario que el usuario esté autenticado?
+interface AuthVerifierProps {
+  requireAuth: boolean;
   children: React.ReactNode;
-  roles?: RoleType[number][]; // Roles necesarios para acceder a la página
+  roles?: UserRoleType[number][];
+  user?: User;
+  isLoading?: boolean;
 }
 
-const AuthChecker = ({
+const AuthVerifier = ({
   children,
   requireAuth,
   roles = [],
-}: AuthCheckerProps): React.ReactNode => {
-  //const { userSession } = useAuthAction();
-  const { userSession } = {
-    userSession: {
-      data: { role: "admin" as RoleType[number] },
-      isLoading: false,
-    },
-  }; // Simulación de un hook de autenticación
-  const { data, isLoading } = userSession;
+  user = undefined,
+  isLoading = false,
+}: AuthVerifierProps): React.ReactNode => {
   const router = useRouter();
   if (isLoading) {
     // Mostrar un mensaje de carga o spinner mientras se verifica la autenticación
@@ -32,13 +28,19 @@ const AuthChecker = ({
     return <>{children}</>;
   }
 
-  if (requireAuth && !data) {
+  if (requireAuth && !user) {
     // Si requireAuth es true y el usuario no está autenticado, redirigir al inicio de sesión.
+    localStorage.removeItem(JWT_KEY);
+    localStorage.removeItem(LOGGED_USER_INFO_KEY);
     router.replace("/");
     return null;
   }
 
-  if (roles.length > 0 && !!data?.role && !roles.includes(data.role)) {
+  if (
+    roles.length > 0 &&
+    !!user?.role &&
+    !roles.includes(user.role as UserRoleType[number])
+  ) {
     router.replace("/access-denied");
     return null;
   }
@@ -47,4 +49,4 @@ const AuthChecker = ({
   return <>{children}</>;
 };
 
-export default AuthChecker;
+export default AuthVerifier;

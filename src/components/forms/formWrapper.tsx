@@ -1,51 +1,70 @@
+import { BaseAttributes } from "@/constants/models";
 import { SaveOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { Button, Form, FormInstance, FormProps, Modal } from "antd";
+import { App, Button, Flex, Form, FormInstance, FormProps, Modal } from "antd";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
-interface FormWrapperProps extends Omit<FormProps<any>, "children"> {
+interface FormWrapperProps<T>
+  extends Omit<FormProps<any>, "children" | "onFinish"> {
   formName: string;
-  onSubmit?: (values: any) => void | Promise<void>;
+  onFinish?: (values: T) => Promise<void>;
+  routeTo?: string;
   children:
     | React.ReactNode
-    | ((formInstance: FormInstance<any>) => React.ReactNode);
+    | ((formInstance: FormInstance<T>) => React.ReactNode);
+  loading?: boolean;
+  preserveDataInCache?: boolean;
 }
-const FormWrapper = ({
+const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   formName,
-  onSubmit,
   children,
   initialValues,
+  preserveDataInCache = true,
   ...formProps
-}: FormWrapperProps) => {
-  const [formValues, setFormValues] = useLocalStorage(
+}: FormWrapperProps<T>) => {
+  const [formValues, setFormValues] = useLocalStorage<T | null>(
     "formValues/" + formName,
     null
   );
-  const [form] = Form.useForm();
-
+  const [form] = Form.useForm<T>();
+  const router = useRouter();
+  const { modal } = App.useApp();
+  const resetForm = () => {
+    setFormValues(null);
+    const actualFormInstance = formProps.form || form;
+    actualFormInstance.resetFields();
+  };
   const showConfirm = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "Sigamos por donde lo dejaste",
       content:
         "Hay cambios no guardados desde la última vez que estuviste aqui",
       okText: "Continuar",
       cancelText: "Descartar",
       onCancel() {
-        setFormValues(null);
-        form.resetFields();
+        resetForm();
       },
     });
   };
   useEffect(() => {
-    if (formValues) {
+    if (formValues && preserveDataInCache) {
       showConfirm();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onFinish = async (values: any) => {
-    if (onSubmit) {
-      await onSubmit(values);
+  const onFinish = async (values: T) => {
+    if (!!formProps.onFinish) {
+      await formProps.onFinish(values).then(
+        () => {
+          resetForm();
+          if (formProps.routeTo) {
+            router.push(formProps.routeTo || "/");
+          }
+        },
+        () => {}
+      );
     }
   };
 
@@ -63,12 +82,14 @@ const FormWrapper = ({
   };
 
   return (
-    <Form
-      form={form}
-      name={formName}
-      onFinish={onFinish}
+    <Form<T>
+      form={formProps.form || form}
       onChange={() => {
-        const values = form.getFieldsValue();
+        if (!preserveDataInCache) {
+          return;
+        }
+        const actualFormInstance = formProps.form || form;
+        const values = actualFormInstance.getFieldsValue();
         setFormValues(values);
       }}
       initialValues={formValues || initialValues}
@@ -78,14 +99,18 @@ const FormWrapper = ({
       requiredMark={false}
       layout={"vertical"}
       {...formProps}
+      onFinish={onFinish}
     >
-      {typeof children === "function" ? children(form) : children}
+      {typeof children === "function"
+        ? children(formProps.form || form)
+        : children}
       <Form.Item style={{ textAlign: "center" }}>
         <Button
           type="primary"
           htmlType="submit"
           style={buttonStyles}
           icon={<SaveOutlined />}
+          loading={formProps.loading}
         >
           Guardar
         </Button>

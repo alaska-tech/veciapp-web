@@ -48,8 +48,11 @@ const LandingPageLayout = (props: {
               window.history.back();
             }}
             icon={<ArrowLeftOutlined />}
+            style={{
+              alignSelf: "start",
+            }}
           >
-            Regresar a la página anterior
+            Regresar
           </Button>
         )}
         <AutoTitle />
@@ -84,7 +87,7 @@ const LandingPageLayout = (props: {
           height={100}
           style={{
             minHeight: 30,
-            height: isSmallScreen?'8vh':"180px",
+            height: isSmallScreen ? "8vh" : "180px",
             width: "auto",
             objectFit: "cover",
           }}
@@ -102,27 +105,27 @@ const titles: Record<string, [string, string, string]> = {
     "Inicio de sesión",
     "Ingresa tu correo y contraseña",
   ],
-  "/(auth)/forgotPassword": [
+  "/a/forgotPassword": [
     "Recupera el acceso a tu cuenta",
     "Olvidé mi contraseña",
     "Ingresa el correo asociado a tu constraseña",
   ],
-  "/(auth)/createNewPassword": [
+  "/a/createNewPassword": [
     "Restablecer contraseña",
     "Crear nueva contraseña",
     "Ingresa tu nueva contraseña para continuar",
   ],
   "/access-denied": ["", "Acceso denegado", "No tienes acceso a esta página"],
-  "/(public)/validateAccount": [
+  "/p/validateAccount": [
     "",
     "Ingresa tu codigo",
     "Ingresa el código unico que te asigno la fundación Maleua",
   ],
-  "/(public)/setPassAccount": [
+  "/p/setPassAccount": [
     "",
-    "Bienvenido! Crea tu contraseña",
+    "Bienvenido, crea tu contraseña",
     "Todo listo, ahora crea tu contraseña para acceder a tu cuenta",
-  ]
+  ],
 };
 const AutoTitle = () => {
   const router = useRouter();

@@ -272,7 +272,7 @@ const Users = () => {
         </Card>
       </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/(admin)/branches/newBranch" icon={<AppstoreAddOutlined />}>
+        <Button href="/v/branches/newBranch" icon={<AppstoreAddOutlined />}>
           Nueva tienda
         </Button>
       </Space>
