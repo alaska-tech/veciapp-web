@@ -64,9 +64,9 @@ const LandingPageLayout = (props: {
           isSmallScreen
             ? {
                 borderRadius: "0 0 0 15%",
+                background: "linear-gradient(to bottom, #FFF5B0, #FFD100)",
                 height: "10vh",
                 width: "100vw",
-                background: "linear-gradient(to bottom, #FFF5B0, #FFD100)",
                 display: "grid",
                 placeItems: "center",
               }
@@ -86,8 +86,7 @@ const LandingPageLayout = (props: {
           width={100}
           height={100}
           style={{
-            minHeight: 30,
-            height: isSmallScreen ? "8vh" : "180px",
+            height: isSmallScreen ? "8vh" : "auto",
             width: "auto",
             objectFit: "cover",
           }}
