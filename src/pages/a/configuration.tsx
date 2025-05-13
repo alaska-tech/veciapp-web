@@ -23,7 +23,7 @@ const Index = () => {
   const parameterActions = useParameterAction();
   const parameterQueries = parameterActions.getParametersByName(
     DEFAULT_PARAMETER_NAMES
-  ); //TODO: El value de los parameters esta llegando siempre como string a pesar de que lo envio como true o false o number, revisar el endpoint
+  ); 
   /*   const parametersQuery = parameterActions.getParameters();
   const { parameters: data, count } = parametersQuery?.data?.data ?? {
     parameters: [],

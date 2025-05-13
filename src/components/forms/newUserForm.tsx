@@ -48,6 +48,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
       routeTo="/a/users"
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
+      highligthOnChange={hasInitialValues}
     >
       {(formInstance) => (
         <div>
@@ -60,7 +61,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               },
             ]}
           >
-            <Input />
+            <Input disabled={hasInitialValues} />
           </Form.Item>
           <Form.Item
             name="identification"
@@ -76,7 +77,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               },
             ]}
           >
-            <Input />
+            <Input disabled={hasInitialValues} />
           </Form.Item>
           <Form.Item
             name="email"
