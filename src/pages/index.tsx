@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
 import { JWT_KEY } from "@/constants/constants";
+import { setToken, setUserInfo } from "@/actions/localStorage.actions";
 
 export type LogInForm = {
   email: string;
@@ -42,6 +43,9 @@ export default function Home() {
   const onFinish: FormProps<LogInForm>["onFinish"] = (values) => {
     login.mutateAsync({ body: values }).then(
       (response) => {
+        const { token, user } = response.data.data;
+        setUserInfo(user);
+        setToken(token);
         if (response.data.data.user.role === "admin") {
           router.push("/a/home");
         } else if (response.data.data.user.role === "vendor") {
@@ -70,7 +74,7 @@ export default function Home() {
         autoComplete="off"
         layout="vertical"
         requiredMark={false}
-      >
+              >
         <Form.Item<LogInForm>
           name="email"
           rules={[

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Breadcrumb,
@@ -32,6 +32,12 @@ import { UserRoleType } from "@/constants/models";
 import GoBackButton from "../pure/goBackButton";
 import { subtitles, titles } from "@/constants/titles";
 import { breadcrumItemTree } from "@/constants/breadcrumbItems";
+import {
+  clearAllInfoFromLocalStorage,
+  useLocalStorageAction,
+} from "@/actions/localStorage.actions";
+import { AutoBreadcrumb } from "../pure/AutoBreadcrumb";
+import { AutoTitle } from "../pure/AutoTitle";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
@@ -149,9 +155,13 @@ function DashboardLayout({
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
   const primaryUrlSegment = router.pathname.split("/")[1];
   const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
+  const localStorageActions = useLocalStorageAction();
+  useEffect(() => {
+    localStorageActions.refreshCurrentToken();  //TODO: Preguntar al tocayo por que falla, si esta bien autenticado
+  }, []);
+
   return (
     <AuthVerifier
-      //requireAuth={false}
       requireAuth={primaryUrlSegment !== "p"}
       roles={[rolesAllowed as UserRoleType[number]]}
       user={userSession.data || undefined}
@@ -277,7 +287,6 @@ const ProfileButton = (props: { width: number }) => {
             icon: <SettingOutlined />,
             onClick: () => {
               router.push(`/${router.pathname.split("/")[1]}/profile`);
-              //signOut!()
             },
           },
           {
@@ -285,7 +294,10 @@ const ProfileButton = (props: { width: number }) => {
             label: "Cerrar sesión",
             icon: <LogoutOutlined />,
             onClick: () => {
-              logout.mutateAsync({ body: null });
+              logout.mutateAsync({ body: null }).finally(() => {
+                clearAllInfoFromLocalStorage();
+                router.push("/");
+              });
             },
           },
         ],
@@ -336,91 +348,5 @@ const ProfileButton = (props: { width: number }) => {
   );
 };
 
-export interface TreeStruct {
-  key: string;
-  value: any;
-  children?: TreeStruct[];
-}
-interface AutoBreadcrumbProps {
-  breadcrumItemTree: TreeStruct[];
-}
-const AutoBreadcrumb = ({ breadcrumItemTree }: AutoBreadcrumbProps) => {
-  const router = useRouter();
-  const getBreadcrumItems = (): BreadcrumbProps["items"] => {
-    const pathSegments = router.pathname.split("/").slice(1);
-    const items = pathSegments.map((segment, index, segments) => {
-      if (index === 0) return null;
-      let currentBreadcrumbBranch = breadcrumItemTree;
-      for (let count = 0; count < index; count++) {
-        const newBreadcrumbBranch = currentBreadcrumbBranch.find(
-          (item) => item.key === segments[count]
-        );
-        currentBreadcrumbBranch = newBreadcrumbBranch?.children || [];
-      }
-      const isDynamicSegment = segment.startsWith("[") && segment.endsWith("]");
-      const dynamicSegmentKey = isDynamicSegment ? segment.slice(1, -1) : null;
-      const dynamicSegmentValue = dynamicSegmentKey
-        ? router.query[dynamicSegmentKey]
-        : null;
-      const path = `${router.pathname
-        .split("/")
-        .slice(0, index + 2)
-        .map((value) =>
-          value.startsWith("[") && value.endsWith("]")
-            ? router.query[value.slice(1, -1)]
-            : value
-        )
-        .join("/")}`;
 
-      const label =
-        currentBreadcrumbBranch.find((item) => item.key === segment)?.value ||
-        segment ||
-        null;
-      if (!label) return null;
-      return {
-        key: path,
-        title: (
-          <Link href={path}>
-            {isDynamicSegment ? dynamicSegmentValue : label}
-          </Link>
-        ),
-      };
-    });
-    return items.filter((item) => !!item) as BreadcrumbProps["items"];
-  };
-  return (
-    <>
-      <Breadcrumb
-        style={{ margin: "16px 0" }}
-        items={getBreadcrumItems()}
-      ></Breadcrumb>
-    </>
-  );
-};
-interface AutoTitleProps {
-  titles: Record<string, string>;
-  subtitles: Record<string, string>;
-}
-const AutoTitle = ({ titles, subtitles }: AutoTitleProps) => {
-  const router = useRouter();
 
-  const replacePlaceholders = (text: string): string => {
-    return text.replace(/\${(\w+)}/g, (_, key) => 
-      String(router.query[key] || `\${${key}}`)
-    );
-  };
-
-  const title = titles[router.pathname] || '';
-  const subtitle = subtitles[router.pathname] || '';
-
-  return (
-    <>
-      <Typography.Title level={2} style={{ margin: 0 }}>
-        {replacePlaceholders(title)}
-      </Typography.Title>
-      <Typography.Text type="secondary">
-        {replacePlaceholders(subtitle)}
-      </Typography.Text>
-    </>
-  );
-};

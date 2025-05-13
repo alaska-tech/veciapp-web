@@ -19,7 +19,6 @@ export type LogInResponse = {
   user: User;
 };
 export default function useAuthAction() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const userSession = useQuery<User | null>({
     queryKey: [LOGGED_USER_INFO_KEY],
@@ -65,13 +64,6 @@ export default function useAuthAction() {
           duration: 5,
         });
       },
-      onSettled(data, error, variables, context) {
-        localStorage.removeItem(JWT_KEY);
-        localStorage.removeItem(LOGGED_USER_INFO_KEY);
-        queryClient.removeQueries({ queryKey: [JWT_KEY] });
-        queryClient.removeQueries({ queryKey: [LOGGED_USER_INFO_KEY] });
-        router.push("/");
-      },
     }
   );
 
@@ -106,9 +98,6 @@ export default function useAuthAction() {
         });
       },
       onSuccess(data, _variables, _context) {
-        const { token, user } = data.data.data;
-        localStorage.setItem(JWT_KEY, token);
-        localStorage.setItem(LOGGED_USER_INFO_KEY, JSON.stringify(user));
         message.success({
           content: "Te has logueado correctamente",
           duration: 5,
