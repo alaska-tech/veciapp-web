@@ -1,7 +1,7 @@
 import { BaseAttributes } from "@/constants/models";
 import { SaveOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { App, Button, Form, FormInstance, FormProps, Modal } from "antd";
+import { App, Button, Flex, Form, FormInstance, FormProps, Modal } from "antd";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
@@ -14,11 +14,13 @@ interface FormWrapperProps<T>
     | React.ReactNode
     | ((formInstance: FormInstance<T>) => React.ReactNode);
   loading?: boolean;
+  preserveDataInCache?: boolean;
 }
 const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   formName,
   children,
   initialValues,
+  preserveDataInCache = true,
   ...formProps
 }: FormWrapperProps<T>) => {
   const [formValues, setFormValues] = useLocalStorage<T | null>(
@@ -46,7 +48,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     });
   };
   useEffect(() => {
-    if (formValues) {
+    if (formValues && preserveDataInCache) {
       showConfirm();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,6 +85,9 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     <Form<T>
       form={formProps.form || form}
       onChange={() => {
+        if (!preserveDataInCache) {
+          return;
+        }
         const actualFormInstance = formProps.form || form;
         const values = actualFormInstance.getFieldsValue();
         setFormValues(values);
@@ -96,7 +101,6 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
       {...formProps}
       onFinish={onFinish}
     >
-      <p>{JSON.stringify(formProps.loading)}</p>
       {typeof children === "function"
         ? children(formProps.form || form)
         : children}

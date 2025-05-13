@@ -29,6 +29,9 @@ import Link from "next/link";
 import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
 import { UserRoleType } from "@/constants/models";
+import GoBackButton from "../pure/goBackButton";
+import { subtitles, titles } from "@/constants/titles";
+import { breadcrumItemTree } from "@/constants/breadcrumbItems";
 
 const siderWidthCollapsed = 80;
 const siderWidthExpanded = 200;
@@ -127,7 +130,14 @@ const roleKeyMap: Record<string, string> = {
   v: "vendor",
 };
 
-function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  backButton?: boolean;
+}
+function DashboardLayout({
+  children,
+  backButton = false,
+}: DashboardLayoutProps) {
   const router = useRouter();
   const authActions = useAuthAction();
   const { userSession } = authActions;
@@ -141,8 +151,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
   return (
     <AuthVerifier
-      requireAuth={false}
-      //requireAuth={primaryUrlSegment !== "p"}
+      //requireAuth={false}
+      requireAuth={primaryUrlSegment !== "p"}
       roles={[rolesAllowed as UserRoleType[number]]}
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}
@@ -214,8 +224,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 flexWrap: "wrap",
               }}
             >
-              <AutoBreadcrumb />
-              <AutoTitle />
+              <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} />
+              {backButton && <GoBackButton />}
+              <AutoTitle titles={titles} subtitles={subtitles} />
             </div>
           </Header>
           <Content
@@ -325,111 +336,15 @@ const ProfileButton = (props: { width: number }) => {
   );
 };
 
-interface TreeStruct {
+export interface TreeStruct {
   key: string;
   value: any;
   children?: TreeStruct[];
 }
-const breadcrumItemTree: TreeStruct[] = [
-  {
-    key: "a",
-    value: null,
-    children: [
-      {
-        key: "home",
-        value: "Inicio",
-      },
-      {
-        key: "profile",
-        value: "Perfil de usuario",
-      },
-      {
-        key: "users",
-        value: "Clientes",
-        children: [
-          {
-            key: "newUser",
-            value: "Nuevo cliente",
-          },
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-        ],
-      },
-      {
-        key: "vendors",
-        value: "Proveedores",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
-            key: "newVendor",
-            value: "Nuevo proveedor",
-          },
-        ],
-      },
-      {
-        key: "branches",
-        value: "Tiendas",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
-            key: "newBranch",
-            value: "Nueva tienda",
-          },
-        ],
-      },
-      {
-        key: "payments",
-        value: "Pagos",
-      },
-      {
-        key: "conciliations",
-        value: "Conciliaciones",
-      },
-      {
-        key: "configuration",
-        value: "Parámetros",
-      },
-    ],
-  },
-  {
-    key: "v",
-    value: null,
-    children: [
-      {
-        key: "home",
-        value: "Inicio",
-      },
-      {
-        key: "profile",
-        value: "Perfil de usuario",
-      },
-      {
-        key: "branches",
-        value: "Tiendas",
-        children: [
-          {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
-            key: "newBranch",
-            value: "Nueva tienda",
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const AutoBreadcrumb = () => {
+interface AutoBreadcrumbProps {
+  breadcrumItemTree: TreeStruct[];
+}
+const AutoBreadcrumb = ({ breadcrumItemTree }: AutoBreadcrumbProps) => {
   const router = useRouter();
   const getBreadcrumItems = (): BreadcrumbProps["items"] => {
     const pathSegments = router.pathname.split("/").slice(1);
@@ -482,48 +397,29 @@ const AutoBreadcrumb = () => {
     </>
   );
 };
-
-const titles: Record<string, string> = {
-  "/a/home": "Bienvenido",
-  "/a/profile": "Perfil de usuario",
-  "/a/users": "Clientes",
-  "/a/users/newUser": "Nuevo usuario",
-  "/a/branches": "Tiendas",
-  "/a/branches/newBranch": "Crear nueva tienda",
-  "/a/vendors": "Vendedores",
-  "/a/configuration": "Parámetros",
-  "/a/conciliations": "Conciliaciones",
-  "/a/payments": "Pagos",
-  "/b/home": "Dashboard",
-  "/b/profile": "Perfil de usuario",
-  "/v/home": "Bienvenido",
-  "/v/profile": "Perfil de usuario",
-  "/v/branches": "Tiendas",
-};
-const subtitles: Record<string, string> = {
-  "/a/home": "Resumen general",
-  "/a/profile": "Esta es la pagina de perfil de usuario",
-  "/a/users": "Esta es la pagina de Clientes",
-  "/a/users/newUser": "Esta es la pagina de Nuevo usuario",
-  "/a/branches": "Esta es la pagina de tiendas",
-  "/a/branches/newBranch": "Esta es la pagina para crear una nueva tienda",
-  "/a/vendors": "Esta es la pagina de vendedores",
-  "/a/configuration": "Esta es la pagina de Parámetros",
-  "/a/conciliations": "Esta es la pagina de conciliaciones",
-  "/a/payments": "Esta es la pagina de pagos",
-  "/v/home": "Esta es la pagina de Inicio",
-  "/v/profile": "Esta es la pagina de perfil de usuario",
-  "/v/branches": "Esta es la pagina de tiendas",
-};
-const AutoTitle = () => {
+interface AutoTitleProps {
+  titles: Record<string, string>;
+  subtitles: Record<string, string>;
+}
+const AutoTitle = ({ titles, subtitles }: AutoTitleProps) => {
   const router = useRouter();
+
+  const replacePlaceholders = (text: string): string => {
+    return text.replace(/\${(\w+)}/g, (_, key) => 
+      String(router.query[key] || `\${${key}}`)
+    );
+  };
+
+  const title = titles[router.pathname] || '';
+  const subtitle = subtitles[router.pathname] || '';
+
   return (
     <>
       <Typography.Title level={2} style={{ margin: 0 }}>
-        {titles[router.pathname]}
+        {replacePlaceholders(title)}
       </Typography.Title>
       <Typography.Text type="secondary">
-        {subtitles[router.pathname]}
+        {replacePlaceholders(subtitle)}
       </Typography.Text>
     </>
   );

@@ -7,15 +7,23 @@ import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 const columnMinWidth = "220px";
 interface vendorWithAuxProps extends Vendor {
   prefix: string;
-  confirmPassword: string;
+}
+function parseInitialValues(values: any) {
+  const [prefix, cellphone] = values.cellphone
+    ? (values.cellphone as string).split(" ")
+    : ["", ""];
+  return { ...values, prefix, cellphone };
 }
 export const FormElement = <T extends vendorWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
+  initialValues?: T;
 }) => {
+  const hasInitialValues: boolean = !!props.initialValues;
   const handleFinish = async (values: T) => {
-    const { cellphone, prefix, confirmPassword, ...rest } = values;
-    const mappedCellphone = !!prefix && !!cellphone ? prefix + cellphone : "";
+    const { cellphone, prefix, ...rest } = values;
+    const mappedCellphone =
+      !!prefix && !!cellphone ? prefix + " " + cellphone : "";
     const mappedValues = {
       ...rest,
       cellphone: mappedCellphone,
@@ -29,14 +37,17 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
     <FormWrapper
       formName={"newVendor"}
       onFinish={handleFinish}
-      initialValues={{
-        prefix: "57",
-        password: "Password123",
-        isHabeasDataConfirm: false,
-      }}
+      initialValues={
+        hasInitialValues
+          ? parseInitialValues(props.initialValues)
+          : {
+              prefix: "57",
+            }
+      }
       requiredMark={true}
       routeTo="/a/vendors"
       loading={props.loading}
+      preserveDataInCache={!hasInitialValues}
     >
       {(formInstance) => (
         <div
@@ -61,7 +72,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="fullName"
@@ -75,7 +86,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="identification"
@@ -94,7 +105,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="email"
@@ -212,7 +223,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name={"rut"}
@@ -223,7 +234,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name={["bankAccount", "entity"]}
