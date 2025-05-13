@@ -1,15 +1,11 @@
-import {
-  Divider,
-  Form,
-  Input,
-  Radio,
-  Select,
-} from "antd";
+import { Divider, Form, Input, Radio, Select } from "antd";
 import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
+import { Branch } from "@/constants/models";
+import { useRouter } from "next/router";
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
@@ -18,13 +14,52 @@ const NewLocationPicker = dynamic(
   () => import("@/components/pure/LocationPicker"),
   { ssr: false }
 );
+interface entityWithAuxProps extends Branch {
+  prefix: string;
+}
+function parseInitialValues(values: Branch) {
+  const [cellphonePrefix, cellphone] = values.phone
+    ? (values.phone as string).split(" ")
+    : ["", ""];
+  const [managerPhonePrefix, managerPhone] = values.managerPhone
+    ? (values.managerPhone as string).split(" ")
+    : ["", ""];
+  const location = values.location.coordinates;
+  return {
+    ...values,
+    location,
+    cellphonePrefix,
+    cellphone,
+    managerPhonePrefix,
+    managerPhone,
+  };
+}
+export const FormElement = <T extends entityWithAuxProps>(props: {
+  onFinish?: (values: T) => Promise<void>;
+  loading?: boolean;
+  initialValues?: T;
+}) => {
+  const router = useRouter();
+  const { vendorId } = router.query;
+  const hasInitialValues: boolean = !!props.initialValues;
 
-export const FormElement = (props: { onFinish?: any }) => {
   const handleFinish = async (values: any) => {
-    const { cellphonePrefix, managerPhonePrefix, ...rest } = values;
+    const {
+      cellphonePrefix,
+      managerPhonePrefix,
+      cellphone,
+      managerPhone,
+      location,
+      ...rest
+    } = values;
     const mappedValues = {
-      cellphone: cellphonePrefix + rest.cellphone,
-      managerPhone: managerPhonePrefix + rest.managerPhone,
+      phone: cellphonePrefix + " " + cellphone,
+      managerPhone: managerPhonePrefix + " " + managerPhone,
+      location: {
+        type: "Point",
+        coordinates: location,
+      },
+      vendorId,
       ...rest,
     };
     if (props.onFinish) {
@@ -35,11 +70,19 @@ export const FormElement = (props: { onFinish?: any }) => {
     <FormWrapper
       formName={"newBranch"}
       onFinish={handleFinish}
-      initialValues={{
-        managerPhonePrefix: "57",
-        cellphonePrefix: "57",
-        location: SANTA_MARTA_LOCATION_OBJECT,
-      }}
+      initialValues={
+        !!hasInitialValues
+          ? parseInitialValues(props.initialValues || ({} as Branch))
+          : {
+              managerPhonePrefix: "57",
+              cellphonePrefix: "57",
+              location: SANTA_MARTA_LOCATION_OBJECT,
+            }
+      }
+      routeTo="/a/branches"
+      loading={props.loading}
+      preserveDataInCache={!hasInitialValues}
+      highligthOnChange={hasInitialValues}
     >
       {(formInstance) => (
         <div
@@ -62,7 +105,7 @@ export const FormElement = (props: { onFinish?: any }) => {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
 
             <Form.Item
@@ -74,7 +117,10 @@ export const FormElement = (props: { onFinish?: any }) => {
                 },
               ]}
             >
-              <Radio.Group options={["Individual", "Empresa"]} />
+              <Radio.Group
+                options={["Individual", "Empresa"]}
+                disabled={hasInitialValues}
+              />
             </Form.Item>
             <Form.Item
               name={"description"}

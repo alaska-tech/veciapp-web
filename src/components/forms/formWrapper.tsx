@@ -3,9 +3,9 @@ import { SaveOutlined } from "@ant-design/icons";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { App, Button, Flex, Form, FormInstance, FormProps, Modal } from "antd";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-interface FormWrapperProps<T>
+export interface FormWrapperProps<T>
   extends Omit<FormProps<any>, "children" | "onFinish"> {
   formName: string;
   onFinish?: (values: T) => Promise<void>;
@@ -15,12 +15,14 @@ interface FormWrapperProps<T>
     | ((formInstance: FormInstance<T>) => React.ReactNode);
   loading?: boolean;
   preserveDataInCache?: boolean;
+  highligthOnChange?: boolean;
 }
 const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   formName,
   children,
   initialValues,
   preserveDataInCache = true,
+  highligthOnChange = false,
   ...formProps
 }: FormWrapperProps<T>) => {
   const [formValues, setFormValues] = useLocalStorage<T | null>(
@@ -30,10 +32,12 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   const [form] = Form.useForm<T>();
   const router = useRouter();
   const { modal } = App.useApp();
+  const [hasNewValue, setHasNewValue] = useState(false);
   const resetForm = () => {
     setFormValues(null);
     const actualFormInstance = formProps.form || form;
     actualFormInstance.resetFields();
+    setHasNewValue(false);
   };
   const showConfirm = () => {
     modal.confirm({
@@ -73,6 +77,8 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     //maxWidth: "600px",
     padding: "16px",
     margin: "0 auto",
+    borderRadius: "12px",
+    background: hasNewValue ? "#ffd406" : "inherit",
   };
 
   const buttonStyles: React.CSSProperties = {
@@ -85,12 +91,14 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     <Form<T>
       form={formProps.form || form}
       onChange={() => {
-        if (!preserveDataInCache) {
-          return;
+        if (preserveDataInCache) {
+          const actualFormInstance = formProps.form || form;
+          const values = actualFormInstance.getFieldsValue();
+          setFormValues(values);
         }
-        const actualFormInstance = formProps.form || form;
-        const values = actualFormInstance.getFieldsValue();
-        setFormValues(values);
+        if (highligthOnChange) {
+          setHasNewValue(true);
+        }
       }}
       initialValues={formValues || initialValues}
       style={formStyles}
@@ -101,6 +109,11 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
       {...formProps}
       onFinish={onFinish}
     >
+      {hasNewValue && (
+        <Button onClick={resetForm} style={{ alignSelf: "end" }}>
+          Resetear
+        </Button>
+      )}
       {typeof children === "function"
         ? children(formProps.form || form)
         : children}

@@ -1,5 +1,5 @@
-export const UserRoles = ["admin", "vendor", "customer"] as const;
-export type UserRoleType = typeof UserRoles;
+export const CustomerRoles = ["admin", "vendor", "customer"] as const;
+export type CustomerRoleType = typeof CustomerRoles;
 
 export interface BaseAttributes {
   createdBy: string;
@@ -37,7 +37,7 @@ export interface User extends BaseAttributes {
   email: string;
   foreignPersonId: string;
   foreignPersonType: string;
-  role: UserRoleType[number];
+  role: CustomerRoleType[number];
   isActive: boolean;
   refreshToken: string;
   passwordResetToken: string | null;
@@ -50,6 +50,42 @@ export enum vendorState {
   VERIFIED = "verified",
   SUSPENDED = "suspended",
 }
+
+export interface Customer extends BaseAttributes {
+  id: string;
+  fullName: string; //max 255
+  identification: string; //max 100
+  email: string; //max 150
+  isEmailVerified: boolean; //default false
+  cellphone: string; // max 20
+  country: string; //max 100
+  city: string; //max 100
+  address: string; //max 255
+  age?: number;
+  birthdate?: Date;
+  gender?: VendorGendersType[number];
+  isHabeasDataConfirm: boolean; //default false
+  state: vendorState;
+  stateHistory: Array<{ state: vendorState; changedAt: Date; reason: string }>; //default []
+  isActive: boolean; //default true
+  score: number;
+  interests: string[];
+  locations?: Record<
+    string,
+    {
+      label: string;
+      address: string;
+      coordinates?: { lat: number; lng: number };
+    }
+  >;
+  codeOtpAuthorization?: string; //max 10
+  avatar?: string; //max 255
+  totalSpent: number; //default 0
+  preferredPaymentMethod?: string; //max 100
+  dietaryRestrictions: string[]; //default []
+  lastOrderDate?: Date; //timestamp
+}
+
 export const VendorStates = ["created", "verified", "suspended"] as const;
 export type VendorStatesType = typeof VendorStates;
 
@@ -137,13 +173,17 @@ export const WEEKDAY_LABEL: Record<weekDayType[number], string> = {
   saturday: "Sábado",
   sunday: "Domingo",
 };
+
+export const LocationType = ["Point"] as const;
+export type LocationTypeType = typeof LocationType;
+
 export interface Branch extends BaseAttributes {
   id: string;
   vendorId: string;
   name: string; //max 255
   location: {
-    lat: number;
-    lng: number;
+    type: string;
+    coordinates: [number, number]; //lat, lng
   };
   address: string; //max 255
   country: string; //max 100
@@ -151,7 +191,7 @@ export interface Branch extends BaseAttributes {
   phone: string; //max 20
   email: string; //max 150
   rank: number; //default 0
-  state: BranchStateType[number]; //default active
+  state: LocationTypeType[number]; //default active
   businessType: BranchBusinessType[number]; //default individual
   operatingHours?: Record<
     weekDayType[number],

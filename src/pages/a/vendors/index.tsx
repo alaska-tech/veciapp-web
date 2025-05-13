@@ -18,6 +18,7 @@ import {
   TableColumnsType,
   Tag,
 } from "antd";
+import Link from "next/link";
 import React, { ReactElement, useState } from "react";
 
 const VENDOR_STATUS_TAG_PROPS = {
@@ -89,15 +90,27 @@ const Users = () => {
       key: "actions",
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/vendors/${record.id}?name=${record.fullName}`}>Detalles</a>
+          <a href={`/a/vendors/${record.id}?name=${record.fullName}`}>
+            Detalles
+          </a>
           <Dropdown
             menu={{
               items: [
                 {
                   key: "1",
+                  label: (
+                    <Link
+                      href={`/a/branches/newBranch?vendorId=${record.id}?name=${record.fullName}`}
+                    >
+                      Crear tienda
+                    </Link>
+                  ),
+                },
+                {
+                  key: "2",
                   danger: true,
                   label: (
-                    <DeleteCourseButton
+                    <DeleteVendorButton
                       courseId={record.id}
                       onSuccess={() => {
                         queryClient.invalidateQueries({
@@ -150,7 +163,7 @@ interface deleteCourseProps {
   courseId: string;
   onSuccess?: (values: any) => void;
 }
-const DeleteCourseButton = ({ courseId, onSuccess }: deleteCourseProps) => {
+const DeleteVendorButton = ({ courseId, onSuccess }: deleteCourseProps) => {
   const vendorActions = useVendorAction();
   const deleteVendor = vendorActions.deleteVendor();
   const [open, setOpen] = useState(false);
