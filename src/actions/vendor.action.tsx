@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity } from "./action";
+import { mutateEntity, queryEntity, queryEntityById } from "./action";
 import { BaseAttributes, PaginatedResult, Response, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
@@ -66,6 +66,22 @@ export const useVendorAction = () => {
     } catch (error) {
       throw error;
     }
+  });
+  const getVendorById = queryEntityById<
+    Vendor,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_VENDOR] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<Vendor>, { status: "Success" }>
+        >(`/vendors/get-details/${id}`);
+        console.log(response)
+        return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
   const deleteVendor = mutateEntity<
     AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
@@ -154,5 +170,52 @@ export const useVendorAction = () => {
       },
     }
   );
-  return { validateAccount, getVendors, deleteVendor, createVendor };
+  const updateVendor = mutateEntity<
+    AxiosResponse<Extract<Response<Vendor>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string; body: Omit<Vendor, keyof BaseAttributes> }
+  >(
+    () => {
+      return async function mutationFn({ body, id }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.put<
+            Extract<Response<Vendor>, { status: "Success" }>
+          >("/vendors" + id, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        const vendor = data.data.data;
+        message.success({
+          content: `Proveedor ${vendor.fullName || ""} ( ${
+            vendor.email
+          } ) se actualizó correctamente`,
+          duration: 4,
+        });
+      },
+    }
+  );
+  return {
+    validateAccount,
+    getVendors,
+    getVendorById,
+    deleteVendor,
+    createVendor,
+    updateVendor,
+  };
 };
