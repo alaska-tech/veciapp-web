@@ -1,12 +1,9 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   CheckCircleOutlined,
   DownOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
-  SearchOutlined,
-  TeamOutlined,
-  UserSwitchOutlined,
 } from "@ant-design/icons";
 import {
   Table,
@@ -14,23 +11,15 @@ import {
   Space,
   Button,
   TableColumnsType,
-  TableColumnType,
-  Input,
-  InputRef,
-  Typography,
   Dropdown,
   Divider,
-  Card,
 } from "antd";
-import { FilterDropdownProps, FilterRestProps } from "antd/es/table/interface";
-import Link from "next/link";
-import React, { ReactElement, useRef, useState } from "react";
-import { User, Vendor } from "@models";
-import { QUERY_KEY_VENDOR } from "@/actions/vendor.action";
+import React, { ReactElement } from "react";
+import { Customer, Vendor } from "@models";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { useCustomerAction } from "@/actions/customer.action";
 
-type DataType = User;
+type DataType = Customer;
 
 const VENDOR_STATUS_TAG_PROPS = {
   created: {
@@ -102,35 +91,6 @@ const Index = () => {
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
           <a href={`/a/users/${record.id}?name=${record.fullName}`}>Detalles</a>
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  danger: true,
-                  label: (
-                    <AsyncButton
-                      type="text"
-                      popConfirm
-                      onClick={() =>
-                        deleteCustomer.mutateAsync({ id: record.id })
-                      }
-                    >
-                      Borrar
-                    </AsyncButton>
-                  ),
-                },
-              ],
-            }}
-            trigger={["click"]}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                Opciones
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
         </Space>
       ),
     },
@@ -152,20 +112,10 @@ const Index = () => {
       />
     </div>
   );
-  return (
-    <Table<DataType>
-      columns={columns}
-      rowKey={(record) => record.id}
-      dataSource={customersQuery.data?.data.data || []}
-      loading={customersQuery.isLoading}
-      /*       pagination={tableParams.pagination}
-      onChange={handleTableChange} */
-    />
-  );
 };
 
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout>{page}</DashboardLayout>;
 };
