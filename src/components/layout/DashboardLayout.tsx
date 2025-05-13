@@ -28,7 +28,7 @@ import type { BreadcrumbProps, MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
-import { UserRoleType } from "@/constants/models";
+import { CustomerRoleType } from "@/constants/models";
 import GoBackButton from "../pure/goBackButton";
 import { subtitles, titles } from "@/constants/titles";
 import { breadcrumItemTree } from "@/constants/breadcrumbItems";
@@ -163,7 +163,7 @@ function DashboardLayout({
   return (
     <AuthVerifier
       requireAuth={primaryUrlSegment !== "p"}
-      roles={[rolesAllowed as UserRoleType[number]]}
+      roles={[rolesAllowed as CustomerRoleType[number]]}
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}
     >

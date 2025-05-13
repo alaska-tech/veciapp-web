@@ -97,7 +97,7 @@ const Users = () => {
                   key: "1",
                   danger: true,
                   label: (
-                    <DeleteCourseButton
+                    <DeleteVendorButton
                       courseId={record.id}
                       onSuccess={() => {
                         queryClient.invalidateQueries({
@@ -150,7 +150,7 @@ interface deleteCourseProps {
   courseId: string;
   onSuccess?: (values: any) => void;
 }
-const DeleteCourseButton = ({ courseId, onSuccess }: deleteCourseProps) => {
+const DeleteVendorButton = ({ courseId, onSuccess }: deleteCourseProps) => {
   const vendorActions = useVendorAction();
   const deleteVendor = vendorActions.deleteVendor();
   const [open, setOpen] = useState(false);
