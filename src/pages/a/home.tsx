@@ -1,4 +1,4 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout2";
+import DashboardLayout2 from "@/components/layout/DashboardLayout";
 import { Card, Space } from "antd";
 import React, { ReactElement } from "react";
 

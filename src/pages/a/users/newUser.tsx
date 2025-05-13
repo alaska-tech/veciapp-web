@@ -1,11 +1,11 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout2";
+import DashboardLayout2 from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
 
 const NewFormDynamic = dynamic(
-  () => import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
+  () => import("@/components/forms/newUserForm").then((mod) => mod.FormElement),
   { ssr: false }
 );
 

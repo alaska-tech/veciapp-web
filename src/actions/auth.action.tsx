@@ -1,11 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { authClient } from "../services/clients";
+import { apiClient } from "../services/clients";
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity } from "./action";
 import { message, notification } from "antd";
-import { JWTKey, loggedUserInfoKey } from "@constants";
-import { ErrorBody, User } from "@models";
+import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@constants";
+import { User, Response } from "@models";
 import { LogInForm } from "@/pages";
 
 export interface UpdatePasswordBody {
@@ -16,44 +16,33 @@ export interface UpdatePasswordBody {
 }
 export type LogInResponse = {
   token: string;
-  currentUser: User;
+  user: User;
 };
 export default function useAuthAction() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const userSession = useQuery<User | null>({
-    queryKey: [loggedUserInfoKey],
+    queryKey: [LOGGED_USER_INFO_KEY],
     queryFn: () => {
-      const loggedUserInfo = localStorage.getItem(loggedUserInfoKey);
+      const loggedUserInfo = localStorage.getItem(LOGGED_USER_INFO_KEY);
       if (!loggedUserInfo) {
         return null;
       }
       return JSON.parse(loggedUserInfo) as User;
     },
   });
-  const logOut = () => {
-    localStorage.removeItem(JWTKey);
-    localStorage.removeItem(loggedUserInfoKey);
-    queryClient.removeQueries({ queryKey: [JWTKey] });
-    queryClient.removeQueries({ queryKey: [loggedUserInfoKey] });
-    router.push("/");
-  };
 
-  const logIn = mutateEntity<
-    AxiosResponse<LogInResponse>,
-    AxiosError<ErrorBody>,
-    { body: LogInForm }
+  const logOut = mutateEntity<
+    AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body?: null }
   >(
     () => {
-      return async function mutationFn({ body }) {
+      return async function mutationFn() {
         try {
-          if (!body) {
-            throw new Error("No body provided");
-          }
-          const response = await authClient.post<LogInResponse>(
-            `/api/v1/auth/login`,
-            body
-          );
+          const response = await apiClient.post<
+            Extract<Response<null>, { status: "Success" }>
+          >(`/auth/logout`);
           return response;
         } catch (error) {
           throw error;
@@ -63,40 +52,43 @@ export default function useAuthAction() {
     {
       onMutate: (res) => res,
       onError: (error, _variables, _context) => {
-        const receivedErrorMessage = error.response?.data.message; //TODO: mapear
+        const receivedErrorMessage = error.response?.data.error.message;
         notification.error({
           message: "Error",
-          description: receivedErrorMessage || error.message,
+          description: receivedErrorMessage,
           duration: 0,
         });
       },
       onSuccess(data, _variables, _context) {
-        const { token, currentUser } =  data.data;
-        localStorage.setItem(JWTKey, JSON.stringify(token));
-        localStorage.setItem(loggedUserInfoKey, JSON.stringify(currentUser));
         message.success({
-          content: "Te logueaste correctamente",
+          content: "Te has deslogueado correctamente",
           duration: 5,
         });
+      },
+      onSettled(data, error, variables, context) {
+        localStorage.removeItem(JWT_KEY);
+        localStorage.removeItem(LOGGED_USER_INFO_KEY);
+        queryClient.removeQueries({ queryKey: [JWT_KEY] });
+        queryClient.removeQueries({ queryKey: [LOGGED_USER_INFO_KEY] });
+        router.push("/");
       },
     }
   );
 
-  const updatePassword = mutateEntity<
-    AxiosResponse<User>,
-    AxiosError<ErrorBody>,
-    { body: UpdatePasswordBody }
+  const logIn = mutateEntity<
+    AxiosResponse<Extract<Response<LogInResponse>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: LogInForm }
   >(
     () => {
       return async function mutationFn({ body }) {
         try {
-          if (!body.password || !body.token) {
+          if (!body) {
             throw new Error("No body provided");
           }
-          const response = await authClient.post<User>("/reset-password", {
-            password: body.password,
-            token: body.token,
-          });
+          const response = await apiClient.post<
+            Extract<Response<LogInResponse>, { status: "Success" }>
+          >(`/auth/login`, body);
           return response;
         } catch (error) {
           throw error;
@@ -104,22 +96,25 @@ export default function useAuthAction() {
       };
     },
     {
-      onSuccess(response, variables, _context) {
-        //queryClient.setQueryData([data.data.userId], data.data)
-        //localStorage.setItem(authSessionKey, variables.body.token as string);
-        if (variables.body.onSuccess) {
-          variables.body.onSuccess(response);
-        }
-      },
+      onMutate: (res) => res,
       onError: (error, _variables, _context) => {
+        const receivedErrorMessage = error.response?.data.error.message;
         notification.error({
           message: "Error",
-          description: error.message,
+          description: receivedErrorMessage,
           duration: 0,
+        });
+      },
+      onSuccess(data, _variables, _context) {
+        const { token, user } = data.data.data;
+        localStorage.setItem(JWT_KEY, token);
+        localStorage.setItem(LOGGED_USER_INFO_KEY, JSON.stringify(user));
+        message.success({
+          content: "Te has logueado correctamente",
+          duration: 5,
         });
       },
     }
   );
-
-  return { logOut, userSession, logIn, updatePassword };
+  return { logOut, userSession, logIn };
 }

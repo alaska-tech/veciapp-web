@@ -1,4 +1,4 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout2";
+import DashboardLayout2 from "@/components/layout/DashboardLayout";
 import {
   AppstoreAddOutlined,
   SearchOutlined,
@@ -272,7 +272,7 @@ const Users = () => {
         </Card>
       </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/(admin)/branches/newBranch" icon={<AppstoreAddOutlined />}>
+        <Button href="/a/branches/newBranch" icon={<AppstoreAddOutlined />}>
           Nueva tienda
         </Button>
       </Space>

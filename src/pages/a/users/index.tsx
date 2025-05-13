@@ -1,4 +1,4 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout2";
+import DashboardLayout2 from "@/components/layout/DashboardLayout";
 import {
   SearchOutlined,
   TeamOutlined,
@@ -269,8 +269,8 @@ const Users = () => {
         </Card>
       </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/(admin)/vendors/newVendor" icon={<UserAddOutlined />}>
-          Nuevo vendedor
+        <Button href="/(admin)/users/newUser" icon={<UserAddOutlined />}>
+          Add User
         </Button>
       </Space>
       <Table<DataType> columns={columns} dataSource={data} />

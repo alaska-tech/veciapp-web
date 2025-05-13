@@ -1,81 +1,53 @@
-import { PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  DatePicker,
-  Divider,
-  Form,
-  FormInstance,
-  Input,
-  Radio,
-  Select,
-  Space,
-} from "antd";
-import React, { useState } from "react";
+import { Divider, Form, Input, InputNumber, Radio } from "antd";
+import React from "react";
+import { Vendor, VendorGenders } from "@models";
 import FormWrapper from "./formWrapper";
-const { Option } = Select;
-const columnMinWidth = "220px";
+import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 
-export const FormElement = (props: { onSubmit?: any }) => {
-  const onFinish = async (values: any) => {
-    if (props.onSubmit) {
-      props.onSubmit(values);
+const columnMinWidth = "220px";
+interface vendorWithAuxProps extends Vendor {
+  prefix: string;
+}
+function parseInitialValues(values: any) {
+  const [prefix, cellphone] = values.cellphone
+    ? (values.cellphone as string).split(" ")
+    : ["", ""];
+  return { ...values, prefix, cellphone };
+}
+export const FormElement = <T extends vendorWithAuxProps>(props: {
+  onFinish?: (values: T) => Promise<void>;
+  loading?: boolean;
+  initialValues?: T;
+}) => {
+  const hasInitialValues: boolean = !!props.initialValues;
+  const handleFinish = async (values: T) => {
+    const { cellphone, prefix, ...rest } = values;
+    const mappedCellphone =
+      !!prefix && !!cellphone ? prefix + " " + cellphone : "";
+    const mappedValues = {
+      ...rest,
+      cellphone: mappedCellphone,
+    } as T;
+    if (props.onFinish) {
+      await props.onFinish(mappedValues);
     }
   };
-  const [customPrefixValue, setCustomPrefixValue] = useState("+");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const prefixSelector = (form: FormInstance) => (
-    <Form.Item name="prefix" noStyle>
-      <Select
-        style={{ width: 75 }}
-        open={isDropdownOpen}
-        onDropdownVisibleChange={setIsDropdownOpen}
-        popupMatchSelectWidth={false}
-        dropdownRender={(menu) => {
-          const handleConfirm = () => {
-            form.setFieldValue("prefix", customPrefixValue);
-            setIsDropdownOpen(false);
-          };
-          return (
-            <>
-              {menu}
-              <Divider style={{ margin: "8px 0" }} />
-              <Space>
-                <Input
-                  placeholder="Please enter item"
-                  onKeyDown={(e) => e.stopPropagation()}
-                  value={customPrefixValue}
-                  onChange={(e) => {
-                    setCustomPrefixValue(e.target.value);
-                  }}
-                  style={{
-                    width: 65,
-                  }}
-                  onPressEnter={handleConfirm}
-                />
-                <Button
-                  type="text"
-                  icon={<PlusOutlined />}
-                  onClick={handleConfirm}
-                >
-                  Guardar
-                </Button>
-              </Space>
-            </>
-          );
-        }}
-      >
-        <Option value="57">+57</Option>
-      </Select>
-    </Form.Item>
-  );
+
   return (
     <FormWrapper
       formName={"newVendor"}
-      onSubmit={onFinish}
-      initialValues={{
-        prefix: "57",
-        password: "Password123",
-      }}
+      onFinish={handleFinish}
+      initialValues={
+        hasInitialValues
+          ? parseInitialValues(props.initialValues)
+          : {
+              prefix: "57",
+            }
+      }
+      requiredMark={true}
+      routeTo="/a/vendors"
+      loading={props.loading}
+      preserveDataInCache={!hasInitialValues}
     >
       {(formInstance) => (
         <div
@@ -95,9 +67,12 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 {
                   required: true,
                 },
+                {
+                  max: 100,
+                },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="fullName"
@@ -106,9 +81,12 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 {
                   required: true,
                 },
+                {
+                  max: 255,
+                },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="identification"
@@ -122,9 +100,12 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 {
                   required: true,
                 },
+                {
+                  max: 100,
+                },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="email"
@@ -136,6 +117,9 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 {
                   required: true,
                 },
+                {
+                  max: 150,
+                },
               ]}
             >
               <Input />
@@ -145,15 +129,39 @@ export const FormElement = (props: { onSubmit?: any }) => {
               label="Teléfono celular"
               tooltip="Escriba el número de celular sin puntos ni espacios"
               rules={[
+                { required: true },
                 {
                   pattern: /^[0-9]+$/,
                   message: "El teléfono solo puede contener números",
                 },
-                { required: true },
+                {
+                  max: 20,
+                },
               ]}
             >
               <Input
-                addonBefore={prefixSelector(formInstance)}
+                addonBefore={
+                  <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
+                    <CustomSelectWithInput
+                      selectProps={{
+                        options: [
+                          {
+                            value: "57",
+                            label: "+57",
+                          },
+                        ],
+                        style: { width: 75 },
+                        popupMatchSelectWidth: false,
+                      }}
+                      inputProps={{
+                        placeholder: "Escriba...",
+                        style: {
+                          width: 65,
+                        },
+                      }}
+                    />
+                  </Form.Item>
+                }
                 style={{ width: "100%" }}
               />
             </Form.Item>
@@ -164,6 +172,9 @@ export const FormElement = (props: { onSubmit?: any }) => {
                 {
                   required: true,
                 },
+                {
+                  max: 255,
+                },
               ]}
             >
               <Input />
@@ -173,65 +184,32 @@ export const FormElement = (props: { onSubmit?: any }) => {
               label="Edad"
               rules={[
                 {
-                  required: true,
+                  type: "number",
+                  min: 0,
+                  max: 120,
+                },
+                {
+                  type: "number",
                 },
               ]}
             >
-              <Input />
+              <InputNumber min={0} />
             </Form.Item>
             <Form.Item
               name="gender"
               label="Género"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ type: "enum", enum: Object.values(VendorGenders) }]}
             >
               <Radio.Group
                 options={[
-                  { value: "male", label: "Hombre" },
-                  { value: "female", label: "Mujer" },
-                  { value: "other", label: "Otro" },
+                  { value: "M", label: "Hombre" },
+                  { value: "F", label: "Mujer" },
+                  { value: "O", label: "Otro" },
                 ]}
               />
             </Form.Item>
-            <Form.Item
-              name={"bio"}
-              label="Biografía"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item name={"bio"} label="Biografía" rules={[]}>
               <Input.TextArea />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                  message:
-                    "La contraseña no cumple con las reglas de seguridad",
-                },
-                {
-                  required: true,
-                },
-                {
-                  required: true,
-                },
-              ]}
-              hasFeedback
-              help={
-                <div style={{ whiteSpace: "normal", maxWidth: columnMinWidth }}>
-                  La contraseña debe tener al menos 8 caracteres, una letra
-                  mayúscula, una letra minúscula y un número
-                </div>
-              }
-            >
-              <Input.Password />
             </Form.Item>
           </div>
           <div style={{ flex: `1 1 ${columnMinWidth}` }}>
@@ -241,30 +219,39 @@ export const FormElement = (props: { onSubmit?: any }) => {
               label="Registro comercial"
               rules={[
                 {
-                  required: true,
+                  max: 255,
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name={"rut"}
               label="RUT"
               rules={[
                 {
-                  required: true,
+                  max: 255,
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name={["bankAccount", "entity"]}
               label="Banco"
               rules={[
-                {
-                  required: true,
-                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const number = getFieldValue(["bankAccount", "number"]);
+                    const type = getFieldValue(["bankAccount", "type"]);
+                    if ((number || type) && !value) {
+                      return Promise.reject(
+                        "Campo requerido si otros campos bancarios están llenos"
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <Input />
@@ -273,9 +260,18 @@ export const FormElement = (props: { onSubmit?: any }) => {
               name={["bankAccount", "number"]}
               label="Número de cuenta"
               rules={[
-                {
-                  required: true,
-                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const entity = getFieldValue(["bankAccount", "entity"]);
+                    const type = getFieldValue(["bankAccount", "type"]);
+                    if ((entity || type) && !value) {
+                      return Promise.reject(
+                        "Campo requerido si otros campos bancarios están llenos"
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <Input />
@@ -284,16 +280,35 @@ export const FormElement = (props: { onSubmit?: any }) => {
               name={["bankAccount", "type"]}
               label="Tipo de cuenta"
               rules={[
-                {
-                  required: true,
-                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const entity = getFieldValue(["bankAccount", "entity"]);
+                    const number = getFieldValue(["bankAccount", "number"]);
+                    if ((entity || number) && !value) {
+                      return Promise.reject(
+                        "Campo requerido si otros campos bancarios están llenos"
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
-              <Radio.Group
-                options={[
-                  { value: "Ahorros", label: "Ahorro" },
-                  { value: "Corriente", label: "Corriente" },
-                ]}
+              <CustomSelectWithInput
+                selectProps={{
+                  options: [
+                    {
+                      value: "Ahorros",
+                    },
+                    {
+                      value: "Corriente",
+                    },
+                  ],
+                  allowClear: true,
+                }}
+                inputProps={{
+                  placeholder: "Escriba...",
+                }}
               />
             </Form.Item>
           </div>
