@@ -153,11 +153,11 @@ const ParameterCard = ({
                   {parameter.name}
                 </Descriptions.Item>
                 <Descriptions.Item label="Creado" span={3}>
-                  {parameter.createdAt} por{" "}
+                  {JSON.stringify(parameter.createdAt)} por{" "}
                   {parameter.createdBy || "Desconocido"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Actualizado por última vez" span={3}>
-                  {parameter.updatedAt} por{" "}
+                  {JSON.stringify(parameter.updatedAt)} por{" "}
                   {parameter.updatedBy || "Desconocido"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Estado" span={3}>
