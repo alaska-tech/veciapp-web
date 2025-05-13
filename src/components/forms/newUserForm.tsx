@@ -1,13 +1,13 @@
 import { Form, Input, Radio } from "antd";
 import React from "react";
-import { Customer } from "@models";
+import { Customer, User } from "@models";
 import FormWrapper from "./formWrapper";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 
 interface customerWithAuxProps extends Customer {
   prefix: string;
 }
-function parseInitialValues(values: any) {
+function parseInitialValues(values: Customer) {
   const [prefix, cellphone] = values.cellphone
     ? (values.cellphone as string).split(" ")
     : ["", ""];
@@ -38,7 +38,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
       onFinish={handleFinish}
       initialValues={
         hasInitialValues
-          ? parseInitialValues(props.initialValues)
+          ? parseInitialValues(props.initialValues || ({} as Customer))
           : {
               prefix: "57",
               password: "Vcapp20251",

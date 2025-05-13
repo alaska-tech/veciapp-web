@@ -271,11 +271,11 @@ const Users = () => {
           </Space>
         </Card>
       </Space>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      {/* <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button href="/a/branches/newBranch" icon={<AppstoreAddOutlined />}>
           Nueva tienda
         </Button>
-      </Space>
+      </Space> */}
       <Table<DataType> columns={columns} dataSource={data} />
     </div>
   );

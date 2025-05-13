@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
 import { Branch } from "@/constants/models";
+import { useRouter } from "next/router";
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
@@ -16,15 +17,17 @@ const NewLocationPicker = dynamic(
 interface entityWithAuxProps extends Branch {
   prefix: string;
 }
-function parseInitialValues(values: any) {
-  const [cellphonePrefix, cellphone] = values.cellphone
-    ? (values.cellphone as string).split(" ")
+function parseInitialValues(values: Branch) {
+  const [cellphonePrefix, cellphone] = values.phone
+    ? (values.phone as string).split(" ")
     : ["", ""];
   const [managerPhonePrefix, managerPhone] = values.managerPhone
     ? (values.managerPhone as string).split(" ")
     : ["", ""];
+  const location = values.location.coordinates;
   return {
     ...values,
+    location,
     cellphonePrefix,
     cellphone,
     managerPhonePrefix,
@@ -36,6 +39,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
   loading?: boolean;
   initialValues?: T;
 }) => {
+  const router = useRouter();
+  const { vendorId } = router.query;
   const hasInitialValues: boolean = !!props.initialValues;
 
   const handleFinish = async (values: any) => {
@@ -44,11 +49,17 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       managerPhonePrefix,
       cellphone,
       managerPhone,
+      location,
       ...rest
     } = values;
     const mappedValues = {
-      cellphone: cellphonePrefix + " " + cellphone,
+      phone: cellphonePrefix + " " + cellphone,
       managerPhone: managerPhonePrefix + " " + managerPhone,
+      location: {
+        type: "Point",
+        coordinates: location,
+      },
+      vendorId,
       ...rest,
     };
     if (props.onFinish) {
@@ -60,8 +71,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       formName={"newBranch"}
       onFinish={handleFinish}
       initialValues={
-        hasInitialValues
-          ? parseInitialValues(props.initialValues)
+        !!hasInitialValues
+          ? parseInitialValues(props.initialValues || ({} as Branch))
           : {
               managerPhonePrefix: "57",
               cellphonePrefix: "57",
