@@ -1,9 +1,9 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
-  SearchOutlined,
-  TeamOutlined,
-  UserAddOutlined,
-  UserSwitchOutlined,
+  CheckCircleOutlined,
+  DownOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import {
   Table,
@@ -11,275 +11,111 @@ import {
   Space,
   Button,
   TableColumnsType,
-  TableColumnType,
-  Input,
-  InputRef,
-  Typography,
   Dropdown,
   Divider,
-  Card,
 } from "antd";
-import { FilterDropdownProps, FilterRestProps } from "antd/es/table/interface";
-import Link from "next/link";
-import React, { ReactElement, useRef, useState } from "react";
+import React, { ReactElement } from "react";
+import { Customer, Vendor } from "@models";
+import AsyncButton from "@/components/pure/AsyncButton";
+import { useCustomerAction } from "@/actions/customer.action";
 
-interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  status: `active` | `inactive` | `pending`;
-}
+type DataType = Customer;
 
-type DataIndex = keyof DataType;
-
-const data: DataType[] = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    status: "active",
+const VENDOR_STATUS_TAG_PROPS = {
+  created: {
+    props: {},
+    text: "Creado",
   },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    status: "inactive",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    status: "pending",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-    status: "active",
-  },
-];
-
-const Users = () => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
-
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: FilterDropdownProps["confirm"],
-    dataIndex: DataIndex
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters: (param?: FilterRestProps) => void) => {
-    clearFilters({
-      closeDropdown: true,
-      confirm: true,
-    });
-
-    setSearchText("");
-    setSearchedColumn("");
-  };
-
-  const getColumnSearchProps = (
-    dataIndex: DataIndex,
-    hasFilters: boolean = false
-  ): TableColumnType<DataType> => ({
-    filterDropdown: !hasFilters
-      ? ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-          <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-            <Input
-              ref={searchInput}
-              placeholder={`Search ${dataIndex}`}
-              value={selectedKeys[0]}
-              onChange={(e) =>
-                setSelectedKeys(e.target.value ? [e.target.value] : [])
-              }
-              onPressEnter={() =>
-                handleSearch(selectedKeys as string[], confirm, dataIndex)
-              }
-              style={{ marginBottom: 8, display: "block" }}
-            />
-            <Space>
-              <Button
-                type="primary"
-                onClick={() =>
-                  handleSearch(selectedKeys as string[], confirm, dataIndex)
-                }
-                icon={<SearchOutlined />}
-                size="small"
-                style={{ width: 90 }}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={() => clearFilters && handleReset(clearFilters)}
-                size="small"
-                style={{ width: 90 }}
-                disabled={selectedKeys.length === 0}
-              >
-                Reset
-              </Button>
-            </Space>
-          </div>
-        )
-      : null,
-    filterIcon: (filtered: boolean) => (
-      <Space wrap>
-        <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
-        {filtered && (
-          <Typography.Text style={{ color: "#1677ff" }}>
-            {searchText}
-          </Typography.Text>
-        )}
-      </Space>
-    ),
-    onFilter: (value, record) => {
-      setSearchText(value as string);
-      setSearchedColumn(dataIndex);
-      return record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase());
+  verified: {
+    props: {
+      icon: <CheckCircleOutlined />,
+      color: "success",
     },
-    filterDropdownProps: {
-      onOpenChange(open) {
-        if (open) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
+    text: "Verificado",
+  },
+  suspended: {
+    props: {
+      icon: <ExclamationCircleOutlined />,
+      color: "warning",
     },
-  });
+    text: "Suspendido",
+  },
+};
+
+const getVendorStatusTagProps = (status: Vendor["state"]) => {
+  return (
+    VENDOR_STATUS_TAG_PROPS[status] || {
+      props: {},
+      text: "Desconocido",
+    }
+  );
+};
+const Index = () => {
+  const customerActions = useCustomerAction();
+  const customersQuery = customerActions.getCustomers();
+  const deleteCustomer = customerActions.deleteCustomer();
   const columns: TableColumnsType<DataType> = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
-      ...getColumnSearchProps("name"),
+      dataIndex: "fullName",
+      key: "fullName",
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-      ...getColumnSearchProps("address"),
+      title: "Correo",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        let color: string = "green";
-        if (status === "inactive") {
-          color = "red";
-        } else if (status === "pending") {
-          color = "orange";
-        }
-        return (
-          <Tag color={color} key={status}>
-            {status.toUpperCase()}
-          </Tag>
-        );
+      title: "Telefono",
+      dataIndex: "cellphone",
+      key: "cellphone",
+    },
+    {
+      title: "Estado",
+      dataIndex: "state",
+      key: "state",
+      render: (state) => {
+        const { text, props } = getVendorStatusTagProps(state);
+        return <Tag {...props}>{text}</Tag>;
       },
-      ...getColumnSearchProps("status", true),
-      filters: [
-        {
-          text: "Active",
-          value: "active",
-        },
-        {
-          text: "Inactive",
-          value: "inactive",
-        },
-        {
-          text: "Pending",
-          value: "pending",
-        },
-      ],
-      filterMultiple: false,
     },
     {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
+      title: "Fecha de creación",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "Acciones",
+      key: "actions",
+      render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
-          <Link href={`/(admin)/users/${record.key}`}>Edit</Link>
-          <Dropdown
-            trigger={["click"]}
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  label: "Edit",
-                },
-                {
-                  key: "2",
-                  label: "Delete",
-                },
-              ],
-            }}
-            placement="bottomRight"
-          >
-            <Button type="link">More...</Button>
-          </Dropdown>
+          <a href={`/a/users/${record.id}?name=${record.fullName}`}>Detalles</a>
         </Space>
       ),
     },
   ];
-
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space wrap direction="horizontal">
-        <Card
-          styles={{
-            body: { display: "inline-flex", gap: "0.5rem", padding: 16 },
-          }}
-        >
-          <TeamOutlined style={{ fontSize: "48px" }} />
-          <Space direction="vertical" size={0}>
-            <Typography.Title level={5} style={{ margin: 0 }}>
-              Total Users
-            </Typography.Title>
-            <Typography.Text type="success" style={{ fontSize: "24px" }}>
-              12.124
-            </Typography.Text>
-          </Space>
-        </Card>
-        <Card
-          styles={{
-            body: { display: "inline-flex", gap: "0.5rem", padding: 16 },
-          }}
-        >
-          <UserSwitchOutlined style={{ fontSize: "48px" }} />
-          <Space direction="vertical" size={0}>
-            <Typography.Title level={5} style={{ margin: 0 }}>
-              Pendientes
-            </Typography.Title>
-            <Typography.Text type="warning" style={{ fontSize: "24px" }}>
-              12.124
-            </Typography.Text>
-          </Space>
-        </Card>
-      </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/(admin)/users/newUser" icon={<UserAddOutlined />}>
-          Add User
+        <Button href="/a/users/newUser" icon={<PlusOutlined />}>
+          Crear nuevo cliente
         </Button>
       </Space>
-      <Table<DataType> columns={columns} dataSource={data} />
+      <Table<DataType>
+        columns={columns}
+        rowKey={(record) => record.id}
+        dataSource={customersQuery.data?.data.data || []}
+        loading={customersQuery.isLoading}
+        /*       pagination={tableParams.pagination}
+      onChange={handleTableChange} */
+      />
     </div>
   );
 };
 
-export default Users;
+export default Index;
 
-Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+Index.getLayout = function getLayout(page: ReactElement) {
+  return <DashboardLayout>{page}</DashboardLayout>;
 };

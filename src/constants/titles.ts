@@ -5,7 +5,7 @@ export const titles: Record<string, string> = {
   "/a/users": "Clientes",
   "/a/users/newUser": "Nuevo usuario",
   "/a/branches": "Tiendas",
-  "/a/branches/newBranch": "Crear nueva tienda",
+  "/a/branches/newBranch": "Crear nueva tienda para ${name}",
   "/a/vendors": "Vendedores",
   "/a/vendors/newVendor": "Creación de nuevo vendedor",
   "/a/vendors/[id]": "Detalles de ${name}",
