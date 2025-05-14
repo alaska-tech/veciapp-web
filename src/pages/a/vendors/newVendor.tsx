@@ -4,19 +4,14 @@ import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
-
-const NewFormDynamic = dynamic(
-  () =>
-    import("@/components/forms/newVendorForm").then((mod) => mod.FormElement),
-  { ssr: false }
-);
+import FormElement from "@/components/forms/newVendorForm"
 
 const Index = () => {
   const vendorActions = useVendorAction();
   const createVendor = vendorActions.createVendor();
   return (
     <Space direction="vertical">
-      <NewFormDynamic
+      <FormElement
         onFinish={async (values) => {
           await createVendor.mutateAsync({ body: values });
         }}

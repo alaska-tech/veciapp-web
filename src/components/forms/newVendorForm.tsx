@@ -317,3 +317,5 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
     </FormWrapper>
   );
 };
+
+export default FormElement

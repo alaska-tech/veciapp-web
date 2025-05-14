@@ -227,6 +227,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
     </FormWrapper>
   );
 };
+export default FormElement
 
 //ddddddddddddddddddddddddddddddddddddddddddd
 /* import { PlusOutlined } from "@ant-design/icons";
