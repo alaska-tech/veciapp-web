@@ -1,5 +1,5 @@
 import { useCustomerAction } from "@/actions/customer.action";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Result, Button, Space } from "antd";
 import dynamic from "next/dynamic";
@@ -55,5 +55,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };

@@ -1,4 +1,4 @@
-import { TreeStruct } from "@/components/layout/DashboardLayout";
+import { TreeStruct } from "@/components/pure/AutoBreadcrumb";
 
 export const breadcrumItemTree: TreeStruct[] = [
   {

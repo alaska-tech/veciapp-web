@@ -117,3 +117,5 @@ export const FormElement = <T extends Parameter>(props: {
     </FormWrapper>
   );
 };
+
+export default FormElement

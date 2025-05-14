@@ -15,9 +15,6 @@ const Index = () => {
     <Space direction="vertical">
       <GoBackButton />
       <NewFormDynamic
-        onFinish={(e: any) => {
-          console.log(e);
-        }}
       />
     </Space>
   );
