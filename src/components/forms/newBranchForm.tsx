@@ -1,11 +1,14 @@
-import { Divider, Form, Input, Radio, Select } from "antd";
+import { Button, Divider, Form, Input, Radio, Select, TimePicker } from "antd";
 import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
-import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
-import { Branch } from "@/constants/models";
+import { Branch, weekDay, WEEKDAY_LABEL } from "@/constants/models";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
@@ -17,23 +20,8 @@ const NewLocationPicker = dynamic(
 interface entityWithAuxProps extends Branch {
   prefix: string;
 }
-function parseInitialValues(values: Branch) {
-  const [cellphonePrefix, cellphone] = values.phone
-    ? (values.phone as string).split(" ")
-    : ["", ""];
-  const [managerPhonePrefix, managerPhone] = values.managerPhone
-    ? (values.managerPhone as string).split(" ")
-    : ["", ""];
-  const location = values.location.coordinates;
-  return {
-    ...values,
-    location,
-    cellphonePrefix,
-    cellphone,
-    managerPhonePrefix,
-    managerPhone,
-  };
-}
+const TIME_PICKER_FORMAT = "HH:mm";
+
 export const FormElement = <T extends entityWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
@@ -42,16 +30,28 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
   const router = useRouter();
   const { vendorId } = router.query;
   const hasInitialValues: boolean = !!props.initialValues;
-
-  const handleFinish = async (values: any) => {
+  const mapValues = (values: any) => {
     const {
       cellphonePrefix,
       managerPhonePrefix,
       cellphone,
       managerPhone,
       location,
+      operatingHours,
       ...rest
     } = values;
+    const mappedOperatingHours = Object.entries(operatingHours).reduce(
+      (acc, [key, value]: [string, any]) => ({
+        ...acc,
+        [key]: value
+          ? [
+              value[0].format(TIME_PICKER_FORMAT),
+              value[1].format(TIME_PICKER_FORMAT),
+            ]
+          : null,
+      }),
+      {}
+    );
     const mappedValues = {
       phone: cellphonePrefix + " " + cellphone,
       managerPhone: managerPhonePrefix + " " + managerPhone,
@@ -60,8 +60,13 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
         coordinates: location,
       },
       vendorId,
+      operatingHours: mappedOperatingHours,
       ...rest,
     };
+    return mappedValues;
+  };
+  const handleFinish = async (values: any) => {
+    const mappedValues = mapValues(values);
     if (props.onFinish) {
       await props.onFinish(mappedValues);
     }
@@ -70,18 +75,9 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
     <FormWrapper
       formName={"newBranch"}
       onFinish={handleFinish}
-      initialValues={
-        !!hasInitialValues
-          ? parseInitialValues(props.initialValues || ({} as Branch))
-          : {
-              managerPhonePrefix: "57",
-              cellphonePrefix: "57",
-              location: SANTA_MARTA_LOCATION_OBJECT,
-            }
-      }
       routeTo="/a/branches"
       loading={props.loading}
-      preserveDataInCache={!hasInitialValues}
+      preserveDataInCache={false}
       highligthOnChange={hasInitialValues}
     >
       {(formInstance) => (
@@ -118,7 +114,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               ]}
             >
               <Radio.Group
-                options={["Individual", "Empresa"]}
+                options={["individual", "empresa"]}
                 disabled={hasInitialValues}
               />
             </Form.Item>
@@ -190,6 +186,20 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 ]}
               />
             </Form.Item>
+            {weekDay.map((day: string) => {
+              return (
+                <Form.Item
+                  name={["operatingHours", day]}
+                  label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
+                  key={day}
+                >
+                  <TimePicker.RangePicker
+                    format={TIME_PICKER_FORMAT}
+                    minuteStep={10}
+                  />
+                </Form.Item>
+              );
+            })}
           </div>
           <div
             style={{ flex: `1 1 ${columnMinWidth}`, maxWidth: columnMaxWidth }}

@@ -1,6 +1,9 @@
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { LoadingOutlined } from "@ant-design/icons";
+import {
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { Button, Result, Space } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -42,6 +45,14 @@ const Index = () => {
   }
   return (
     <Space direction="vertical">
+      <Button
+        type="default"
+        href={`/a/branches/newBranch?vendorId=${vendorQuery.data?.id}&name=${vendorQuery.data?.fullName}`}
+        style={{ float: "inline-end" }}
+        icon={<PlusOutlined />}
+      >
+        Crear tienda
+      </Button>
       <NewFormDynamic
         onFinish={async (values) => {
           await updateVendor.mutateAsync({ body: values, id: id as string });

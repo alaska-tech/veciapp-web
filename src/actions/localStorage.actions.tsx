@@ -2,6 +2,8 @@ import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
 import { User, Response } from "@/constants/models";
 import { apiClient } from "@/services/clients";
 import { useMutation } from "@tanstack/react-query";
+import { mutateEntity } from "./action";
+import { AxiosError, AxiosResponse } from "axios";
 
 interface DecodedToken {
   exp: number;
@@ -30,7 +32,7 @@ export const getUserInfo = (): User | null => {
 export const setUserInfo = (newUserInfo: User) => {
   if (typeof window === "undefined") return null;
   const stringifiedUserInfo = JSON.stringify(newUserInfo);
-  return localStorage.setItem(JWT_KEY, stringifiedUserInfo);
+  return localStorage.setItem(LOGGED_USER_INFO_KEY, stringifiedUserInfo);
 };
 
 export const clearAllInfoFromLocalStorage = () => {
@@ -66,27 +68,78 @@ export const isTokenValid = (): boolean => {
   }
 };
 export const useLocalStorageAction = () => {
-  const userInfo = getUserInfo();
-  const currentRefreshToken = userInfo?.refreshToken || null;
-  const mutation = useMutation({
-    mutationFn: () => {
-      return apiClient.post<Response<{ accessToken: string }>>(
+  /*   const mutation = useMutation<
+    Response<{ accessToken: string }>,
+    Error,
+    string | null
+  >({
+    mutationFn: async (currentRefreshToken) => {
+      const response = await apiClient.post<Response<{ accessToken: string }>>(
         "/auth/refresh-token",
         {
           refreshToken: currentRefreshToken,
         }
       );
+      return response.data;
     },
     onSuccess: (data, _variables, _context) => {
-      const accessToken = data.data.data?.accessToken || "";
+      const accessToken = data.data?.accessToken || "";
       setToken(accessToken);
     },
-  });
+  }); */
+
+  const refresh = mutateEntity<
+    AxiosResponse<
+      Extract<
+        Response<{ message: string; accessToken: string }>,
+        { status: "Success" }
+      >
+    >,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: { refreshToken: string } }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.post<
+            Extract<
+              Response<{ message: string; accessToken: string }>,
+              { status: "Success" }
+            >
+          >("/auth/refresh-token", body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onSuccess: async (data, variables, context) => {
+        const accessToken = data.data?.data?.accessToken || "";
+        setToken(accessToken);
+      },
+    }
+  );
+  const refreshMutation = refresh();
   function refreshCurrentToken() {
     if (isTokenValid()) {
       return;
     }
-    mutation.mutate();
+
+    const userInfo = getUserInfo();
+    const currentRefreshToken = userInfo?.refreshToken;
+    if (!currentRefreshToken) {
+      return;
+    }
+    try {
+      refreshMutation.mutate({ body: { refreshToken: currentRefreshToken } });
+    } catch (error) {
+      console.error("Error refreshing token", error);
+    }
   }
   return { refreshCurrentToken };
 };

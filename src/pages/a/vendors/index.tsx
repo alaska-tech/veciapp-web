@@ -100,7 +100,7 @@ const Users = () => {
                   key: "1",
                   label: (
                     <Link
-                      href={`/a/branches/newBranch?vendorId=${record.id}?name=${record.fullName}`}
+                      href={`/a/branches/newBranch?vendorId=${record.id}&name=${record.fullName}`}
                     >
                       Crear tienda
                     </Link>
