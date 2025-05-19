@@ -196,8 +196,8 @@ export interface Branch extends BaseAttributes {
   operatingHours?: Record<
     weekDayType[number],
     {
-      open: string; //hora en formato hh:mm, como 19:00 o 14:30
-      close: string;
+      open: string | null; //hora en formato hh:mm, como 19:00 o 14:30
+      close: string | null;
       isOpen: boolean;
     }
   >;

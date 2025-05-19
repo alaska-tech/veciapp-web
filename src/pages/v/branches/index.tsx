@@ -1,225 +1,105 @@
+import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
-  AppstoreAddOutlined,
-  SearchOutlined,
-  TeamOutlined,
-  UserSwitchOutlined,
-} from "@ant-design/icons";
+  Branch,
+  weekDay,
+  WEEKDAY_LABEL,
+  weekDayType,
+} from "@/constants/models";
+import { AppstoreAddOutlined } from "@ant-design/icons";
 import {
   Table,
-  Tag,
   Space,
   Button,
   TableColumnsType,
-  TableColumnType,
-  Input,
-  InputRef,
-  Typography,
   Dropdown,
   Divider,
-  Card,
+  Descriptions,
+  Tag,
 } from "antd";
-import { FilterDropdownProps, FilterRestProps } from "antd/es/table/interface";
 import Link from "next/link";
-import React, { ReactElement, useRef, useState } from "react";
+import React, { ReactElement } from "react";
 
-interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  status: `active` | `inactive` | `pending`;
-}
-
-type DataIndex = keyof DataType;
-
-const data: DataType[] = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    status: "active",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    status: "inactive",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    status: "pending",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-    status: "active",
-  },
-];
+type DataType = Branch;
 
 const Users = () => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
   const user = getUserInfo();
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: FilterDropdownProps["confirm"],
-    dataIndex: DataIndex
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters: (param?: FilterRestProps) => void) => {
-    clearFilters({
-      closeDropdown: true,
-      confirm: true,
-    });
-
-    setSearchText("");
-    setSearchedColumn("");
-  };
-
-  const getColumnSearchProps = (
-    dataIndex: DataIndex,
-    hasFilters: boolean = false
-  ): TableColumnType<DataType> => ({
-    filterDropdown: !hasFilters
-      ? ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-          <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-            <Input
-              ref={searchInput}
-              placeholder={`Search ${dataIndex}`}
-              value={selectedKeys[0]}
-              onChange={(e) =>
-                setSelectedKeys(e.target.value ? [e.target.value] : [])
-              }
-              onPressEnter={() =>
-                handleSearch(selectedKeys as string[], confirm, dataIndex)
-              }
-              style={{ marginBottom: 8, display: "block" }}
-            />
-            <Space>
-              <Button
-                type="primary"
-                onClick={() =>
-                  handleSearch(selectedKeys as string[], confirm, dataIndex)
-                }
-                icon={<SearchOutlined />}
-                size="small"
-                style={{ width: 90 }}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={() => clearFilters && handleReset(clearFilters)}
-                size="small"
-                style={{ width: 90 }}
-                disabled={selectedKeys.length === 0}
-              >
-                Reset
-              </Button>
-            </Space>
-          </div>
-        )
-      : null,
-    filterIcon: (filtered: boolean) => (
-      <Space wrap>
-        <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
-        {filtered && (
-          <Typography.Text style={{ color: "#1677ff" }}>
-            {searchText}
-          </Typography.Text>
-        )}
-      </Space>
-    ),
-    onFilter: (value, record) => {
-      setSearchText(value as string);
-      setSearchedColumn(dataIndex);
-      return record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase());
-    },
-    filterDropdownProps: {
-      onOpenChange(open) {
-        if (open) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-    },
-  });
+  const actions = useBranchAction();
+  const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
   const columns: TableColumnsType<DataType> = [
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "Sucursal",
       key: "name",
-      ...getColumnSearchProps("name"),
+      dataIndex: "name",
     },
     {
-      title: "Address",
-      dataIndex: "address",
+      title: "Dirección",
       key: "address",
-      ...getColumnSearchProps("address"),
+      dataIndex: "address",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        let color: string = "green";
-        if (status === "inactive") {
-          color = "red";
-        } else if (status === "pending") {
-          color = "orange";
-        }
+      title: "Operacion",
+      key: "id",
+      render: (record: Branch) => {
         return (
-          <Tag color={color} key={status}>
-            {status.toUpperCase()}
-          </Tag>
+          <Descriptions>
+            <Descriptions.Item label="Tipo de negocio">
+              {record.businessType}
+            </Descriptions.Item>
+            <Descriptions.Item label="Recogida en tienda">
+              {record.isPickupAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
+            </Descriptions.Item>
+            <Descriptions.Item label="Domicilio">
+              {record.isDeliveryAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
+            </Descriptions.Item>
+            <Descriptions.Item label="Formas de pago">
+              <Space wrap>
+                {record.availablePaymentMethods.map((e) => {
+                  return <Tag key={e}>{e}</Tag>;
+                })}
+              </Space>
+            </Descriptions.Item>
+            <Descriptions.Item label="Horario de atención">
+              <Space direction="vertical">
+                {record.operatingHours ? (
+                  Object.entries(record.operatingHours)
+                    .sort(([dayA], [dayB]) => {
+                      return (
+                        weekDay.indexOf(dayA as weekDayType[number]) -
+                        weekDay.indexOf(dayB as weekDayType[number])
+                      );
+                    })
+                    .map(([day, hours]) => {
+                      if (!!hours && !!hours.open && !!hours.close) {
+                        return (
+                          <Tag key={day}>
+                            {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}:{" "}
+                            {hours.open} - {hours.close}
+                          </Tag>
+                        );
+                      }
+                      return null;
+                    })
+                ) : (
+                  <Tag color="warning">Sin horario registrado</Tag>
+                )}
+              </Space>
+            </Descriptions.Item>
+          </Descriptions>
         );
       },
-      ...getColumnSearchProps("status", true),
-      filters: [
-        {
-          text: "Active",
-          value: "active",
-        },
-        {
-          text: "Inactive",
-          value: "inactive",
-        },
-        {
-          text: "Pending",
-          value: "pending",
-        },
-      ],
-      filterMultiple: false,
     },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
-          <Link href={`/(admin)/users/${record.key}`}>Edit</Link>
+          <Link href={`/(v)/branches/${record.id}`}>Edit</Link>
           <Dropdown
             trigger={["click"]}
             menu={{
               items: [
-                {
-                  key: "1",
-                  label: "Edit",
-                },
                 {
                   key: "2",
                   label: "Delete",
@@ -239,38 +119,6 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space wrap direction="horizontal">
-        <Card
-          styles={{
-            body: { display: "inline-flex", gap: "0.5rem", padding: 16 },
-          }}
-        >
-          <TeamOutlined style={{ fontSize: "48px" }} />
-          <Space direction="vertical" size={0}>
-            <Typography.Title level={5} style={{ margin: 0 }}>
-              Total Users
-            </Typography.Title>
-            <Typography.Text type="success" style={{ fontSize: "24px" }}>
-              12.124
-            </Typography.Text>
-          </Space>
-        </Card>
-        <Card
-          styles={{
-            body: { display: "inline-flex", gap: "0.5rem", padding: 16 },
-          }}
-        >
-          <UserSwitchOutlined style={{ fontSize: "48px" }} />
-          <Space direction="vertical" size={0}>
-            <Typography.Title level={5} style={{ margin: 0 }}>
-              Pendientes
-            </Typography.Title>
-            <Typography.Text type="warning" style={{ fontSize: "24px" }}>
-              12.124
-            </Typography.Text>
-          </Space>
-        </Card>
-      </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
           href={`/v/branches/newBranch?vendorId=${user?.foreignPersonId}&name=${user?.fullName}`}
@@ -279,7 +127,14 @@ const Users = () => {
           Nueva tienda
         </Button>
       </Space>
-      <Table<DataType> columns={columns} dataSource={data} />
+      <Table<DataType>
+        columns={columns}
+        dataSource={getBranchById.data?.data}
+        loading={getBranchById.isLoading}
+        style={{
+          overflow: "auto",
+        }}
+      />
     </div>
   );
 };
