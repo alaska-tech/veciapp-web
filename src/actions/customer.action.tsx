@@ -5,7 +5,6 @@ import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
 
-
 export const QUERY_KEY_CUSTOMER = "customer" as const;
 
 export const useCustomerAction = () => {
@@ -35,7 +34,7 @@ export const useCustomerAction = () => {
         const response = await apiClient.get<
           Extract<Response<Customer>, { status: "Success" }>
         >(`/customers/get-details/${id}`);
-        console.log(response)
+        console.log(response);
         return response.data.data;
       } catch (error) {
         throw error;
@@ -169,11 +168,50 @@ export const useCustomerAction = () => {
       },
     }
   );
+  const validateAccount = mutateEntity<
+    AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: {hash:string} }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.post<
+            Extract<Response<null>, { status: "Success" }>
+          >(`/customers/validate-email`, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, _variables, _context) => {
+        const receivedErrorMessage = error.response?.data.error.message;
+        notification.error({
+          message: "Error",
+          description: receivedErrorMessage,
+          duration: 0,
+        });
+      },
+      onSuccess(data, _variables, _context) {
+        message.success({
+          content: "Password asignado exitosamente",
+          duration: 5,
+        });
+      },
+    }
+  );
   return {
     getCustomers,
     getCustomerById,
     deleteCustomer,
     createCustomer,
     updateCustomer,
+    validateAccount
   };
 };
