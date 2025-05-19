@@ -1,4 +1,8 @@
-import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
+import {
+  JWT_KEY,
+  LOGGED_USER_INFO_KEY,
+  REFRESH_JWT_KEY,
+} from "@/constants/constants";
 import { User, Response } from "@/constants/models";
 import { apiClient } from "@/services/clients";
 import { useMutation } from "@tanstack/react-query";
@@ -21,7 +25,19 @@ export const setToken = (newToken: string) => {
   if (typeof window === "undefined") return null;
   return localStorage.setItem(JWT_KEY, newToken);
 };
+export const getRefreshToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(REFRESH_JWT_KEY);
+};
 
+export const setRefreshToken = (newRefreshToken: string) => {
+  if (typeof window === "undefined") return null;
+  return localStorage.setItem(REFRESH_JWT_KEY, newRefreshToken);
+};
+
+export const clearRefreshToken = () => {
+  localStorage.removeItem(REFRESH_JWT_KEY);
+};
 export const getUserInfo = (): User | null => {
   if (typeof window === "undefined") return null;
   const rawUserInfo = localStorage.getItem(LOGGED_USER_INFO_KEY) || "null";
@@ -38,6 +54,7 @@ export const setUserInfo = (newUserInfo: User) => {
 export const clearAllInfoFromLocalStorage = () => {
   localStorage.removeItem(JWT_KEY);
   localStorage.removeItem(LOGGED_USER_INFO_KEY);
+  localStorage.removeItem(REFRESH_JWT_KEY);
 };
 const decodeToken = (token: string): DecodedToken => {
   const base64Url = token.split(".")[1];
@@ -121,6 +138,7 @@ export const useLocalStorageAction = () => {
       onSuccess: async (data, variables, context) => {
         const accessToken = data.data?.data?.accessToken || "";
         setToken(accessToken);
+        clearRefreshToken() //TODO: preguntar cuantas veces sirve ese token
       },
     }
   );
@@ -130,8 +148,7 @@ export const useLocalStorageAction = () => {
       return;
     }
 
-    const userInfo = getUserInfo();
-    const currentRefreshToken = userInfo?.refreshToken;
+    const currentRefreshToken = getRefreshToken()
     if (!currentRefreshToken) {
       return;
     }

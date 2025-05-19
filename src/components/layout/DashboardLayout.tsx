@@ -177,8 +177,8 @@ function DashboardLayout({
         key: "logout",
         label: "Cerrar sesión",
         icon: <LogoutOutlined />,
-        onClick: () => {
-          logout.mutate({ body: null });
+        onClick: async () => {
+          await logout.mutateAsync({ body: null });
           clearAllInfoFromLocalStorage();
           router.push("/");
         },
