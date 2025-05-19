@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Radio, Select, TimePicker } from "antd";
+import { Divider, Form, Input, Radio, Select, TimePicker } from "antd";
 import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
@@ -7,6 +7,8 @@ import { Branch, weekDay, WEEKDAY_LABEL } from "@/constants/models";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
+import { getUserInfo } from "@/actions/localStorage.actions";
 
 dayjs.extend(customParseFormat);
 
@@ -29,6 +31,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
 }) => {
   const router = useRouter();
   const { vendorId } = router.query;
+  const user = getUserInfo();
   const hasInitialValues: boolean = !!props.initialValues;
   const mapValues = (values: any) => {
     const {
@@ -57,7 +60,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       managerPhone: managerPhonePrefix + " " + managerPhone,
       location: {
         type: "Point",
-        coordinates: location,
+        coordinates: [location.lng, location.lat],
       },
       vendorId,
       operatingHours: mappedOperatingHours,
@@ -75,10 +78,21 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
     <FormWrapper
       formName={"newBranch"}
       onFinish={handleFinish}
-      routeTo="/a/branches"
+      routeTo={
+        user?.role === "admin"
+          ? "/a/branches"
+          : user?.role === "vendor"
+          ? "/v/branches"
+          : undefined
+      }
       loading={props.loading}
       preserveDataInCache={false}
       highligthOnChange={hasInitialValues}
+      initialValues={{
+        managerPhonePrefix: "57",
+        cellphonePrefix: "57",
+        location: SANTA_MARTA_LOCATION_OBJECT,
+      }}
     >
       {(formInstance) => (
         <div

@@ -52,7 +52,7 @@ export default function Home() {
         } else if (response.data.data.user.role === "vendor") {
           router.push("/v/home");
         } else {
-          message.error("No tienes permisos para acceder a esta sección", 10);
+          message.error("Usted no cuenta con los permisos suficientes para acceder a esta sección", 10);
         }
       },
       () => {}

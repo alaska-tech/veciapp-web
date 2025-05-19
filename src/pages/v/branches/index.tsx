@@ -1,4 +1,5 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import { getUserInfo } from "@/actions/localStorage.actions";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   AppstoreAddOutlined,
   SearchOutlined,
@@ -15,13 +16,10 @@ import {
   Input,
   InputRef,
   Typography,
-  FloatButtonRef,
   Dropdown,
   Divider,
   Card,
 } from "antd";
-import Column from "antd/es/table/Column";
-import ColumnGroup from "antd/es/table/ColumnGroup";
 import { FilterDropdownProps, FilterRestProps } from "antd/es/table/interface";
 import Link from "next/link";
 import React, { ReactElement, useRef, useState } from "react";
@@ -71,7 +69,7 @@ const Users = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
-
+  const user = getUserInfo();
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],
@@ -236,7 +234,9 @@ const Users = () => {
       ),
     },
   ];
-
+  if (!user) {
+    return null;
+  }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space wrap direction="horizontal">
@@ -272,7 +272,10 @@ const Users = () => {
         </Card>
       </Space>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/v/branches/newBranch" icon={<AppstoreAddOutlined />}>
+        <Button
+          href={`/v/branches/newBranch?vendorId=${user?.foreignPersonId}&name=${user?.fullName}`}
+          icon={<AppstoreAddOutlined />}
+        >
           Nueva tienda
         </Button>
       </Space>
@@ -284,5 +287,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };
