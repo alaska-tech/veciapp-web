@@ -213,3 +213,19 @@ export interface Branch extends BaseAttributes {
   availablePaymentMethods: string[]; //default []
   description?: string;
 }
+
+export interface ProductService extends BaseAttributes {
+  id: string;
+  vendorId: string;
+  branchId: string;
+  categoryId: string;
+  type: string;
+  name: string;
+  description: string;
+  shortDescription: string;
+  price: string;
+  currency: string;
+  inventory: number;
+  mainImage: string;
+}
+

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Layout, theme, Typography, Button, Drawer } from "antd";
 import {
+  AppleOutlined,
   AppstoreOutlined,
   DollarOutlined,
   HomeOutlined,
@@ -122,6 +123,12 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           key: `/v/branches`,
           icon: React.createElement(AppstoreOutlined),
           label: <Link href="/v/branches">Tiendas</Link>,
+          children: undefined,
+        },
+        {
+          key: `/v/products`,
+          icon: React.createElement(AppleOutlined),
+          label: <Link href="/v/products">Productos y servicios</Link>,
           children: undefined,
         },
       ],
