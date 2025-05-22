@@ -1,5 +1,5 @@
 import { QUERY_KEY_VENDOR, useVendorAction } from "@/actions/vendor.action";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Vendor } from "@/constants/models";
 import {
   CheckCircleOutlined,
@@ -157,7 +157,7 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };
 interface deleteCourseProps {
   courseId: string;

@@ -1,4 +1,4 @@
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   SearchOutlined,
   TeamOutlined,
@@ -280,5 +280,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };

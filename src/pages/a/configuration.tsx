@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import {
   QUERY_KEY_PARAMETER,
@@ -136,5 +136,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };
