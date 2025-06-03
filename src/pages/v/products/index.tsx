@@ -57,11 +57,6 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href={`/v/products/newProduct?`} icon={<PlusOutlined />}>
-          Nueva tienda
-        </Button>
-      </Space>
       <Table<DataType>
         columns={columns}
         dataSource={getProductService.data?.data.data}

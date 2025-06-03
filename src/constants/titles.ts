@@ -18,6 +18,7 @@ export const titles: Record<string, string> = {
   "/v/profile": "Perfil de usuario",
   "/v/branches": "Tiendas",
   "/v/branches/newBranch": "Crear nueva tienda para ${name}",
+  "/v/branches/[id]/products/newProduct": "Crear un nuevo producto o servicio para la tienda '${name}'",
   "/v/products": "Servicios y productos",
   "/v/products/newProduct": "Crear un nuevo producto o servicio",
 };
@@ -38,6 +39,7 @@ export const subtitles: Record<string, string> = {
   "/v/profile": "Esta es la pagina de perfil de usuario",
   "/v/branches": "Esta es la pagina de tiendas",
   "/v/branches/newBranch": "Esta es la pagina para crear una nueva tienda",
+  "/v/branches/[id]/products/newProduct": "Esta es la pagina para crear un nuevo producto o servicio",
   "/v/products": "Esta es la pagina de servicios y productos",
   "/v/products/newProduct": "Esta es la pagina para crear un nuevo servicio o producto",
 };

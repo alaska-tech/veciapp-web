@@ -43,7 +43,11 @@ const Users = () => {
       key: "id",
       render: (record: Branch) => {
         return (
-          <Descriptions>
+            <Descriptions 
+            style={{ whiteSpace: "nowrap" }}
+            column={{ xxl: 4, xl: 3, lg: 2, md: 1, sm: 1, xs: 1 }}
+            layout="vertical"
+            >
             <Descriptions.Item label="Tipo de negocio">
               {record.businessType}
             </Descriptions.Item>
@@ -94,8 +98,13 @@ const Users = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />}>
-          <Link href={`/(v)/branches/${record.id}`}>Edit</Link>
+        <Space split={<Divider type="vertical" />} wrap>
+          <Link href={`/v/branches/${record.id}`}>Detalles</Link>
+          <Link
+            href={`/v/branches/${record.id}/products/newProduct?name=${record.name}`}
+          >
+            Crear producto/servicio
+          </Link>
           <Dropdown
             trigger={["click"]}
             menu={{

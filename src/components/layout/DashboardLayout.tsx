@@ -174,7 +174,7 @@ function DashboardLayout({
     items: [
       {
         key: "profile",
-        label: "Configuración",
+        label: "Perfil de usuario",
         icon: <SettingOutlined />,
         onClick: () => {
           router.push(`/${router.pathname.split("/")[1]}/profile`);
