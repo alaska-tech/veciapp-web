@@ -154,7 +154,7 @@ export const useBranchAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<Branch>, { status: "Success" }>
-          >("/branches" + id, body);
+          >("/branches/edit/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -173,7 +173,7 @@ export const useBranchAction = () => {
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
         message.success({
-          content: `Proveedor ${branch.name || ""} se actualizó correctamente`,
+          content: `La tienda ${branch.name || ""} se actualizó correctamente`,
           duration: 4,
         });
       },

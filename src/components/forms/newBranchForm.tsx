@@ -24,6 +24,47 @@ interface entityWithAuxProps extends Branch {
 }
 const TIME_PICKER_FORMAT = "HH:mm";
 
+function parseInitialValues(values: Branch) {
+  if (!values) return {} as Branch;
+
+  const { phone, managerPhone, location, operatingHours, ...rest } = values;
+
+  // Parse phone numbers
+  const [cellphonePrefix, cellphone] = (phone || "").split(" ");
+  const [managerPhonePrefix, managerPhoneNum] = (managerPhone || "").split(" ");
+
+  // Parse operating hours
+  const parsedOperatingHours = Object.entries(operatingHours || {}).reduce(
+    (acc, [key, value]: [string, any]) => ({
+      ...acc,
+      [key]: value
+        ? [
+            dayjs(value[0], TIME_PICKER_FORMAT),
+            dayjs(value[1], TIME_PICKER_FORMAT),
+          ]
+        : null,
+    }),
+    {}
+  );
+
+  // Parse location
+  const parsedLocation = location?.coordinates
+    ? {
+        lat: location.coordinates[1],
+        lng: location.coordinates[0],
+      }
+    : SANTA_MARTA_LOCATION_OBJECT;
+
+  return {
+    ...rest,
+    cellphone,
+    cellphonePrefix,
+    managerPhone: managerPhoneNum,
+    managerPhonePrefix,
+    location: parsedLocation,
+    operatingHours: parsedOperatingHours,
+  };
+}
 export const FormElement = <T extends entityWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
@@ -88,13 +129,17 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       loading={props.loading}
       preserveDataInCache={false}
       highligthOnChange={hasInitialValues}
-      initialValues={{
-        managerPhonePrefix: "57",
-        cellphonePrefix: "57",
-        location: SANTA_MARTA_LOCATION_OBJECT,
-      }}
+      initialValues={
+        hasInitialValues
+          ? parseInitialValues(props.initialValues || ({} as Branch))
+          : {
+              managerPhonePrefix: "57",
+              cellphonePrefix: "57",
+              location: SANTA_MARTA_LOCATION_OBJECT,
+            }
+      }
     >
-      {(formInstance) => (
+      {(formInstance, setAsTouched) => (
         <div
           style={{
             display: "flex",
@@ -142,6 +187,38 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               ]}
             >
               <Input.TextArea />
+            </Form.Item>
+            <Form.Item
+              name="address"
+              label="Dirección completa"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Ubicación"
+              name={"location"}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <NewLocationPicker
+                initialPosition={
+                  hasInitialValues && props.initialValues?.location?.coordinates
+                    ? {
+                        lat: props.initialValues.location.coordinates[1],
+                        lng: props.initialValues.location.coordinates[0],
+                      }
+                    : undefined
+                }
+                afterChange={setAsTouched}
+              />
             </Form.Item>
           </div>
           <div
@@ -210,6 +287,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                   <TimePicker.RangePicker
                     format={TIME_PICKER_FORMAT}
                     minuteStep={10}
+                    onCalendarChange={setAsTouched}
                   />
                 </Form.Item>
               );
@@ -271,90 +349,6 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 }
                 style={{ width: "100%" }}
               />
-            </Form.Item>
-          </div>
-          <div
-            style={{ flex: `1 1 ${columnMinWidth}`, maxWidth: columnMaxWidth }}
-          >
-            <Divider>Información de contacto</Divider>
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                },
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="cellphone"
-              label="Teléfono celular"
-              tooltip="Escriba el número de celular sin puntos ni espacios"
-              rules={[
-                {
-                  pattern: /^[0-9]+$/,
-                  message: "El teléfono solo puede contener números",
-                },
-                { required: true },
-              ]}
-            >
-              <Input
-                addonBefore={
-                  <Form.Item
-                    name="cellphonePrefix"
-                    rules={[{ required: true }]}
-                    noStyle
-                  >
-                    <CustomSelectWithInput
-                      selectProps={{
-                        options: [
-                          {
-                            value: "57",
-                            label: "+57",
-                          },
-                        ],
-                        style: { width: 75 },
-                        popupMatchSelectWidth: false,
-                      }}
-                      inputProps={{
-                        placeholder: "Escriba...",
-                        style: {
-                          width: 65,
-                        },
-                      }}
-                    />
-                  </Form.Item>
-                }
-                style={{ width: "100%" }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="address"
-              label="Dirección completa"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Ubicación"
-              name={"location"}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <NewLocationPicker />
             </Form.Item>
           </div>
         </div>

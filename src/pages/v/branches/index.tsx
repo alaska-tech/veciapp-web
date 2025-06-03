@@ -103,7 +103,7 @@ const Users = () => {
           <Link
             href={`/v/branches/${record.id}/products/newProduct?name=${record.name}`}
           >
-            Crear producto/servicio
+            Crear producto o servicio
           </Link>
           <Dropdown
             trigger={["click"]}
@@ -117,7 +117,7 @@ const Users = () => {
             }}
             placement="bottomRight"
           >
-            <Button type="link">More...</Button>
+            <Button type="link">Mas...</Button>
           </Dropdown>
         </Space>
       ),
