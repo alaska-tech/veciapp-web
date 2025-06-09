@@ -120,6 +120,11 @@ const titles: Record<string, [string, string, string]> = {
     "Ingresa tu codigo",
     "Ingresa el código unico que te asigno la fundación Maleua",
   ],
+  "/p/uValidateAccount": [
+    "",
+    "Bienvenido!",
+    "Ya casi terminas. Ahora confirma tu registro.",
+  ],
   "/p/setPassAccount": [
     "",
     "Bienvenido, crea tu contraseña",
