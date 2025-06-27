@@ -99,12 +99,17 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/v/branches/${record.id}`}>Detalles</Link>
           <Link
+            href={`/v/products/byBranch/${record.id}`}
+          >
+          Inventario
+        </Link>
+          <Link href={`/v/branches/${record.id}`}>Detalles</Link>
+          {/* <Link
             href={`/v/branches/${record.id}/products/newProduct?name=${record.name}`}
           >
             Crear producto o servicio
-          </Link>
+          </Link> */}
           <Dropdown
             trigger={["click"]}
             menu={{

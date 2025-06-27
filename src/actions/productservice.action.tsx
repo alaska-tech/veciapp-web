@@ -4,6 +4,7 @@ import { BaseAttributes, PaginatedResult, Response, ProductService } from "@mode
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
+import { QUERY_KEY_BRANCH } from "./branch.action";
 
 export const QUERY_KEY_PRODUCTSERVICE = "productService" as const;
 
@@ -24,6 +25,22 @@ export const useProductServiceAction = () => {
     } catch (error) {
       throw error;
     }
+  });
+  const getProductServicesByBranchId = queryEntityById<
+    Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_PRODUCTSERVICE, QUERY_KEY_BRANCH] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>
+        >(`/productService/list?limit=50&page=0&branchId=${id}`);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
   const getProductServiceById = queryEntityById<
     ProductService,
@@ -166,7 +183,7 @@ export const useProductServiceAction = () => {
   );
   return {
     getProductServices,
-    getProductServiceById,
+    getProductServiceById,getProductServicesByBranchId,
     deleteProductService,
     createProductService,
     updateProductService,

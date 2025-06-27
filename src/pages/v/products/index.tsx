@@ -15,16 +15,26 @@ import {
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement } from "react";
+import { useBranchAction } from "@/actions/branch.action";
 
 type DataType = ProductService;
 
 const Users = () => {
   const user = getUserInfo();
   const actions = useProductServiceAction();
-  const getProductService = actions.getProductServices();
+  const productsQuery = actions.getProductServices();
+  const branchActions = useBranchAction();
+  const branchesQuery = branchActions.getBranchesById(productsQuery.data?.data.data.map((e) => e.branchId))
   const columns: TableColumnsType<DataType> = [
     {
-      title: "Sucursal",
+      title: "Tienda",
+      key: "branchId",
+      dataIndex: "branchId",
+      render: (branchId: string) => {
+        return branchesQuery.find(e => e.data?.data.data.id === branchId)?.data?.data.data.name
+      }
+    }, {
+      title: "Nombre",
       key: "name",
       dataIndex: "name",
     },
@@ -59,8 +69,8 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Table<DataType>
         columns={columns}
-        dataSource={getProductService.data?.data.data}
-        loading={getProductService.isLoading}
+        dataSource={productsQuery.data?.data.data}
+        loading={productsQuery.isLoading}
         style={{
           overflow: "auto",
         }}

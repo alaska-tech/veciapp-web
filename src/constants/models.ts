@@ -10,18 +10,18 @@ export interface BaseAttributes {
 }
 export type Response<T> =
   | {
-      status: "Success";
-      data: T;
-      error: null;
-    }
+    status: "Success";
+    data: T;
+    error: null;
+  }
   | {
-      status: "Error";
-      data: null;
-      error: {
-        message?: string;
-        detail?: string;
-      };
+    status: "Error";
+    data: null;
+    error: {
+      message?: string;
+      detail?: string;
     };
+  };
 export interface PaginatedResult<T> {
   data: T[];
   meta: {
@@ -214,6 +214,11 @@ export interface Branch extends BaseAttributes {
   description?: string;
 }
 
+export const productServiceState = [
+  "available", "unavailable"
+] as const;
+export type productServiceStateType = typeof productServiceState;
+
 export interface ProductService extends BaseAttributes {
   id: string;
   vendorId: string;
@@ -227,5 +232,7 @@ export interface ProductService extends BaseAttributes {
   currency: string;
   inventory: number;
   mainImage: string;
+  images:string[]
+  state: productServiceStateType[number]
 }
 
