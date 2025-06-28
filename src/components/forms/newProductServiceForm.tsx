@@ -16,6 +16,7 @@ import FormWrapper from "./formWrapper";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import { useBranchAction } from "@/actions/branch.action";
 import { PlusOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 
 type productServiceWithAuxProps = ProductService;
 
@@ -38,6 +39,8 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   initialValues?: T;
   branchId: string;
 }) => {
+  const router = useRouter()
+  const {id} = router.query
   const hasInitialValues: boolean = !!props.initialValues;
   const user = getUserInfo();
   //----
@@ -82,17 +85,17 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
         hasInitialValues
           ? parseInitialValues(props.initialValues || ({} as ProductService))
           : {
-              prefix: "57",
-              password: "Vcapp20251",
-            }
+            prefix: "57",
+            password: "Vcapp20251",
+          }
       }
       requiredMark={false}
       routeTo={
         user?.role === "admin"
-          ? "/a/branches"
+          ? "/a/byBranch/"+id
           : user?.role === "vendor"
-          ? "/v/branches"
-          : undefined
+            ? "/v/byBranch/"+id
+            : undefined
       }
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
@@ -120,7 +123,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
               },
             ]}
           >
-            <Radio.Group
+            <Radio.Group disabled={hasInitialValues}
               options={[
                 {
                   label: "Cosmetica",
@@ -142,6 +145,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
             ]}
           >
             <Radio.Group
+              disabled={hasInitialValues}
               options={[
                 {
                   label: "Producto",

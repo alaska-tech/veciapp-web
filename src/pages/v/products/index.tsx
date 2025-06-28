@@ -43,7 +43,7 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
-          <Link href={`/v/products/${record.id}`}>Edit</Link>
+          <Link href={`/v/products/${record.id}`}>Editar</Link>
           <Dropdown
             trigger={["click"]}
             menu={{

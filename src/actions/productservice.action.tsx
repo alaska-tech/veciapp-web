@@ -49,10 +49,10 @@ export const useProductServiceAction = () => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
-          Extract<Response<ProductService>, { status: "Success" }>
-        >(`/productServicees/get-details/${id}`);
+          Extract<Response<{data:ProductService}>, { status: "Success" }>
+        >(`/productService/get-details/${id}`);
         console.log(response);
-        return response.data.data;
+        return response.data.data.data;
       } catch (error) {
         throw error;
       }
@@ -156,7 +156,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService/update" + id, body);
+          >("/productService/update/" + id, body);
           return response;
         } catch (error) {
           throw error;
