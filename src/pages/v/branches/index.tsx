@@ -41,6 +41,7 @@ const Users = () => {
     {
       title: "Operacion",
       key: "id",
+      width: "45%",
       render: (record: Branch) => {
         return (
             <Descriptions 
@@ -75,11 +76,11 @@ const Users = () => {
                       );
                     })
                     .map(([day, hours]) => {
-                      if (!!hours && !!hours.open && !!hours.close) {
+                      if (!!hours && !!hours[0] && !!hours[1]) {
                         return (
                           <Tag key={day}>
                             {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}:{" "}
-                            {hours.open} - {hours.close}
+                            {hours[0]} - {hours[1]}
                           </Tag>
                         );
                       }
@@ -105,18 +106,13 @@ const Users = () => {
           Inventario
         </Link>
           <Link href={`/v/branches/${record.id}`}>Detalles</Link>
-          {/* <Link
-            href={`/v/branches/${record.id}/products/newProduct?name=${record.name}`}
-          >
-            Crear producto o servicio
-          </Link> */}
           <Dropdown
             trigger={["click"]}
             menu={{
               items: [
                 {
                   key: "2",
-                  label: "Delete",
+                  label: "Eliminar",
                 },
               ],
             }}

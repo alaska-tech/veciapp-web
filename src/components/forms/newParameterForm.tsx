@@ -65,7 +65,6 @@ export const FormElement = <T extends Parameter>(props: {
       onFinish={handleFinish}
       form={formRef}
       initialValues={{ isActive: true }}
-      routeTo="/a/configuration"
       loading={props.loading}
     >
       <div>

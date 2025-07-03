@@ -10,18 +10,18 @@ export interface BaseAttributes {
 }
 export type Response<T> =
   | {
-    status: "Success";
-    data: T;
-    error: null;
-  }
+      status: "Success";
+      data: T;
+      error: null;
+    }
   | {
-    status: "Error";
-    data: null;
-    error: {
-      message?: string;
-      detail?: string;
+      status: "Error";
+      data: null;
+      error: {
+        message?: string;
+        detail?: string;
+      };
     };
-  };
 export interface PaginatedResult<T> {
   data: T[];
   meta: {
@@ -193,14 +193,7 @@ export interface Branch extends BaseAttributes {
   rank: number; //default 0
   state: LocationTypeType[number]; //default active
   businessType: BranchBusinessType[number]; //default individual
-  operatingHours?: Record<
-    weekDayType[number],
-    {
-      open: string | null; //hora en formato hh:mm, como 19:00 o 14:30
-      close: string | null;
-      isOpen: boolean;
-    }
-  >;
+  operatingHours?: Record<weekDayType[number], [string, string]>;
   logo?: string; //max 255
   deliveryRadius: number; //default 0 min 0
   deliveryFee: string; // default 0 min 0
@@ -214,9 +207,7 @@ export interface Branch extends BaseAttributes {
   description?: string;
 }
 
-export const productServiceState = [
-  "available", "unavailable"
-] as const;
+export const productServiceState = ["available", "unavailable"] as const;
 export type productServiceStateType = typeof productServiceState;
 
 export interface ProductService extends BaseAttributes {
@@ -232,7 +223,18 @@ export interface ProductService extends BaseAttributes {
   currency: string;
   inventory: number;
   mainImage: string;
-  images:string[]
-  state: productServiceStateType[number]
+  images: string[];
+  state: productServiceStateType[number];
+  serviceScheduling?: {
+    professionalRequired: boolean;
+    attentionLimitPerSlot: number;
+    availableHours?: Record<
+      weekDayType[number],
+      {
+        open: string | null; //hora en formato hh:mm, como 19:00 o 14:30
+        close: string | null;
+        isOpen: boolean;
+      }
+    >;
+  };
 }
-

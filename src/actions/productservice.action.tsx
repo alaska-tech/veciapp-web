@@ -1,6 +1,11 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { mutateEntity, queryEntity, queryEntityById } from "./action";
-import { BaseAttributes, PaginatedResult, Response, ProductService } from "@models";
+import {
+  BaseAttributes,
+  PaginatedResult,
+  Response,
+  ProductService,
+} from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
@@ -19,7 +24,10 @@ export const useProductServiceAction = () => {
   >([QUERY_KEY_PRODUCTSERVICE + "s"] as QueryKey, async () => {
     try {
       const response = await apiClient.get<
-        Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>
+        Extract<
+          Response<PaginatedResult<ProductService>>,
+          { status: "Success" }
+        >
       >("/productService/list?limit=50&page=0");
       return response.data;
     } catch (error) {
@@ -33,7 +41,10 @@ export const useProductServiceAction = () => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
-          Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>
+          Extract<
+            Response<PaginatedResult<ProductService>>,
+            { status: "Success" }
+          >
         >(`/productService/list?limit=50&page=0&branchId=${id}`);
         console.log(response);
         return response.data;
@@ -49,7 +60,7 @@ export const useProductServiceAction = () => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
-          Extract<Response<{data:ProductService}>, { status: "Success" }>
+          Extract<Response<{ data: ProductService }>, { status: "Success" }>
         >(`/productService/get-details/${id}`);
         console.log(response);
         return response.data.data.data;
@@ -105,20 +116,75 @@ export const useProductServiceAction = () => {
       },
     }
   );
+  const uploadPicture = mutateEntity<
+    AxiosResponse<Extract<Response<string>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    {
+      body: any;
+    }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const formData = new FormData();
+          formData.append("file", body);
+
+          const response = await apiClient.post<
+            Extract<Response<string>, { status: "Success" }>
+          >("/productService/upload-picture", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        message.success({
+          content: `Picture uploaded successfully`,
+          duration: 4,
+        });
+      },
+    }
+  );
   const createProductService = mutateEntity<
     AxiosResponse<Extract<Response<ProductService>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
-    { body: Omit<ProductService, keyof BaseAttributes & "id">; vendorId: string }
+    {
+      body: Omit<ProductService, keyof BaseAttributes & "id">;
+      userId: string;
+      branchId: string;
+    }
   >(
     () => {
-      return async function mutationFn({ body, vendorId }) {
+      return async function mutationFn({ body, userId: vendorId, branchId }) {
         try {
           if (!body) {
             throw new Error("No body provided");
           }
           const response = await apiClient.post<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService", body);
+          >("/productService", {
+            ...body,
+            vendorId,
+            branchId,
+            currency: "COP",
+          });
           return response;
         } catch (error) {
           throw error;
@@ -137,7 +203,9 @@ export const useProductServiceAction = () => {
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
         message.success({
-          content: `ProductService ${productService.name || ""} was created successfully`,
+          content: `ProductService ${
+            productService.name || ""
+          } was created successfully`,
           duration: 4,
         });
       },
@@ -175,7 +243,49 @@ export const useProductServiceAction = () => {
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
         message.success({
-          content: `Proveedor ${productService.name || ""} se actualizó correctamente`,
+          content: `Proveedor ${
+            productService.name || ""
+          } se actualizó correctamente`,
+          duration: 4,
+        });
+      },
+    }
+  );
+  const updateProductServiceState = mutateEntity<
+    AxiosResponse<Extract<Response<ProductService>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string; body: { state: string; updatedBy: string } }
+  >(
+    () => {
+      return async function mutationFn({ body, id }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.put<
+            Extract<Response<ProductService>, { status: "Success" }>
+          >("/productService/state/update/" + id, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        const productService = data.data.data;
+        message.success({
+          content: `Proveedor ${
+            productService.name || ""
+          } se actualizó correctamente`,
           duration: 4,
         });
       },
@@ -183,9 +293,12 @@ export const useProductServiceAction = () => {
   );
   return {
     getProductServices,
-    getProductServiceById,getProductServicesByBranchId,
+    getProductServiceById,
+    getProductServicesByBranchId,
     deleteProductService,
     createProductService,
     updateProductService,
+    uploadPicture,
+    updateProductServiceState,
   };
 };

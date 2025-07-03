@@ -4,19 +4,17 @@ import {
   Input,
   InputNumber,
   Radio,
-  Select,
-  Upload,
+  TimePicker,
   UploadFile,
   UploadProps,
-  Image,
 } from "antd";
 import React, { useState } from "react";
-import { ProductService } from "@models";
+import { ProductService, weekDay, WEEKDAY_LABEL } from "@models";
 import FormWrapper from "./formWrapper";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import { useBranchAction } from "@/actions/branch.action";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
 
 type productServiceWithAuxProps = ProductService;
 
@@ -30,19 +28,44 @@ const getBase64 = (file: FileType): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 function parseInitialValues(values: ProductService) {
-  return { ...values };
+  const { serviceScheduling, ...rest } = values;
+
+  const parsedAvailableHours = Object.entries(
+    serviceScheduling?.availableHours || {}
+  ).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: value
+        ? [
+            dayjs(value.open, TIME_PICKER_FORMAT),
+            dayjs(value.close, TIME_PICKER_FORMAT),
+          ]
+        : null,
+    }),
+    {}
+  );
+  return {
+    serviceScheduling: {
+      ...serviceScheduling,
+      availableHours: parsedAvailableHours,
+    },
+    ...rest,
+  };
 }
 const MAX_NUMBER_OF_PHOTOS = 8 as const;
+const TIME_PICKER_FORMAT = "HH:mm";
+
 export const FormElement = <T extends productServiceWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
   initialValues?: T;
   branchId: string;
+  userId: string;
 }) => {
-  const router = useRouter()
-  const {id} = router.query
   const hasInitialValues: boolean = !!props.initialValues;
   const user = getUserInfo();
+  const [formInstance] = Form.useForm();
+  const type = Form.useWatch("type", formInstance);
   //----
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -68,9 +91,29 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   );
   //----
   const handleFinish = async (values: T) => {
-    const { ...rest } = values;
+    const { serviceScheduling, ...rest } = values;
+    const mappedAvailableHours = Object.entries(
+      serviceScheduling?.availableHours || {}
+    ).reduce(
+      (acc, [key, value]: [string, any]) => ({
+        ...acc,
+        [key]: value
+          ? {
+              open: value[0].format(TIME_PICKER_FORMAT),
+              close: value[1].format(TIME_PICKER_FORMAT),
+              isOpen: true,
+            }
+          : { open: "00:00", close: "00:00", isOpen: false },
+      }),
+      {}
+    );
     const mappedValues = {
       ...rest,
+      serviceScheduling: {
+        ...serviceScheduling,
+        availableHours: mappedAvailableHours,
+      },
+      mainImage: "https://url-imagen.com/imagen.jpg",
     } as T;
     if (props.onFinish) {
       await props.onFinish(mappedValues);
@@ -80,28 +123,22 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   return (
     <FormWrapper
       formName={"newProductService"}
+      form={formInstance}
       onFinish={handleFinish}
       initialValues={
         hasInitialValues
           ? parseInitialValues(props.initialValues || ({} as ProductService))
           : {
-            prefix: "57",
-            password: "Vcapp20251",
-          }
+              prefix: "57",
+              password: "Vcapp20251",
+            }
       }
       requiredMark={false}
-      routeTo={
-        user?.role === "admin"
-          ? "/a/byBranch/"+id
-          : user?.role === "vendor"
-            ? "/v/byBranch/"+id
-            : undefined
-      }
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
       highligthOnChange={hasInitialValues}
     >
-      {(formInstance) => (
+      {(formInstance, setAsTouched) => (
         <div>
           <Form.Item
             name="name"
@@ -123,15 +160,16 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
               },
             ]}
           >
-            <Radio.Group disabled={hasInitialValues}
+            <Radio.Group
+              disabled={hasInitialValues}
               options={[
                 {
                   label: "Cosmetica",
-                  value: "cosmetics",
+                  value: "Cosmetica",
                 },
-                { label: "Comida", value: "food" },
-                { label: "Belleza y estetica", value: "beauty" },
-                { label: "Confecciones", value: "confections" },
+                { label: "Comida", value: "Comida" },
+                { label: "Belleza y estetica", value: "Belleza y estetica" },
+                { label: "Confecciones", value: "Confecciones" },
               ]}
             />
           </Form.Item>
@@ -177,6 +215,41 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
           >
             <Input.TextArea />
           </Form.Item>
+
+          {type === "service" && (
+            <>
+              <Form.Item
+                label="Se requiere asistencia de un profesional?"
+                name={["serviceScheduling", "professionalRequired"]}
+              >
+                <Radio.Group>
+                  <Radio value={true}>Si</Radio>
+                  <Radio value={false}>No</Radio>
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item
+                label="Personas por servicio"
+                name={["serviceScheduling", "attentionLimitPerSlot"]}
+              >
+                <InputNumber min={1} />
+              </Form.Item>
+              {weekDay.map((day: string) => {
+                return (
+                  <Form.Item
+                    name={["serviceScheduling", "availableHours", day]}
+                    label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
+                    key={day}
+                  >
+                    <TimePicker.RangePicker
+                      format={TIME_PICKER_FORMAT}
+                      minuteStep={10}
+                      onCalendarChange={setAsTouched}
+                    />
+                  </Form.Item>
+                );
+              })}
+            </>
+          )}
           <Form.Item
             name="price"
             label="Precio"
@@ -200,9 +273,13 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
           >
             <InputNumber min={0} />
           </Form.Item>
-          <Form.Item>
+          {/* <Form.Item>
             <Upload
-              action={`https://veciapp-backend.onrender.com/api/v1/productservice/upload-images/${props.branchId}`}
+              action={async (file)=>{
+                 const response = await upload.mutateAsync({ body: file as FileType })
+                console.log(JSON.stringify(response.data)) 
+                return "https://url-imagen.com/imagen.jpg"
+              }}
               listType="picture-card"
               fileList={fileList}
               onPreview={handlePreview}
@@ -222,7 +299,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
                 alt=""
               />
             )}
-          </Form.Item>
+          </Form.Item> */}
         </div>
       )}
     </FormWrapper>

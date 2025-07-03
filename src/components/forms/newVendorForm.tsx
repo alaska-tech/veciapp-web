@@ -45,7 +45,6 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
             }
       }
       requiredMark={true}
-      routeTo="/a/vendors"
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
     >

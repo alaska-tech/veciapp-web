@@ -119,13 +119,6 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
     <FormWrapper
       formName={"newBranch"}
       onFinish={handleFinish}
-      routeTo={
-        user?.role === "admin"
-          ? "/a/branches"
-          : user?.role === "vendor"
-          ? "/v/branches"
-          : undefined
-      }
       loading={props.loading}
       preserveDataInCache={false}
       highligthOnChange={hasInitialValues}

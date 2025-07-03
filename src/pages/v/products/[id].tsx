@@ -1,3 +1,4 @@
+import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import { useCustomerAction } from "@/actions/customer.action";
 import { useProductServiceAction } from "@/actions/productservice.action";
@@ -16,6 +17,8 @@ const Index = () => {
   const actions = useProductServiceAction();
   const queryResult = actions.getProductServiceById(id as string);
   const update = actions.updateProductService();
+  const authActions = useAuthAction();
+  const user = authActions.userSession;
   if (queryResult.isLoading) {
     return <LoadingOutlined />;
   }
@@ -46,7 +49,8 @@ const Index = () => {
         }}
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
-        branchId={queryResult.data?.branchId||""}
+        branchId={queryResult.data?.branchId || ""}
+        userId={user.data?.id || ""}
       />
     </Space>
   );

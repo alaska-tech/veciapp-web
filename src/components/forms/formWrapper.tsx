@@ -9,10 +9,13 @@ export interface FormWrapperProps<T>
   extends Omit<FormProps<any>, "children" | "onFinish"> {
   formName: string;
   onFinish?: (values: T) => Promise<void>;
-  routeTo?: string;
+  onSuccess?: () => void;
   children:
     | React.ReactNode
-    | ((formInstance: FormInstance<T>, setAsTouched:()=>void) => React.ReactNode);
+    | ((
+        formInstance: FormInstance<T>,
+        setAsTouched: () => void
+      ) => React.ReactNode);
   loading?: boolean;
   preserveDataInCache?: boolean;
   highligthOnChange?: boolean;
@@ -63,8 +66,10 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
       await formProps.onFinish(values).then(
         () => {
           resetForm();
-          if (formProps.routeTo) {
-            router.push(formProps.routeTo || "/");
+          if (!!formProps.onSuccess) {
+            formProps.onSuccess();
+          } else {
+            router.back();
           }
         },
         () => {}
@@ -117,7 +122,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
         </Button>
       )}
       {typeof children === "function"
-        ? children(formProps.form || form,setAsTouched)
+        ? children(formProps.form || form, setAsTouched)
         : children}
       <Form.Item style={{ textAlign: "center" }}>
         <Button
