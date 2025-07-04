@@ -19,6 +19,7 @@ import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
 import ChangeProductStateModal from "@/components/changeProductStateModal";
+import ChangeProductInventoryModal from "@/components/changeProductInventoryModal";
 
 type DataType = ProductService;
 const PRODUCT_TYPE_TAG: Record<string, any> = {
@@ -124,6 +125,17 @@ const Users = () => {
       title: "Inventario",
       key: "inventory",
       dataIndex: "inventory",
+      render(value, record, index) {
+        return (
+          <Space wrap>
+            {value}
+            <ChangeProductInventoryModal
+              productId={record.id}
+              currentValue={value}
+            />
+          </Space>
+        );
+      },
     },
     {
       title: "Estado",
@@ -131,7 +143,6 @@ const Users = () => {
       dataIndex: "state",
       render(value, record, index) {
         const stateTag = PRODUCT_STATE_TAG[value] || null;
-
         return (
           <Space wrap>
             {stateTag}

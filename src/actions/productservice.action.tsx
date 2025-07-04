@@ -21,7 +21,7 @@ export const useProductServiceAction = () => {
       Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>
     >["data"],
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_PRODUCTSERVICE + "s"] as QueryKey, async () => {
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, async () => {
     try {
       const response = await apiClient.get<
         Extract<
@@ -243,7 +243,7 @@ export const useProductServiceAction = () => {
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
         message.success({
-          content: `Proveedor ${
+          content: `Producto o servicio ${
             productService.name || ""
           } se actualizó correctamente`,
           duration: 4,
@@ -283,7 +283,54 @@ export const useProductServiceAction = () => {
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
         message.success({
-          content: `Proveedor ${
+          content: `Producto o servicio ${
+            productService.name || ""
+          } se actualizó correctamente`,
+          duration: 4,
+        });
+      },
+    }
+  );
+  const updateProductServiceInventory = mutateEntity<
+    AxiosResponse<Extract<Response<ProductService>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    {
+      id: string;
+      body: {
+        quantity: number;
+        action: "addition" | "subtraction";
+        updatedBy: string;
+      };
+    }
+  >(
+    () => {
+      return async function mutationFn({ body, id }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.put<
+            Extract<Response<ProductService>, { status: "Success" }>
+          >("/productService/inventory/update/" + id, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        const productService = data.data.data;
+        message.success({
+          content: `Producto o servicio ${
             productService.name || ""
           } se actualizó correctamente`,
           duration: 4,
@@ -300,5 +347,6 @@ export const useProductServiceAction = () => {
     updateProductService,
     uploadPicture,
     updateProductServiceState,
+    updateProductServiceInventory,
   };
 };
