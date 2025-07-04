@@ -1,11 +1,16 @@
-import { Divider, Form, Input, Radio, Select } from "antd";
+import { Divider, Form, Input, Radio, Select, TimePicker } from "antd";
 import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
-import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
-import { Branch } from "@/constants/models";
+import { Branch, weekDay, WEEKDAY_LABEL } from "@/constants/models";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
+import { getUserInfo } from "@/actions/localStorage.actions";
+
+dayjs.extend(customParseFormat);
 
 const columnMinWidth = "220px";
 const columnMaxWidth = "400px";
@@ -17,21 +22,47 @@ const NewLocationPicker = dynamic(
 interface entityWithAuxProps extends Branch {
   prefix: string;
 }
+const TIME_PICKER_FORMAT = "HH:mm";
+
 function parseInitialValues(values: Branch) {
-  const [cellphonePrefix, cellphone] = values.phone
-    ? (values.phone as string).split(" ")
-    : ["", ""];
-  const [managerPhonePrefix, managerPhone] = values.managerPhone
-    ? (values.managerPhone as string).split(" ")
-    : ["", ""];
-  const location = values.location.coordinates;
+  if (!values) return {} as Branch;
+
+  const { phone, managerPhone, location, operatingHours, ...rest } = values;
+
+  // Parse phone numbers
+  const [cellphonePrefix, cellphone] = (phone || "").split(" ");
+  const [managerPhonePrefix, managerPhoneNum] = (managerPhone || "").split(" ");
+
+  // Parse operating hours
+  const parsedOperatingHours = Object.entries(operatingHours || {}).reduce(
+    (acc, [key, value]: [string, any]) => ({
+      ...acc,
+      [key]: value
+        ? [
+            dayjs(value[0], TIME_PICKER_FORMAT),
+            dayjs(value[1], TIME_PICKER_FORMAT),
+          ]
+        : null,
+    }),
+    {}
+  );
+
+  // Parse location
+  const parsedLocation = location?.coordinates
+    ? {
+        lat: location.coordinates[1],
+        lng: location.coordinates[0],
+      }
+    : SANTA_MARTA_LOCATION_OBJECT;
+
   return {
-    ...values,
-    location,
-    cellphonePrefix,
+    ...rest,
     cellphone,
+    cellphonePrefix,
+    managerPhone: managerPhoneNum,
     managerPhonePrefix,
-    managerPhone,
+    location: parsedLocation,
+    operatingHours: parsedOperatingHours,
   };
 }
 export const FormElement = <T extends entityWithAuxProps>(props: {
@@ -41,27 +72,45 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
 }) => {
   const router = useRouter();
   const { vendorId } = router.query;
+  const user = getUserInfo();
   const hasInitialValues: boolean = !!props.initialValues;
-
-  const handleFinish = async (values: any) => {
+  const mapValues = (values: any) => {
     const {
       cellphonePrefix,
       managerPhonePrefix,
       cellphone,
       managerPhone,
       location,
+      operatingHours,
       ...rest
     } = values;
+    const mappedOperatingHours = Object.entries(operatingHours).reduce(
+      (acc, [key, value]: [string, any]) => ({
+        ...acc,
+        [key]: value
+          ? [
+              value[0].format(TIME_PICKER_FORMAT),
+              value[1].format(TIME_PICKER_FORMAT),
+            ]
+          : null,
+      }),
+      {}
+    );
     const mappedValues = {
       phone: cellphonePrefix + " " + cellphone,
       managerPhone: managerPhonePrefix + " " + managerPhone,
       location: {
         type: "Point",
-        coordinates: location,
+        coordinates: [location.lng, location.lat],
       },
       vendorId,
+      operatingHours: mappedOperatingHours,
       ...rest,
     };
+    return mappedValues;
+  };
+  const handleFinish = async (values: any) => {
+    const mappedValues = mapValues(values);
     if (props.onFinish) {
       await props.onFinish(mappedValues);
     }
@@ -70,8 +119,11 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
     <FormWrapper
       formName={"newBranch"}
       onFinish={handleFinish}
+      loading={props.loading}
+      preserveDataInCache={false}
+      highligthOnChange={hasInitialValues}
       initialValues={
-        !!hasInitialValues
+        hasInitialValues
           ? parseInitialValues(props.initialValues || ({} as Branch))
           : {
               managerPhonePrefix: "57",
@@ -79,12 +131,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               location: SANTA_MARTA_LOCATION_OBJECT,
             }
       }
-      routeTo="/a/branches"
-      loading={props.loading}
-      preserveDataInCache={!hasInitialValues}
-      highligthOnChange={hasInitialValues}
     >
-      {(formInstance) => (
+      {(formInstance, setAsTouched) => (
         <div
           style={{
             display: "flex",
@@ -118,7 +166,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               ]}
             >
               <Radio.Group
-                options={["Individual", "Empresa"]}
+                options={["individual", "empresa"]}
                 disabled={hasInitialValues}
               />
             </Form.Item>
@@ -132,6 +180,38 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               ]}
             >
               <Input.TextArea />
+            </Form.Item>
+            <Form.Item
+              name="address"
+              label="Dirección completa"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Ubicación"
+              name={"location"}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <NewLocationPicker
+                initialPosition={
+                  hasInitialValues && props.initialValues?.location?.coordinates
+                    ? {
+                        lat: props.initialValues.location.coordinates[1],
+                        lng: props.initialValues.location.coordinates[0],
+                      }
+                    : undefined
+                }
+                afterChange={setAsTouched}
+              />
             </Form.Item>
           </div>
           <div
@@ -190,6 +270,21 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 ]}
               />
             </Form.Item>
+            {weekDay.map((day: string) => {
+              return (
+                <Form.Item
+                  name={["operatingHours", day]}
+                  label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
+                  key={day}
+                >
+                  <TimePicker.RangePicker
+                    format={TIME_PICKER_FORMAT}
+                    minuteStep={10}
+                    onCalendarChange={setAsTouched}
+                  />
+                </Form.Item>
+              );
+            })}
           </div>
           <div
             style={{ flex: `1 1 ${columnMinWidth}`, maxWidth: columnMaxWidth }}
@@ -247,90 +342,6 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 }
                 style={{ width: "100%" }}
               />
-            </Form.Item>
-          </div>
-          <div
-            style={{ flex: `1 1 ${columnMinWidth}`, maxWidth: columnMaxWidth }}
-          >
-            <Divider>Información de contacto</Divider>
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                },
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="cellphone"
-              label="Teléfono celular"
-              tooltip="Escriba el número de celular sin puntos ni espacios"
-              rules={[
-                {
-                  pattern: /^[0-9]+$/,
-                  message: "El teléfono solo puede contener números",
-                },
-                { required: true },
-              ]}
-            >
-              <Input
-                addonBefore={
-                  <Form.Item
-                    name="cellphonePrefix"
-                    rules={[{ required: true }]}
-                    noStyle
-                  >
-                    <CustomSelectWithInput
-                      selectProps={{
-                        options: [
-                          {
-                            value: "57",
-                            label: "+57",
-                          },
-                        ],
-                        style: { width: 75 },
-                        popupMatchSelectWidth: false,
-                      }}
-                      inputProps={{
-                        placeholder: "Escriba...",
-                        style: {
-                          width: 65,
-                        },
-                      }}
-                    />
-                  </Form.Item>
-                }
-                style={{ width: "100%" }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="address"
-              label="Dirección completa"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Ubicación"
-              name={"location"}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <NewLocationPicker />
             </Form.Item>
           </div>
         </div>

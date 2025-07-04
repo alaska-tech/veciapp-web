@@ -9,10 +9,13 @@ export interface FormWrapperProps<T>
   extends Omit<FormProps<any>, "children" | "onFinish"> {
   formName: string;
   onFinish?: (values: T) => Promise<void>;
-  routeTo?: string;
+  onSuccess?: () => void;
   children:
     | React.ReactNode
-    | ((formInstance: FormInstance<T>) => React.ReactNode);
+    | ((
+        formInstance: FormInstance<T>,
+        setAsTouched: () => void
+      ) => React.ReactNode);
   loading?: boolean;
   preserveDataInCache?: boolean;
   highligthOnChange?: boolean;
@@ -63,8 +66,10 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
       await formProps.onFinish(values).then(
         () => {
           resetForm();
-          if (formProps.routeTo) {
-            router.push(formProps.routeTo || "/");
+          if (!!formProps.onSuccess) {
+            formProps.onSuccess();
+          } else {
+            router.back();
           }
         },
         () => {}
@@ -78,7 +83,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     padding: "16px",
     margin: "0 auto",
     borderRadius: "12px",
-    background: hasNewValue ? "#ffd406" : "inherit",
+    background: hasNewValue ? "rgba(255, 212, 6, 0.5)" : "inherit",
   };
 
   const buttonStyles: React.CSSProperties = {
@@ -86,7 +91,11 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     width: "100%",
     maxWidth: "200px",
   };
-
+  function setAsTouched() {
+    if (highligthOnChange) {
+      setHasNewValue(true);
+    }
+  }
   return (
     <Form<T>
       form={formProps.form || form}
@@ -96,9 +105,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
           const values = actualFormInstance.getFieldsValue();
           setFormValues(values);
         }
-        if (highligthOnChange) {
-          setHasNewValue(true);
-        }
+        setAsTouched();
       }}
       initialValues={formValues || initialValues}
       style={formStyles}
@@ -115,7 +122,7 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
         </Button>
       )}
       {typeof children === "function"
-        ? children(formProps.form || form)
+        ? children(formProps.form || form, setAsTouched)
         : children}
       <Form.Item style={{ textAlign: "center" }}>
         <Button

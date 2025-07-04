@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Layout, theme, Typography, Button, Drawer } from "antd";
 import {
+  AppleOutlined,
   AppstoreOutlined,
   DollarOutlined,
   HomeOutlined,
@@ -124,6 +125,12 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           label: <Link href="/v/branches">Tiendas</Link>,
           children: undefined,
         },
+        {
+          key: `/v/products`,
+          icon: React.createElement(AppleOutlined),
+          label: <Link href="/v/products">Productos y servicios</Link>,
+          children: undefined,
+        },
       ],
     },
   ],
@@ -167,7 +174,7 @@ function DashboardLayout({
     items: [
       {
         key: "profile",
-        label: "Configuración",
+        label: "Perfil de usuario",
         icon: <SettingOutlined />,
         onClick: () => {
           router.push(`/${router.pathname.split("/")[1]}/profile`);
@@ -177,8 +184,8 @@ function DashboardLayout({
         key: "logout",
         label: "Cerrar sesión",
         icon: <LogoutOutlined />,
-        onClick: () => {
-          logout.mutate({ body: null });
+        onClick: async () => {
+          await logout.mutateAsync({ body: null });
           clearAllInfoFromLocalStorage();
           router.push("/");
         },

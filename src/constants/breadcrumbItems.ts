@@ -86,12 +86,24 @@ export const breadcrumItemTree: TreeStruct[] = [
         value: "Tiendas",
         children: [
           {
-            key: "[id]",
-            value: "[{id}]",
-          },
-          {
             key: "newBranch",
             value: "Nueva tienda",
+          },
+          {
+            key: "[id]",
+            value: "[{id}]",
+            children: [
+              {
+                key: "products",
+                value: "Productos y servicios",
+                children: [
+                  {
+                    key: "newProduct",
+                    value: "Nuevo producto o servicio",
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

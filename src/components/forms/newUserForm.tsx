@@ -45,7 +45,6 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
             }
       }
       requiredMark={false}
-      routeTo="/a/users"
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
       highligthOnChange={hasInitialValues}

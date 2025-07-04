@@ -1,5 +1,5 @@
 import { useCustomerAction } from "@/actions/customer.action";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import React, { ReactElement } from "react";
@@ -24,5 +24,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };
