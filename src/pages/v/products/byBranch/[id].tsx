@@ -12,11 +12,13 @@ import {
   Divider,
   Tag,
   Image,
+  Typography,
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
+import ChangeProductStateModal from "@/components/changeProductStateModal";
 
 type DataType = ProductService;
 const PRODUCT_TYPE_TAG: Record<string, any> = {
@@ -28,6 +30,18 @@ const PRODUCT_TYPE_TAG: Record<string, any> = {
   service: (
     <Tag bordered={false} color="magenta">
       Servicio
+    </Tag>
+  ),
+};
+const PRODUCT_STATE_TAG: Record<string, any> = {
+  available: (
+    <Tag bordered={false} color="blue">
+      Disponible
+    </Tag>
+  ),
+  unavailable: (
+    <Tag bordered={false} color="default">
+      No disponible
     </Tag>
   ),
 };
@@ -91,6 +105,9 @@ const Users = () => {
                 </>
               );
             })}
+            {!value?.availableHours && (
+              <Typography.Text type="secondary">No aplica</Typography.Text>
+            )}
           </Space>
         );
       },
@@ -113,10 +130,16 @@ const Users = () => {
       key: "state",
       dataIndex: "state",
       render(value, record, index) {
+        const stateTag = PRODUCT_STATE_TAG[value] || null;
+
         return (
-          <Tag color={record.state === "unavailable" ? "default" : "blue"}>
-            {value}
-          </Tag>
+          <Space wrap>
+            {stateTag}
+            <ChangeProductStateModal
+              productId={record.id}
+              currentState={value}
+            />
+          </Space>
         );
       },
     },

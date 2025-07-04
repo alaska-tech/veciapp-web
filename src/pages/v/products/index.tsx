@@ -1,8 +1,7 @@
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ProductService } from "@/constants/models";
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { ProductService, WEEKDAY_LABEL } from "@/constants/models";
 import {
   Table,
   Space,
@@ -13,14 +12,11 @@ import {
   Tag,
   Image,
   Typography,
-  Modal,
-  App,
 } from "antd";
 import Link from "next/link";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 import { useBranchAction } from "@/actions/branch.action";
-import FormElement from "@/components/forms/updateProductServiceState";
-import useAuthAction from "@/actions/auth.action";
+import ChangeProductStateModal from "@/components/changeProductStateModal";
 
 type DataType = ProductService;
 const PRODUCT_TYPE_TAG: Record<string, any> = {
@@ -94,6 +90,32 @@ const Users = () => {
               height={75}
             ></Image>
           </Image.PreviewGroup>
+        );
+      },
+    },
+    {
+      title: "Horarios disponibles",
+      key: "serviceScheduling",
+      dataIndex: "serviceScheduling",
+      render(value: ProductService["serviceScheduling"], record, index) {
+        return (
+          <Space direction="vertical" size="small">
+            {Object.entries(value?.availableHours ?? {}).map(([day, hours]) => {
+              return (
+                <>
+                  {hours.isOpen ? (
+                    <Tag key={day}>
+                      {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}{" "}
+                      {hours.open} - {hours.close}
+                    </Tag>
+                  ) : null}
+                </>
+              );
+            })}
+            {!value?.availableHours && (
+              <Typography.Text type="secondary">No aplica</Typography.Text>
+            )}
+          </Space>
         );
       },
     },
@@ -175,49 +197,4 @@ Users.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout> {page}</DashboardLayout>;
 };
 
-const ChangeProductStateModal = (props: {
-  productId: string;
-  currentState: string;
-}) => {
-  const actions = useProductServiceAction();
-  const changeStatus = actions.updateProductServiceState();
-  const authActions = useAuthAction();
-  const user = authActions.userSession;
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Modal
-        open={open}
-        onCancel={() => setOpen(false)}
-        title="Actualizar estado"
-        footer={null}
-      >
-        <FormElement
-          onFinish={async (values) => {
-            await changeStatus
-              .mutateAsync({
-                id: props.productId,
-                body: {
-                  state: values.state || "",
-                  updatedBy: user?.data?.email || "",
-                },
-              })
-              .then(
-                () => {
-                  setOpen(false);
-                },
-                () => {}
-              );
-          }}
-          loading={changeStatus.isPending}
-          initialValues={{ state: props.currentState }}
-        />
-      </Modal>
-      <Button
-        type="text"
-        icon={<EditOutlined />}
-        onClick={() => setOpen(true)}
-      ></Button>
-    </>
-  );
-};
+
