@@ -19,14 +19,24 @@ import {
   Tag,
 } from "antd";
 import Link from "next/link";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 
 type DataType = Branch;
 
 const Users = () => {
   const user = getUserInfo();
   const actions = useBranchAction();
-  const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  //const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
+  const branchQuery = actions.getBranchesByVendorIdPaginated({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+    vendorId: user?.foreignPersonId,
+  });
   const columns: TableColumnsType<DataType> = [
     {
       title: "Sucursal",
@@ -44,11 +54,11 @@ const Users = () => {
       width: "45%",
       render: (record: Branch) => {
         return (
-            <Descriptions 
+          <Descriptions
             style={{ whiteSpace: "nowrap" }}
             column={{ xxl: 4, xl: 3, lg: 2, md: 1, sm: 1, xs: 1 }}
             layout="vertical"
-            >
+          >
             <Descriptions.Item label="Tipo de negocio">
               {record.businessType}
             </Descriptions.Item>
@@ -100,11 +110,7 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link
-            href={`/v/products/byBranch/${record.id}`}
-          >
-          Inventario
-        </Link>
+          <Link href={`/v/products/byBranch/${record.id}`}>Inventario</Link>
           <Link href={`/v/branches/${record.id}`}>Detalles</Link>
           <Dropdown
             trigger={["click"]}
@@ -139,10 +145,25 @@ const Users = () => {
       </Space>
       <Table<DataType>
         columns={columns}
-        dataSource={getBranchById.data?.data}
-        loading={getBranchById.isLoading}
+        dataSource={branchQuery.data?.data.data}
+        loading={branchQuery.isLoading}
+        onChange={(pag, _filters, _sorter) => {
+          setPagination({
+            ...pagination,
+            current: pag.current || 1,
+            pageSize: pag.pageSize || 2,
+          });
+        }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: branchQuery.data?.data.meta.total || 0,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+        }}
         style={{
           overflow: "auto",
+          background: "#fff",
         }}
       />
     </div>

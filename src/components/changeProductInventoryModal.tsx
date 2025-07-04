@@ -25,7 +25,7 @@ const ChangeProductStateModal = (props: {
       <Modal
         open={open}
         onCancel={() => setOpen(false)}
-        title="Actualizar estado"
+        title="Actualizar inventario"
         footer={null}
       >
         <FormElement

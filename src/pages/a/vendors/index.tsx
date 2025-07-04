@@ -148,6 +148,7 @@ const Users = () => {
         loading={vendorQuery.isLoading}
         style={{
           overflow: "auto",
+          background: "#fff",
         }}
       />
     </div>

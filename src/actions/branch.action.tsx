@@ -1,5 +1,11 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity, queryEntityById, queryMultipleEntitiesById } from "./action";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityById,
+  queryEntityWithParameters,
+  queryMultipleEntitiesById,
+} from "./action";
 import { BaseAttributes, PaginatedResult, Response, Branch } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
@@ -66,6 +72,22 @@ export const useBranchAction = () => {
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
         >(`/branches/${id}/all-branches?limit=10&page=1`);
         return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getBranchesByVendorIdPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, vendorId }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
+        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`);
+        console.log(response);
+        return response.data;
       } catch (error) {
         throw error;
       }
@@ -201,6 +223,7 @@ export const useBranchAction = () => {
     createBranch,
     updateBranch,
     getBranchesByVendorId,
-    getBranchesById
+    getBranchesById,
+    getBranchesByVendorIdPaginated,
   };
 };

@@ -15,7 +15,7 @@ import {
   Typography,
 } from "antd";
 import Link from "next/link";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
 import ChangeProductStateModal from "@/components/changeProductStateModal";
@@ -51,8 +51,17 @@ const Users = () => {
   const router = useRouter();
   const { id } = router.query;
   const actions = useProductServiceAction();
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const branchActions = useBranchAction();
-  const productsQuery = actions.getProductServicesByBranchId(id as string);
+  const productsQuery = actions.getProductServicesPaginated({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+    branchId: id as string,
+  });
   const branchQuery = branchActions.getBranchById(id as string);
   const columns: TableColumnsType<DataType> = [
     {
@@ -195,8 +204,23 @@ const Users = () => {
         columns={columns}
         dataSource={productsQuery.data?.data.data}
         loading={productsQuery.isLoading}
+        onChange={(pag, _filters, _sorter) => {
+          setPagination({
+            ...pagination,
+            current: pag.current || 1,
+            pageSize: pag.pageSize || 2,
+          });
+        }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: productsQuery.data?.data.meta.total || 0,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+        }}
         style={{
           overflow: "auto",
+          background: "#fff",
         }}
       />
     </div>

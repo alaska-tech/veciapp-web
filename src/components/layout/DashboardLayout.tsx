@@ -214,6 +214,7 @@ function DashboardLayout({
           position: "fixed",
           top: 0,
           left: 0,
+          zIndex: 1000,
         }}
       >
         <div>
@@ -354,7 +355,7 @@ function DashboardLayout({
           }}
         />
       </Header>
-      <Content style={{ padding: "0 48px" }}>
+      <Content style={{ padding: "0 4px" }}>
         <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} />
         {backButton && <GoBackButton />}
         <AutoTitle titles={titles} subtitles={subtitles} />

@@ -14,7 +14,7 @@ import {
   Typography,
 } from "antd";
 import Link from "next/link";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { useBranchAction } from "@/actions/branch.action";
 import ChangeProductStateModal from "@/components/changeProductStateModal";
 import ChangeProductInventoryModal from "@/components/changeProductInventoryModal";
@@ -47,7 +47,15 @@ const PRODUCT_STATE_TAG: Record<string, any> = {
 const Users = () => {
   const user = getUserInfo();
   const actions = useProductServiceAction();
-  const productsQuery = actions.getProductServices();
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const productsQuery = actions.getProductServicesPaginated({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+  });
   const branchActions = useBranchAction();
   const branchesQuery = branchActions.getBranchesById(
     productsQuery.data?.data.data.map((e) => e.branchId)
@@ -195,8 +203,23 @@ const Users = () => {
         columns={columns}
         dataSource={productsQuery.data?.data.data}
         loading={productsQuery.isLoading}
+        onChange={(pag, _filters, _sorter) => {
+          setPagination({
+            ...pagination,
+            current: pag.current || 1,
+            pageSize: pag.pageSize || 2,
+          });
+        }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: productsQuery.data?.data.meta.total || 0,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+        }}
         style={{
           overflow: "auto",
+          background: "#fff",
         }}
       />
     </div>
@@ -208,5 +231,3 @@ export default Users;
 Users.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout> {page}</DashboardLayout>;
 };
-
-

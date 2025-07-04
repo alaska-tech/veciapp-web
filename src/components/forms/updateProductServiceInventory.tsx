@@ -13,7 +13,7 @@ export const FormElement = (props: {
       onFinish={props.onFinish}
       initialValues={props.initialValues}
     >
-      <Form.Item label="Cantidad" name="inventory" required={true}>
+      <Form.Item label="Nueva cantidad" name="inventory" required={true}>
         <InputNumber min={0} />
       </Form.Item>
       <Form.Item style={{ textAlign: "center" }}>

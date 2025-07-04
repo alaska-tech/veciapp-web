@@ -1,5 +1,10 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity, queryEntityById } from "./action";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityById,
+  queryEntityWithParameters,
+} from "./action";
 import {
   BaseAttributes,
   PaginatedResult,
@@ -33,6 +38,26 @@ export const useProductServiceAction = () => {
     } catch (error) {
       throw error;
     }
+  });
+  const getProductServicesPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId }) => {
+    return async function queryFn() {
+      try {
+        const branch = branchId ? `&branchId=${branchId}` : "";
+        const response = await apiClient.get<
+          Extract<
+            Response<PaginatedResult<ProductService>>,
+            { status: "Success" }
+          >
+        >(`/productService/list?limit=${limit}&page=${page}${branch}`);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
   const getProductServicesByBranchId = queryEntityById<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
@@ -348,5 +373,6 @@ export const useProductServiceAction = () => {
     uploadPicture,
     updateProductServiceState,
     updateProductServiceInventory,
+    getProductServicesPaginated,
   };
 };
