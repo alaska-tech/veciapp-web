@@ -97,13 +97,14 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
     ).reduce(
       (acc, [key, value]: [string, any]) => ({
         ...acc,
-        [key]: value
-          ? {
-              open: value[0].format(TIME_PICKER_FORMAT),
-              close: value[1].format(TIME_PICKER_FORMAT),
-              isOpen: true,
-            }
-          : { open: "00:00", close: "00:00", isOpen: false },
+        [key]: {
+          open: !!value ? value[0].format(TIME_PICKER_FORMAT) : "00:00",
+          close: !!value ? value[1].format(TIME_PICKER_FORMAT) : "00:00",
+          isOpen:
+            !!value &&
+            value[0].format(TIME_PICKER_FORMAT) !==
+              value[1].format(TIME_PICKER_FORMAT),
+        },
       }),
       {}
     );

@@ -110,9 +110,10 @@ const Users = () => {
         return (
           <Space direction="vertical" size="small">
             {Object.entries(value?.availableHours ?? {}).map(([day, hours]) => {
+              const isOpen = hours.open !== "00:00" && hours.close !== "00:00" ;
               return (
                 <>
-                  {hours.isOpen ? (
+                  {isOpen ? (
                     <Tag key={day}>
                       {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}{" "}
                       {hours.open} - {hours.close}
@@ -175,7 +176,9 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
-          <Link href={`/v/products/${record.id}`}>Editar</Link>
+          <Link href={`/v/products/${record.id}?name=${record.name}`}>
+            Editar
+          </Link>
           <Dropdown
             trigger={["click"]}
             menu={{

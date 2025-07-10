@@ -18,9 +18,11 @@ export const titles: Record<string, string> = {
   "/v/profile": "Perfil de usuario",
   "/v/branches": "Tiendas",
   "/v/branches/newBranch": "Crear nueva tienda para ${name}",
+  "/v/branches/[id]": "Detalles de ${name}",
   "/v/branches/[id]/products/newProduct": "Crear un nuevo producto o servicio para la tienda '${name}'",
   "/v/products": "Servicios y productos",
-  "/v/products/newProduct": "Crear un nuevo producto o servicio",
+  "/v/products/[id]": "Detalles de ${name}",
+  "/v/products/byBranch/[id]": "Servicios y productos de la tienda '${name}'",
 };
 export const subtitles: Record<string, string> = {
   "/a/home": "Resumen general",
