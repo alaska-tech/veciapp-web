@@ -8,7 +8,7 @@ const addJwtToHeader = (request: AxiosRequestConfig) => {
       Authorization: `Bearer ${jwt}`,
       'Content-Type': 'application/json',
     }
-    request.headers = newHeader
+    request.headers = {...newHeader, ...request.headers} // Merge new headers with existing ones
   }
   return request
 }

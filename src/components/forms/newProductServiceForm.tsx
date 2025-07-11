@@ -1,32 +1,19 @@
 import {
   Form,
-  GetProp,
   Input,
   InputNumber,
   Radio,
   TimePicker,
-  UploadFile,
-  UploadProps,
 } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import { ProductService, weekDay, WEEKDAY_LABEL } from "@models";
 import FormWrapper from "./formWrapper";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import { PlusOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
 import dayjs from "dayjs";
 
 type productServiceWithAuxProps = ProductService;
 
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const getBase64 = (file: FileType): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
 function parseInitialValues(values: ProductService) {
   const { serviceScheduling, ...rest } = values;
 
@@ -52,7 +39,6 @@ function parseInitialValues(values: ProductService) {
     ...rest,
   };
 }
-const MAX_NUMBER_OF_PHOTOS = 8 as const;
 const TIME_PICKER_FORMAT = "HH:mm";
 
 export const FormElement = <T extends productServiceWithAuxProps>(props: {
@@ -63,33 +49,9 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   userId: string;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
-  const user = getUserInfo();
   const [formInstance] = Form.useForm();
   const type = Form.useWatch("type", formInstance);
-  //----
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
-    }
-
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-  };
-
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
-
-  const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Cargar foto</div>
-    </button>
-  );
-  //----
   const handleFinish = async (values: T) => {
     const { serviceScheduling, ...rest } = values;
     const mappedAvailableHours = Object.entries(
@@ -307,3 +269,4 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   );
 };
 export default FormElement;
+
