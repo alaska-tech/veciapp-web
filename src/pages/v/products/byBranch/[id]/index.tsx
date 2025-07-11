@@ -201,7 +201,7 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
-          href={`/v/branches/${id}/products/newProduct?name=${branchQuery.data?.name}`}
+          href={`/v/products/byBranch/${id}/newProduct?name=${branchQuery.data?.name}`}
           icon={<PlusOutlined />}
         >
           Nuevo producto o servicio

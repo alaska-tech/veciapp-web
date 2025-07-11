@@ -163,7 +163,7 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
-          href={`/v/branches/newBranch?vendorId=${user?.foreignPersonId}&name=${user?.fullName}`}
+          href={`/v/branches/newBranch?name=${user?.fullName}`}
           icon={<AppstoreAddOutlined />}
         >
           Nueva tienda
@@ -199,5 +199,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout backButton> {page}</DashboardLayout>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };

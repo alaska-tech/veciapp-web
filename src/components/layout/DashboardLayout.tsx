@@ -51,7 +51,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
     },
     {
       key: `sub-users`,
-      label: "Proveedores",
+      label: "Veciproveedores",
       type: "group",
       children: [
         {
@@ -93,6 +93,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         },
         {
           key: `/a/conciliations`,
+          disabled: true,
           icon: React.createElement(ReconciliationOutlined),
           label: <Link href="/a/conciliations">Conciliaciones</Link>,
           children: undefined,
@@ -146,6 +147,10 @@ const roleKeyMap: Record<string, string> = {
   a: "admin",
   v: "vendor",
 };
+const roleLabels: Record<string, string> = {
+  a: "Administrador",
+  v: "Veciproveedor",
+};
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -178,14 +183,16 @@ function DashboardLayout({
   }, []);
   const dropdownMenu = {
     items: [
-      {
-        key: "profile",
-        label: "Perfil de usuario",
-        icon: <SettingOutlined />,
-        onClick: () => {
-          router.push(`/${router.pathname.split("/")[1]}/profile`);
-        },
-      },
+      currentUser.data?.role === "vendor"
+        ? {
+            key: "profile",
+            label: "Perfil de usuario",
+            icon: <SettingOutlined />,
+            onClick: () => {
+              router.push(`/${router.pathname.split("/")[1]}/profile`);
+            },
+          }
+        : ({} as any),
       {
         key: "logout",
         label: "Cerrar sesión",
@@ -240,7 +247,7 @@ function DashboardLayout({
             level={3}
             style={{ textAlign: "center", color: colorPrimary }}
           >
-            VeciApp {roleKeyMap[primaryUrlSegment]}
+            {roleLabels[primaryUrlSegment]}
           </Typography.Title>
           <AutoMenu items={lateralMenuItems[router.pathname.split("/")[1]]} />
         </div>
@@ -280,7 +287,7 @@ function DashboardLayout({
               flexWrap: "wrap",
             }}
           >
-            <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} />
+            {/* <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} /> */}
             {backButton && <GoBackButton />}
             <AutoTitle titles={titles} subtitles={subtitles} />
           </div>
@@ -320,7 +327,7 @@ function DashboardLayout({
             lineBreak: "auto",
           }}
         >
-          VeciApp {roleKeyMap[primaryUrlSegment]}
+          {roleLabels[primaryUrlSegment]}
         </Typography.Title>
         <AutoMenu
           items={lateralMenuItems[router.pathname.split("/")[1]]}
@@ -362,7 +369,7 @@ function DashboardLayout({
         />
       </Header>
       <Content style={{ padding: "0 4px" }}>
-        <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} />
+        {/* <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} /> */}
         {backButton && <GoBackButton />}
         <AutoTitle titles={titles} subtitles={subtitles} />
         {children}
@@ -372,7 +379,7 @@ function DashboardLayout({
   );
   return (
     <AuthVerifier
-      requireAuth={false}
+      requireAuth={true}
       roles={[rolesAllowed as CustomerRoleType[number]]}
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}

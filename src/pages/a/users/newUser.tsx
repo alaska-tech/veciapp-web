@@ -10,7 +10,7 @@ const Index = () => {
   const create = actions.createCustomer();
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <FormElement
         onFinish={async (values) => {
           await create.mutateAsync({ body: values });

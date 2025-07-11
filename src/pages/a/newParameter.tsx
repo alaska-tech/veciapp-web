@@ -10,7 +10,7 @@ const Index = () => {
   const createParameter = parameterActions.createParameter();
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <FormElement
         onFinish={async (values) => {
           await createParameter.mutateAsync({ body: values });

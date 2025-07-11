@@ -19,5 +19,5 @@ const Home = () => {
 export default Home
 
 Home.getLayout = function getLayout(page: ReactElement) {
-    return <DashboardLayout backButton> {page}</DashboardLayout>;
+    return <DashboardLayout> {page}</DashboardLayout>;
 };

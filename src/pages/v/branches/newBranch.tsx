@@ -21,7 +21,6 @@ const Index = () => {
 
   return (
     <Space direction="vertical">
-      <GoBackButton />
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({ body: values, vendorId: vendorId });

@@ -19,7 +19,7 @@ const Index = () => {
   const { id : vendorId, } = router.query;
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({

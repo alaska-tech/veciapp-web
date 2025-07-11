@@ -1,7 +1,7 @@
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ProductService, WEEKDAY_LABEL } from "@/constants/models";
+import { Branch, ProductService, WEEKDAY_LABEL } from "@/constants/models";
 import {
   Table,
   Space,
@@ -67,8 +67,23 @@ const Users = () => {
       key: "branchId",
       dataIndex: "branchId",
       render: (branchId: string) => {
-        return branchesQuery.find((e) => e.data?.data.data.id === branchId)
-          ?.data?.data.data.name;
+        const vendorQuery = branchesQuery.find((queryResult) => {
+          return queryResult.data?.data.data.id === branchId;
+        });
+        const { name = "", address = "" } =
+          vendorQuery?.data?.data.data || ({} as Branch);
+        return (
+          <Typography.Link
+            style={{ width: "100px" }}
+            ellipsis
+            href={`/v/branches/${branchId}?name=${name}`}
+          >
+            {name}
+            {", "}
+            <br />
+            {address || "Desconocido"}
+          </Typography.Link>
+        );
       },
     },
     {
