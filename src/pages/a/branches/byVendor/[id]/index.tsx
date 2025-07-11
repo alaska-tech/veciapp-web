@@ -1,16 +1,12 @@
-import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import { useVendorAction } from "@/actions/vendor.action";
-import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   Branch,
-  Vendor,
   weekDay,
   WEEKDAY_LABEL,
   weekDayType,
 } from "@/constants/models";
-import { AppstoreAddOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -18,58 +14,33 @@ import {
   TableColumnsType,
   Dropdown,
   Divider,
-  Descriptions,
-  Image,
   Tag,
-  Typography,
+  Image,
+  Descriptions,
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
+import { useRouter } from "next/router";
+import { useBranchAction } from "@/actions/branch.action";
+import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 
 type DataType = Branch;
-
 const Users = () => {
   const user = getUserInfo();
+  const router = useRouter();
+  const { name: vendorName, id } = router.query;
   const actions = useBranchAction();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const branchQuery = actions.getBranchesByVendorIdPaginated({
+  const productsQuery = actions.getBranchesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.foreignPersonId,
+    vendorId: id as string,
   });
-  const vendorActions = useVendorAction();
-  const vendorQueries = vendorActions.getVendorsById(
-    branchQuery.data?.data.data.map((branch) => branch.vendorId)
-  );
   const columns: TableColumnsType<DataType> = [
-    {
-      title: "Gerente",
-      key: "vendorId",
-      dataIndex: "vendorId",
-      render: (value) => {
-        const vendorQuery = vendorQueries.find((queryResult) => {
-          return queryResult.data?.data.data.id === value;
-        });
-        const { fullName = "", email = "" } =
-          vendorQuery?.data?.data.data || ({} as Vendor);
-        return (
-          <Typography.Link
-            style={{ width: "100px" }}
-            ellipsis
-            href={`/a/vendors/${value}?name=${fullName}`}
-          >
-            {fullName}
-            {", "}
-            <br />
-            {email || "Desconocido"}
-          </Typography.Link>
-        );
-      },
-    },
     {
       title: "Sucursal",
       key: "name",
@@ -191,11 +162,20 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}></Space>
+      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+        <Button
+          type="default"
+          href={`/a/branches/byVendor/${id}/newBranch?name=${vendorName}`}
+          style={{ float: "inline-end" }}
+          icon={<PlusOutlined />}
+        >
+          Crear tienda
+        </Button>
+      </Space>
       <Table<DataType>
         columns={columns}
-        dataSource={branchQuery.data?.data.data}
-        loading={branchQuery.isLoading}
+        dataSource={productsQuery.data?.data.data}
+        loading={productsQuery.isLoading}
         onChange={(pag, _filters, _sorter) => {
           setPagination({
             ...pagination,
@@ -206,7 +186,7 @@ const Users = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: branchQuery.data?.data.meta.total || 0,
+          total: productsQuery.data?.data.meta.total || 0,
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50],
         }}

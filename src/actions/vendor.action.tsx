@@ -1,5 +1,10 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity, queryEntityById } from "./action";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityById,
+  queryMultipleEntitiesById,
+} from "./action";
 import { BaseAttributes, PaginatedResult, Response, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
@@ -76,8 +81,23 @@ export const useVendorAction = () => {
         const response = await apiClient.get<
           Extract<Response<Vendor>, { status: "Success" }>
         >(`/vendors/get-details/${id}`);
-        console.log(response)
+        console.log(response);
         return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getVendorsById = queryMultipleEntitiesById<
+    AxiosResponse<Extract<Response<Vendor>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_VENDOR] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<Vendor>, { status: "Success" }>
+        >(`/vendors/get-details/${id}`);
+        return response;
       } catch (error) {
         throw error;
       }
@@ -183,7 +203,7 @@ export const useVendorAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<Vendor>, { status: "Success" }>
-          >("/vendors" + id, body);
+          >("/vendors/edit/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -217,5 +237,6 @@ export const useVendorAction = () => {
     deleteVendor,
     createVendor,
     updateVendor,
+    getVendorsById,
   };
 };

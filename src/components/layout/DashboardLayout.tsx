@@ -51,19 +51,25 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
     },
     {
       key: `sub-users`,
-      label: "Usuarios",
+      label: "Proveedores",
       type: "group",
       children: [
         {
           key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/a/vendors">Proveedores</Link>,
+          label: <Link href="/a/vendors">Gerentes</Link>,
           children: undefined,
         },
         {
-          key: `/a/users`,
-          icon: React.createElement(TeamOutlined),
-          label: <Link href="/a/users">Clientes</Link>,
+          key: `/a/branches`,
+          icon: React.createElement(AppstoreOutlined),
+          label: <Link href="/a/branches">Tiendas</Link>,
+          children: undefined,
+        },
+        {
+          key: `/a/products`,
+          icon: React.createElement(AppleOutlined),
+          label: <Link href="/a/products">Productos</Link>,
           children: undefined,
         },
       ],
@@ -74,6 +80,12 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
+          key: `/a/users`,
+          icon: React.createElement(TeamOutlined),
+          label: <Link href="/a/users">Clientes</Link>,
+          children: undefined,
+        },
+        {
           key: `/a/payments`,
           icon: React.createElement(DollarOutlined),
           label: <Link href="/a/payments">Pagos</Link>,
@@ -83,12 +95,6 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           key: `/a/conciliations`,
           icon: React.createElement(ReconciliationOutlined),
           label: <Link href="/a/conciliations">Conciliaciones</Link>,
-          children: undefined,
-        },
-        {
-          key: `/a/branches`,
-          icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/a/branches">Tiendas</Link>,
           children: undefined,
         },
       ],

@@ -1,6 +1,9 @@
+import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import { useCustomerAction } from "@/actions/customer.action";
+import { useProductServiceAction } from "@/actions/productservice.action";
 import { useVendorAction } from "@/actions/vendor.action";
+import NewProductServiceForm from "@/components/forms/newProductServiceForm";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Result, Button, Space } from "antd";
@@ -8,18 +11,14 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 
-const NewFormDynamic = dynamic(
-  () =>
-    import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
-  { ssr: false }
-);
-
 const Index = () => {
   const router = useRouter();
   const { id } = router.query;
-  const actions = useBranchAction();
-  const queryResult = actions.getBranchById(id as string);
-  const update = actions.updateBranch();
+  const actions = useProductServiceAction();
+  const queryResult = actions.getProductServiceById(id as string);
+  const update = actions.updateProductService();
+  const authActions = useAuthAction();
+  const user = authActions.userSession;
   if (queryResult.isLoading) {
     return <LoadingOutlined />;
   }
@@ -44,13 +43,14 @@ const Index = () => {
   }
   return (
     <Space direction="vertical">
-      <NewFormDynamic
+      <NewProductServiceForm
         onFinish={async (values) => {
           await update.mutateAsync({ body: values, id: id as string });
         }}
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
-        vendorId={queryResult.data?.vendorId || ""}
+        branchId={queryResult.data?.branchId || ""}
+        userId={user.data?.id || ""}
       />
     </Space>
   );

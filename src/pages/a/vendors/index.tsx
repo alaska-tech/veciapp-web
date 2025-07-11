@@ -56,7 +56,7 @@ const Users = () => {
   const queryClient = useQueryClient();
   const columns: TableColumnsType<Vendor> = [
     {
-      title: "Name",
+      title: "Nombre",
       dataIndex: "fullName",
       key: "fullName",
     },
@@ -90,6 +90,9 @@ const Users = () => {
       key: "actions",
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
+          <a href={`/a/branches/byVendor/${record.id}?name=${record.fullName}`}>
+           Tiendas
+          </a>
           <a href={`/a/vendors/${record.id}?name=${record.fullName}`}>
             Detalles
           </a>
@@ -97,18 +100,7 @@ const Users = () => {
             menu={{
               items: [
                 {
-                  key: "1",
-                  label: (
-                    <Link
-                      href={`/a/branches/newBranch?vendorId=${record.id}&name=${record.fullName}`}
-                    >
-                      Crear tienda
-                    </Link>
-                  ),
-                },
-                {
                   key: "2",
-                  danger: true,
                   label: (
                     <DeleteVendorButton
                       courseId={record.id}
@@ -126,7 +118,7 @@ const Users = () => {
           >
             <a onClick={(e) => e.preventDefault()}>
               <Space>
-                Opciones
+                Mas...
                 <DownOutlined />
               </Space>
             </a>
