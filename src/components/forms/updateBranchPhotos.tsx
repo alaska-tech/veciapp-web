@@ -10,7 +10,7 @@ import {
   Space,
 } from "antd";
 
-const MAX_NUMBER_OF_PHOTOS = 4 as const;
+const MAX_NUMBER_OF_PHOTOS = 3 as const;
 
 export const PhotoUploadModal = (props: { branchId: string }) => {
   const queryClient = useQueryClient();

@@ -181,7 +181,7 @@ const Users = () => {
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
           <Link href={`/v/products/${record.id}?name=${record.name}`}>
-            Editar
+            Detalles
           </Link>
           <Dropdown
             trigger={["click"]}
@@ -236,5 +236,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

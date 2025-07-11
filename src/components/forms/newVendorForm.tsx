@@ -14,6 +14,14 @@ function parseInitialValues(values: any) {
     : ["", ""];
   return { ...values, prefix, cellphone };
 }
+const nonEditableFields = [
+  "internalCode",
+  "fullName",
+  "identification",
+  "commercialRegistry",
+  "rut",
+  "email",
+] as const;
 export const FormElement = <T extends vendorWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
@@ -22,10 +30,15 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
   const hasInitialValues: boolean = !!props.initialValues;
   const handleFinish = async (values: T) => {
     const { cellphone, prefix, ...rest } = values;
+    const restWithoutNonEditableFields = Object.fromEntries(
+      Object.entries(rest).filter(
+        ([key]) => !nonEditableFields.includes(key as any)
+      )
+    );
     const mappedCellphone =
       !!prefix && !!cellphone ? prefix + " " + cellphone : "";
     const mappedValues = {
-      ...rest,
+      ...restWithoutNonEditableFields,
       cellphone: mappedCellphone,
     } as T;
     if (props.onFinish) {
@@ -121,7 +134,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={hasInitialValues} />
             </Form.Item>
             <Form.Item
               name="cellphone"
@@ -317,4 +330,4 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
   );
 };
 
-export default FormElement
+export default FormElement;

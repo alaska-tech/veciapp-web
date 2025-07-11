@@ -13,9 +13,10 @@ export const AutoTitle = ({ titles, subtitles }: AutoTitleProps) => {
       String(router.query[key] || `\${${key}}`)
     );
   };
-
-  const title = titles[router.pathname] || "";
-  const subtitle = subtitles[router.pathname] || "";
+  // Remove the first segment of the pathname (role)
+  const trimmedPathname = router.pathname.split("/").slice(2).join("/");
+  const title = titles[trimmedPathname] || "";
+  const subtitle = subtitles[trimmedPathname] || "";
 
   return (
     <>
