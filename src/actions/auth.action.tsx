@@ -105,5 +105,45 @@ export default function useAuthAction() {
       },
     }
   );
-  return { logOut, userSession, logIn };
+  const recoverPassword = mutateEntity<
+    AxiosResponse<
+      Extract<Response<{ message: string }>, { status: "Success" }>
+    >,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: { email: string } }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.post(`/auth/forgot-password`, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, _variables, _context) => {
+        const message =
+          error.response?.data.error.message || "Hubo un error inesperado";
+        notification.error({
+          message: "Error",
+          description: message,
+          duration: 5,
+        });
+      },
+      onSuccess(response, _variables, _context) {
+        const answer = response.data.data.message || "Success";
+        message.success({
+          content: answer,
+          duration: 5,
+        });
+      },
+    }
+  );
+  return { logOut, userSession, logIn, recoverPassword };
 }
