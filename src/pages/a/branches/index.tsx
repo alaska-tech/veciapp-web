@@ -3,6 +3,7 @@ import { getUserInfo } from "@/actions/localStorage.actions";
 import { useVendorAction } from "@/actions/vendor.action";
 import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import AsyncButton from "@/components/pure/AsyncButton";
 import {
   Branch,
   Vendor,
@@ -31,6 +32,7 @@ type DataType = Branch;
 const Users = () => {
   const user = getUserInfo();
   const actions = useBranchAction();
+  const deleteBranch = actions.deleteBranch();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -174,7 +176,16 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Eliminar",
+                  label: (
+                    <AsyncButton
+                      onClick={() => {
+                        deleteBranch.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}

@@ -2,6 +2,7 @@ import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import AsyncButton from "@/components/pure/AsyncButton";
 import {
   Branch,
   weekDay,
@@ -28,6 +29,7 @@ type DataType = Branch;
 const Users = () => {
   const user = getUserInfo();
   const actions = useBranchAction();
+  const deleteBranch = actions.deleteBranch()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -144,7 +146,17 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Eliminar",
+                  label: (
+                    <AsyncButton
+                    type="text"
+                      onClick={() => {
+                        deleteBranch.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}
