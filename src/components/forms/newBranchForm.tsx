@@ -4,11 +4,9 @@ import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 import { Branch, weekDay, WEEKDAY_LABEL } from "@/constants/models";
-import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
-import { getUserInfo } from "@/actions/localStorage.actions";
 
 dayjs.extend(customParseFormat);
 
@@ -69,10 +67,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
   initialValues?: T;
+  vendorId: string
 }) => {
-  const router = useRouter();
-  const { vendorId } = router.query;
-  const user = getUserInfo();
   const hasInitialValues: boolean = !!props.initialValues;
   const mapValues = (values: any) => {
     const {
@@ -103,7 +99,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
         type: "Point",
         coordinates: [location.lng, location.lat],
       },
-      vendorId,
+      vendorId: props.vendorId,
       operatingHours: mappedOperatingHours,
       ...rest,
     };

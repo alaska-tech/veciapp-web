@@ -20,22 +20,20 @@ const Index = () => {
   const create = actions.createProductService();
   const router = useRouter();
   const { id } = router.query;
-  const authActions = useAuthAction();
-  const user = authActions.userSession;
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({
             body: values,
-            userId: user.data?.id ?? "",
+            userId: "",
             branchId: (id as string) || "",
           });
         }}
         loading={create.isPending}
         branchId={(id as string) || ""}
-        userId={user.data?.id || ""}
+        userId={""}
       />
     </Space>
   );

@@ -44,15 +44,7 @@ const Index = () => {
     );
   }
   return (
-    <Space direction="vertical">
-      <Button
-        type="default"
-        href={`/a/branches/newBranch?vendorId=${vendorQuery.data?.id}&name=${vendorQuery.data?.fullName}`}
-        style={{ float: "inline-end" }}
-        icon={<PlusOutlined />}
-      >
-        Crear tienda
-      </Button>
+    <Space direction="vertical">      
       <NewFormDynamic
         onFinish={async (values) => {
           await updateVendor.mutateAsync({ body: values, id: id as string });

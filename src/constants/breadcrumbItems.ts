@@ -53,6 +53,10 @@ export const breadcrumItemTree: TreeStruct[] = [
             key: "newBranch",
             value: "Nueva tienda",
           },
+          {
+            key: "byVendor",
+            value: "Por vendedor",
+          },
         ],
       },
       {

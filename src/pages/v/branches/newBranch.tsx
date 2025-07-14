@@ -1,3 +1,4 @@
+import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
@@ -14,14 +15,18 @@ const NewFormDynamic = dynamic(
 const Index = () => {
   const actions = useBranchAction();
   const create = actions.createBranch();
+  const auth = useAuthAction();
+  const user = auth.userSession;
+  const vendorId = user.data?.foreignPersonId || "";
+
   return (
     <Space direction="vertical">
-      <GoBackButton />
       <NewFormDynamic
         onFinish={async (values) => {
-          await create.mutateAsync({ body: values, vendorId: values.vendorId });
+          await create.mutateAsync({ body: values, vendorId: vendorId });
         }}
         loading={create.isPending}
+        vendorId={vendorId}
       />
     </Space>
   );
@@ -30,5 +35,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

@@ -1,15 +1,12 @@
-import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import AsyncButton from "@/components/pure/AsyncButton";
 import {
   Branch,
   weekDay,
   WEEKDAY_LABEL,
   weekDayType,
 } from "@/constants/models";
-import { AppstoreAddOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -17,17 +14,22 @@ import {
   TableColumnsType,
   Dropdown,
   Divider,
-  Descriptions,
-  Image,
   Tag,
+  Image,
+  Descriptions,
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
+import { useRouter } from "next/router";
+import { useBranchAction } from "@/actions/branch.action";
+import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
+import AsyncButton from "@/components/pure/AsyncButton";
 
 type DataType = Branch;
-
 const Users = () => {
   const user = getUserInfo();
+  const router = useRouter();
+  const { name: vendorName, id } = router.query;
   const actions = useBranchAction();
   const deleteBranch = actions.deleteBranch()
   const [pagination, setPagination] = useState({
@@ -35,11 +37,10 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
-  //const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
-  const branchQuery = actions.getBranchesByVendorIdPaginated({
+  const productsQuery = actions.getBranchesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.foreignPersonId,
+    vendorId: id as string,
   });
   const columns: TableColumnsType<DataType> = [
     {
@@ -134,10 +135,10 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/v/products/byBranch/${record.id}?name=${record.name}`}>
+          <Link href={`/a/products/byBranch/${record.id}?name=${record.name}`}>
             Inventario
           </Link>
-          <Link href={`/v/branches/${record.id}?name=${record.name}`}>
+          <Link href={`/a/branches/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
           <Dropdown
@@ -148,7 +149,6 @@ const Users = () => {
                   key: "2",
                   label: (
                     <AsyncButton
-                    type="text"
                       onClick={() => {
                         deleteBranch.mutateAsync({ id: record.id });
                       }}
@@ -175,16 +175,18 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
-          href={`/v/branches/newBranch?name=${user?.fullName}`}
-          icon={<AppstoreAddOutlined />}
+          type="default"
+          href={`/a/branches/byVendor/${id}/newBranch?name=${vendorName}`}
+          style={{ float: "inline-end" }}
+          icon={<PlusOutlined />}
         >
-          Nueva tienda
+          Crear tienda
         </Button>
       </Space>
       <Table<DataType>
         columns={columns}
-        dataSource={branchQuery.data?.data.data}
-        loading={branchQuery.isLoading}
+        dataSource={productsQuery.data?.data.data}
+        loading={productsQuery.isLoading}
         onChange={(pag, _filters, _sorter) => {
           setPagination({
             ...pagination,
@@ -195,7 +197,7 @@ const Users = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: branchQuery.data?.data.meta.total || 0,
+          total: productsQuery.data?.data.meta.total || 0,
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50],
         }}
@@ -211,5 +213,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

@@ -9,7 +9,8 @@ import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 
 const NewFormDynamic = dynamic(
-  () => import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
+  () =>
+    import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
   { ssr: false }
 );
 
@@ -49,6 +50,7 @@ const Index = () => {
         }}
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
+        vendorId={queryResult.data?.vendorId || ""}
       />
     </Space>
   );
@@ -57,5 +59,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

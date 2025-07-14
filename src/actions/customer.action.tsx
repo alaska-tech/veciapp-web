@@ -141,7 +141,7 @@ export const useCustomerAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<Customer>, { status: "Success" }>
-          >("/customers" + id, body);
+          >("/customers/edit/" + id, body);
           return response;
         } catch (error) {
           throw error;

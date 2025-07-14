@@ -1,15 +1,8 @@
-import { useBranchAction } from "@/actions/branch.action";
+import { useProductServiceAction } from "@/actions/productservice.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import AsyncButton from "@/components/pure/AsyncButton";
-import {
-  Branch,
-  weekDay,
-  WEEKDAY_LABEL,
-  weekDayType,
-} from "@/constants/models";
-import { AppstoreAddOutlined } from "@ant-design/icons";
+import { ProductService, WEEKDAY_LABEL } from "@/constants/models";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -17,40 +10,77 @@ import {
   TableColumnsType,
   Dropdown,
   Divider,
-  Descriptions,
-  Image,
   Tag,
+  Image,
+  Typography,
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
+import { useRouter } from "next/router";
+import { useBranchAction } from "@/actions/branch.action";
+import ChangeProductStateModal from "@/components/changeProductStateModal";
+import ChangeProductInventoryModal from "@/components/changeProductInventoryModal";
+import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos";
+import AsyncButton from "@/components/pure/AsyncButton";
 
-type DataType = Branch;
-
+type DataType = ProductService;
+const PRODUCT_TYPE_TAG: Record<string, any> = {
+  product: (
+    <Tag bordered={false} color="geekblue">
+      Producto
+    </Tag>
+  ),
+  service: (
+    <Tag bordered={false} color="magenta">
+      Servicio
+    </Tag>
+  ),
+};
+const PRODUCT_STATE_TAG: Record<string, any> = {
+  available: (
+    <Tag bordered={false} color="blue">
+      Disponible
+    </Tag>
+  ),
+  unavailable: (
+    <Tag bordered={false} color="default">
+      No disponible
+    </Tag>
+  ),
+};
 const Users = () => {
   const user = getUserInfo();
-  const actions = useBranchAction();
-  const deleteBranch = actions.deleteBranch()
+  const router = useRouter();
+  const { id } = router.query;
+  const actions = useProductServiceAction();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  //const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
-  const branchQuery = actions.getBranchesByVendorIdPaginated({
+  const branchActions = useBranchAction();
+  const deleteProduct = actions.deleteProductService();
+  const productsQuery = actions.getProductServicesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.foreignPersonId,
+    branchId: id as string,
   });
+  const branchQuery = branchActions.getBranchById(id as string);
   const columns: TableColumnsType<DataType> = [
     {
-      title: "Sucursal",
+      title: "Nombre",
       key: "name",
       dataIndex: "name",
-    },
-    {
-      title: "Dirección",
-      key: "address",
-      dataIndex: "address",
+      render(value, record, index) {
+        const typeTag = PRODUCT_TYPE_TAG[record.type] || null;
+        return (
+          <Space wrap>
+            {typeTag}
+            {value}
+            <Tag>{record.categoryId}</Tag>
+          </Space>
+        );
+      },
     },
     {
       title: "Imagen",
@@ -67,65 +97,76 @@ const Users = () => {
                 height={75}
               ></Image>
             </Image.PreviewGroup>
-            <PhotoUploadModal branchId={record.id} />
+            <PhotoUploadModal productServiceId={record.id} />
           </Space>
         );
       },
     },
     {
-      title: "Operacion",
-      key: "id",
-      width: "45%",
-      render: (record: Branch) => {
+      title: "Horarios disponibles",
+      key: "serviceScheduling",
+      dataIndex: "serviceScheduling",
+      render(value: ProductService["serviceScheduling"], record, index) {
         return (
-          <Descriptions
-            style={{ whiteSpace: "nowrap" }}
-            column={{ xxl: 4, xl: 3, lg: 2, md: 1, sm: 1, xs: 1 }}
-            layout="vertical"
-          >
-            <Descriptions.Item label="Tipo de negocio">
-              {record.businessType}
-            </Descriptions.Item>
-            <Descriptions.Item label="Recogida en tienda">
-              {record.isPickupAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
-            </Descriptions.Item>
-            <Descriptions.Item label="Domicilio">
-              {record.isDeliveryAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
-            </Descriptions.Item>
-            <Descriptions.Item label="Formas de pago">
-              <Space wrap>
-                {record.availablePaymentMethods.map((e) => {
-                  return <Tag key={e}>{e}</Tag>;
-                })}
-              </Space>
-            </Descriptions.Item>
-            <Descriptions.Item label="Horario de atención">
-              <Space direction="vertical">
-                {record.operatingHours ? (
-                  Object.entries(record.operatingHours)
-                    .sort(([dayA], [dayB]) => {
-                      return (
-                        weekDay.indexOf(dayA as weekDayType[number]) -
-                        weekDay.indexOf(dayB as weekDayType[number])
-                      );
-                    })
-                    .map(([day, hours]) => {
-                      if (!!hours && !!hours[0] && !!hours[1]) {
-                        return (
-                          <Tag key={day}>
-                            {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}:{" "}
-                            {hours[0]} - {hours[1]}
-                          </Tag>
-                        );
-                      }
-                      return null;
-                    })
-                ) : (
-                  <Tag color="warning">Sin horario registrado</Tag>
-                )}
-              </Space>
-            </Descriptions.Item>
-          </Descriptions>
+          <Space direction="vertical" size="small">
+            {Object.entries(value?.availableHours ?? {}).map(([day, hours]) => {
+              const isOpen = hours.open !== "00:00" && hours.close !== "00:00";
+              return (
+                <>
+                  {isOpen ? (
+                    <Tag key={day}>
+                      {WEEKDAY_LABEL[day as keyof typeof WEEKDAY_LABEL]}{" "}
+                      {hours.open} - {hours.close}
+                    </Tag>
+                  ) : null}
+                </>
+              );
+            })}
+            {!value?.availableHours && (
+              <Typography.Text type="secondary">No aplica</Typography.Text>
+            )}
+          </Space>
+        );
+      },
+    },
+    {
+      title: "Precio",
+      key: "finalPrice",
+      dataIndex: "finalPrice",
+      render: (value: string, record, index) => {
+        return <>{Number(value).toLocaleString("es-CO")}</>;
+      },
+    },
+    {
+      title: "Inventario",
+      key: "inventory",
+      dataIndex: "inventory",
+      render(value, record, index) {
+        return (
+          <Space wrap>
+            {value}
+            <ChangeProductInventoryModal
+              productId={record.id}
+              currentValue={value}
+            />
+          </Space>
+        );
+      },
+    },
+    {
+      title: "Estado",
+      key: "state",
+      dataIndex: "state",
+      render(value, record, index) {
+        const stateTag = PRODUCT_STATE_TAG[value] || null;
+        return (
+          <Space wrap>
+            {stateTag}
+            <ChangeProductStateModal
+              productId={record.id}
+              currentState={value}
+            />
+          </Space>
         );
       },
     },
@@ -133,11 +174,8 @@ const Users = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/v/products/byBranch/${record.id}?name=${record.name}`}>
-            Inventario
-          </Link>
-          <Link href={`/v/branches/${record.id}?name=${record.name}`}>
+        <Space split={<Divider type="vertical" />}>
+          <Link href={`/a/products/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
           <Dropdown
@@ -148,9 +186,8 @@ const Users = () => {
                   key: "2",
                   label: (
                     <AsyncButton
-                    type="text"
                       onClick={() => {
-                        deleteBranch.mutateAsync({ id: record.id });
+                        deleteProduct.mutateAsync({ id: record.id });
                       }}
                       popConfirm
                     >
@@ -162,7 +199,7 @@ const Users = () => {
             }}
             placement="bottomRight"
           >
-            <Button type="link">Mas...</Button>
+            <Button type="link">More...</Button>
           </Dropdown>
         </Space>
       ),
@@ -175,16 +212,16 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
-          href={`/v/branches/newBranch?name=${user?.fullName}`}
-          icon={<AppstoreAddOutlined />}
+          href={`/a/products/byBranch/${id}/newProduct?name=${branchQuery.data?.name}`}
+          icon={<PlusOutlined />}
         >
-          Nueva tienda
+          Nuevo producto o servicio
         </Button>
       </Space>
       <Table<DataType>
         columns={columns}
-        dataSource={branchQuery.data?.data.data}
-        loading={branchQuery.isLoading}
+        dataSource={productsQuery.data?.data.data}
+        loading={productsQuery.isLoading}
         onChange={(pag, _filters, _sorter) => {
           setPagination({
             ...pagination,
@@ -195,7 +232,7 @@ const Users = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: branchQuery.data?.data.meta.total || 0,
+          total: productsQuery.data?.data.meta.total || 0,
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50],
         }}
@@ -211,5 +248,5 @@ const Users = () => {
 export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

@@ -72,7 +72,9 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
             router.back();
           }
         },
-        () => {}
+        (error) => {
+          console.error(error);
+        }
       );
     }
   };
