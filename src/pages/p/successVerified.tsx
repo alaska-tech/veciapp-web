@@ -17,7 +17,12 @@ const SuccessVerified = () => {
     }, 1000);
 
     const redirectTimer = setTimeout(() => {
-      router.replace("/");
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = 'veciapp://';
+      } else {
+        router.replace("/");
+      }
     }, 12000);
 
     return () => {
@@ -39,7 +44,7 @@ const SuccessVerified = () => {
     >
       <Title level={4}>Todo listo</Title>
       <Text>
-        Muchas gracias, ahora seras dirigido a la aplicación en {countdown}{" "}
+        Muchas gracias, ahora seras dirigido al inicio de sesión en {countdown}{" "}
         segundos.
       </Text>
       <Button loading={true} block type="primary" size="large" />
