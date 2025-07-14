@@ -2,6 +2,7 @@ import useAuthAction from "@/actions/auth.action";
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import { SendOutlined } from "@ant-design/icons";
 import { Form, Input, Button } from "antd";
+import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 interface FormValues {
   email: string;
@@ -10,9 +11,15 @@ const Index = () => {
   const [formInstance] = Form.useForm();
   const actions = useAuthAction();
   const recoverPassword = actions.recoverPassword();
+  const router = useRouter();
   const handleSubmit = async (values: FormValues) => {
     try {
-      await recoverPassword.mutateAsync({ body: values });
+      await recoverPassword.mutateAsync({ body: values }).then(
+        () => {
+          router.push("/");
+        },
+        () => {}
+      );
     } catch (error) {
       console.error(error);
     }
