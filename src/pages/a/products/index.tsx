@@ -19,6 +19,7 @@ import { useBranchAction } from "@/actions/branch.action";
 import ChangeProductStateModal from "@/components/changeProductStateModal";
 import ChangeProductInventoryModal from "@/components/changeProductInventoryModal";
 import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos";
+import AsyncButton from "@/components/pure/AsyncButton";
 
 type DataType = ProductService;
 const PRODUCT_TYPE_TAG: Record<string, any> = {
@@ -48,6 +49,7 @@ const PRODUCT_STATE_TAG: Record<string, any> = {
 const Users = () => {
   const user = getUserInfo();
   const actions = useProductServiceAction();
+  const deleteProduct = actions.deleteProductService()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -204,7 +206,16 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Eliminar",
+                  label: (
+                    <AsyncButton
+                      onClick={() => {
+                        deleteProduct.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}

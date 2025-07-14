@@ -13,14 +13,14 @@ import {
 } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
-import { QueryKey } from "@tanstack/react-query";
+import { QueryClient, QueryKey, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY_BRANCH } from "./branch.action";
 
 export const QUERY_KEY_PRODUCTSERVICE = "productService" as const;
 
 export const useProductServiceAction = () => {
   const { notification, message } = App.useApp();
-
+  const queryClient = useQueryClient();
   const getProductServices = queryEntity<
     AxiosResponse<
       Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>
@@ -33,7 +33,7 @@ export const useProductServiceAction = () => {
           Response<PaginatedResult<ProductService>>,
           { status: "Success" }
         >
-      >("/productService/list?limit=50&page=0");
+      >("/productservice/list?limit=50&page=0");
       return response.data;
     } catch (error) {
       throw error;
@@ -51,7 +51,7 @@ export const useProductServiceAction = () => {
             Response<PaginatedResult<ProductService>>,
             { status: "Success" }
           >
-        >(`/productService/list?limit=${limit}&page=${page}${branch}`);
+        >(`/productservice/list?limit=${limit}&page=${page}${branch}`);
         console.log(response);
         return response.data;
       } catch (error) {
@@ -70,7 +70,7 @@ export const useProductServiceAction = () => {
             Response<PaginatedResult<ProductService>>,
             { status: "Success" }
           >
-        >(`/productService/list?limit=50&page=0&branchId=${id}`);
+        >(`/productservice/list?limit=50&page=0&branchId=${id}`);
         console.log(response);
         return response.data;
       } catch (error) {
@@ -86,7 +86,7 @@ export const useProductServiceAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<{ data: ProductService }>, { status: "Success" }>
-        >(`/productService/get-details/${id}`);
+        >(`/productservice/get-details/${id}`);
         console.log(response);
         return response.data.data.data;
       } catch (error) {
@@ -109,7 +109,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.delete<
             Extract<Response<null>, { status: "Success" }>
-          >("/productServicees/delete/" + id);
+          >("/productservice/delete/" + id);
           return response;
         } catch (error) {
           throw error;
@@ -159,7 +159,7 @@ export const useProductServiceAction = () => {
 
           const response = await apiClient.post<
             Extract<Response<string>, { status: "Success" }>
-          >("/productService/upload-picture", formData, {
+          >("/productservice/upload-picture", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -204,7 +204,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.post<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService", {
+          >("/productservice", {
             ...body,
             vendorId,
             branchId,
@@ -249,7 +249,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService/update/" + id, body);
+          >("/productservice/update/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -289,7 +289,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService/state/update/" + id, body);
+          >("/productservice/state/update/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -336,7 +336,7 @@ export const useProductServiceAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<ProductService>, { status: "Success" }>
-          >("/productService/inventory/update/" + id, body);
+          >("/productservice/inventory/update/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -353,6 +353,7 @@ export const useProductServiceAction = () => {
         });
       },
       onSuccess: async (data, variables, context) => {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_PRODUCTSERVICE] });
         const productService = data.data.data;
         message.success({
           content: `Producto o servicio ${

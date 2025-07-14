@@ -9,13 +9,13 @@ import {
 import { BaseAttributes, PaginatedResult, Response, Branch } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
-import { QueryKey } from "@tanstack/react-query";
+import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 export const QUERY_KEY_BRANCH = "branch" as const;
 
 export const useBranchAction = () => {
   const { notification, message } = App.useApp();
-
+  const queryClient = useQueryClient();
   const getBranchs = queryEntity<
     AxiosResponse<
       Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
@@ -149,6 +149,8 @@ export const useBranchAction = () => {
         });
       },
       onSuccess(data, variables, context) {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_BRANCH] });
+
         message.success({
           content: `Branch was deleted successfully`,
           duration: 4,

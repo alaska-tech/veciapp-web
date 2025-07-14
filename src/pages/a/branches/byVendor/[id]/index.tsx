@@ -23,6 +23,7 @@ import React, { ReactElement, useState } from "react";
 import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
 import { PhotoUploadModal } from "@/components/forms/updateBranchPhotos";
+import AsyncButton from "@/components/pure/AsyncButton";
 
 type DataType = Branch;
 const Users = () => {
@@ -30,6 +31,7 @@ const Users = () => {
   const router = useRouter();
   const { name: vendorName, id } = router.query;
   const actions = useBranchAction();
+  const deleteBranch = actions.deleteBranch()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -145,7 +147,16 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Eliminar",
+                  label: (
+                    <AsyncButton
+                      onClick={() => {
+                        deleteBranch.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}
