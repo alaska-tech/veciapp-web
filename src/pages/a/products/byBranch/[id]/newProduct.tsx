@@ -19,16 +19,15 @@ const Index = () => {
   const actions = useProductServiceAction();
   const create = actions.createProductService();
   const router = useRouter();
-  const { id } = router.query;
+  const { id, vendorId } = router.query;
   return (
     <Space direction="vertical">
-      
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({
             body: values,
-            userId: "",
             branchId: (id as string) || "",
+            vendorId: (vendorId as string) || "",
           });
         }}
         loading={create.isPending}

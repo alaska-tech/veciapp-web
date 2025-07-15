@@ -51,7 +51,7 @@ const PRODUCT_STATE_TAG: Record<string, any> = {
 const Users = () => {
   const user = getUserInfo();
   const router = useRouter();
-  const { id } = router.query;
+  const { id, vendorId } = router.query;
   const actions = useProductServiceAction();
   const [pagination, setPagination] = useState({
     current: 1,
@@ -212,7 +212,7 @@ const Users = () => {
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
-          href={`/a/products/byBranch/${id}/newProduct?name=${branchQuery.data?.name}`}
+          href={`/a/products/byBranch/${id}/newProduct?vendorId=${vendorId}&name=${branchQuery.data?.name}`}
           icon={<PlusOutlined />}
         >
           Nuevo producto o servicio

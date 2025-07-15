@@ -126,13 +126,9 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
             <Radio.Group
               disabled={hasInitialValues}
               options={[
-                {
-                  label: "Cosmetica",
-                  value: "Cosmetica",
-                },
-                { label: "Comida", value: "Comida" },
-                { label: "Belleza y estetica", value: "Belleza y estetica" },
                 { label: "Confecciones", value: "Confecciones" },
+                { label: "Belleza", value: "Belleza" },
+                { label: "Gastronomía", value: "Gastronomía" },
               ]}
             />
           </Form.Item>

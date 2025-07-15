@@ -192,12 +192,12 @@ export const useProductServiceAction = () => {
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
     {
       body: Omit<ProductService, keyof BaseAttributes & "id">;
-      userId: string;
       branchId: string;
+      vendorId: string;
     }
   >(
     () => {
-      return async function mutationFn({ body, userId: vendorId, branchId }) {
+      return async function mutationFn({ body, vendorId, branchId }) {
         try {
           if (!body) {
             throw new Error("No body provided");
