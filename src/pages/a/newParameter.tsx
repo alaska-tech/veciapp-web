@@ -10,7 +10,7 @@ const Index = () => {
   const createParameter = parameterActions.createParameter();
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <FormElement
         onFinish={async (values) => {
           await createParameter.mutateAsync({ body: values });
@@ -24,5 +24,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout> {page}</DashboardLayout>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

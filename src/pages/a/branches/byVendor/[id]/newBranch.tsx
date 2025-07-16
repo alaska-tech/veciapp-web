@@ -1,8 +1,9 @@
 import { useBranchAction } from "@/actions/branch.action";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 
 const NewFormDynamic = dynamic(
@@ -14,14 +15,20 @@ const NewFormDynamic = dynamic(
 const Index = () => {
   const actions = useBranchAction();
   const create = actions.createBranch();
+  const router = useRouter();
+  const { id : vendorId, } = router.query;
   return (
     <Space direction="vertical">
-      <GoBackButton />
+      
       <NewFormDynamic
         onFinish={async (values) => {
-          await create.mutateAsync({ body: values, vendorId: values.vendorId });
+          await create.mutateAsync({
+            body: values,
+            vendorId: vendorId as string,
+          });
         }}
         loading={create.isPending}
+        vendorId={vendorId as string}
       />
     </Space>
   );
@@ -30,5 +37,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout backButton> {page}</DashboardLayout>;
 };

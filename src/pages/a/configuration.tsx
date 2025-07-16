@@ -1,11 +1,11 @@
-import React, { ReactElement } from "react";
-import DashboardLayout2 from "@/components/layout/DashboardLayout";
+import React, { ReactElement, useState } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import {
   QUERY_KEY_PARAMETER,
   useParameterAction,
 } from "@/actions/parameter.action";
-import { App, Button, Space } from "antd";
+import { App, Button, Pagination, Space } from "antd";
 import { Parameter } from "@models";
 import ParameterCard from "@/components/pure/ParameterCard";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,46 +21,21 @@ const Index = () => {
   const queryClient = useQueryClient();
   const { message } = App.useApp();
   const parameterActions = useParameterAction();
-  const parameterQueries = parameterActions.getParametersByName(
-    DEFAULT_PARAMETER_NAMES
-  ); 
-  /*   const parametersQuery = parameterActions.getParameters();
-  const { parameters: data, count } = parametersQuery?.data?.data ?? {
-    parameters: [],
-    count: 0,
-  }; */
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const parametersQuery = parameterActions.getParametersPaginated({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+  });
+
   const updateParameter = parameterActions.updateParameter();
   const toggleIsActive = parameterActions.toggleIsActive({
     onSuccess: (data, variables, context: any) => {
-      queryClient.setQueryData([QUERY_KEY_PARAMETER, "byName", context?.name], {
-        data: {
-          status: "Success",
-          data: data.data.data,
-          error: null,
-        },
-      });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY_PARAMETER, "byName", context?.name],
-        exact: true,
-      });
-      queryClient.setQueryData([QUERY_KEY_PARAMETER + "s"], (oldData: any) => {
-        if (!oldData) return oldData;
-
-        const updatedParameters = oldData.data.parameters.map(
-          (param: Parameter) =>
-            param.id === variables.id ? { ...param, ...data.data.data } : param
-        );
-
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            parameters: updatedParameters,
-          },
-        };
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY_PARAMETER + "s"],
+        queryKey: [QUERY_KEY_PARAMETER],
       });
       message.success({
         content: `Parámetro ${
@@ -101,9 +76,22 @@ const Index = () => {
           Nuevo parámetro
         </Button>
       </Space>
+      <Pagination
+        onChange={(page, pageSize) => {
+          setPagination({
+            ...pagination,
+            current: page || 1,
+            pageSize: pageSize || 2,
+          });
+        }}
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={parametersQuery.data?.data.meta.total || 0}
+        showSizeChanger={true}
+        pageSizeOptions={[10, 20, 50]}
+      />
       <Space wrap style={{ gap: "1rem" }}>
-        {parameterQueries.map((queryResult, index) => {
-          const parameter = queryResult.data?.data.data;
+        {parametersQuery.data?.data.data.map((parameter, index) => {
           if (!parameter) {
             return (
               <Card
@@ -119,11 +107,6 @@ const Index = () => {
               parameter={parameter}
               onClickOnSave={handleClickOnSave}
               onClickOnToggle={handleClickOnToggle}
-              loading={
-                updateParameter.isPending ||
-                toggleIsActive.isPending ||
-                queryResult.isLoading
-              }
               key={parameter.id}
             />
           );
@@ -136,5 +119,5 @@ const Index = () => {
 export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout2> {page}</DashboardLayout2>;
+  return <DashboardLayout> {page}</DashboardLayout>;
 };

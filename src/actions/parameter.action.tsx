@@ -1,5 +1,10 @@
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
-import { mutateEntity, queryEntity, queryMultipleEntitiesById } from "./action";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityWithParameters,
+  queryMultipleEntitiesById,
+} from "./action";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseAttributes, PaginatedResult, Parameter, Response } from "@models";
 import { apiClient } from "@/services/clients";
@@ -96,36 +101,8 @@ export const useParameterAction = <T extends object>() => {
         });
       },
       onSuccess(data, variables, context) {
-        queryClient.setQueryData(
-          [QUERY_KEY_PARAMETER, variables.id],
-          data.data.data
-        );
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY_PARAMETER, variables.id],
-        });
-        queryClient.setQueryData(
-          [QUERY_KEY_PARAMETER + "s"],
-          (oldData: any) => {
-            if (!oldData) return oldData;
-
-            const updatedParameters = oldData.data.parameters.map(
-              (param: Parameter) =>
-                param.id === variables.id
-                  ? { ...param, ...data.data.data }
-                  : param
-            );
-
-            return {
-              ...oldData,
-              data: {
-                ...oldData.data,
-                parameters: updatedParameters,
-              },
-            };
-          }
-        );
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY_PARAMETER + "s"],
+          queryKey: [QUERY_KEY_PARAMETER],
         });
         message.success({
           content: "Parámetro actualizado correctamente",
@@ -218,11 +195,28 @@ export const useParameterAction = <T extends object>() => {
       }
     };
   });
+  const getParametersPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_PARAMETER] as QueryKey, ({ limit, page }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Parameter>>, { status: "Success" }>
+        >(`/parameters/list?limit=${limit}&page=${page}`);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
   return {
     createParameter,
     getParameters,
     updateParameter,
     toggleIsActive,
     getParametersByName,
+    getParametersPaginated,
   };
 };

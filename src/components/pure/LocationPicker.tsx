@@ -15,12 +15,24 @@ export const SANTA_MARTA_LOCATION_OBJECT = {
   lat: 11.225966,
   lng: -74.190294,
 };
+interface Position {
+  lat: number;
+  lng: number;
+}
 const SANTA_MARTA_LOCATION_TUPLE: [number, number] = [11.225966, -74.190294];
 const DEFAULT_CONTAINER_WIDTH = 300;
 const DEFAULT_CONTAINER_HEIGHT = 300;
 
-function DraggableMarker({ onChange }: { onChange?: (pos: { lat: number; lng: number }) => void }) {
-  const [position, setPosition] = useState(SANTA_MARTA_LOCATION_OBJECT);
+function DraggableMarker({
+  onChange,
+  afterChange,
+  initialPosition = SANTA_MARTA_LOCATION_OBJECT,
+}: {
+  onChange?: (pos: Position) => void;
+  afterChange?: () => void;
+  initialPosition?: Position;
+}) {
+  const [position, setPosition] = useState(initialPosition);
   const markerRef = useRef<L.Marker>(null);
   const eventHandlers = useMemo(
     () => ({
@@ -30,10 +42,13 @@ function DraggableMarker({ onChange }: { onChange?: (pos: { lat: number; lng: nu
           const newPos = marker.getLatLng();
           setPosition(newPos);
           onChange?.(newPos);
+          if (afterChange) {
+            afterChange();
+          }
         }
       },
     }),
-    [onChange]
+    [afterChange, onChange]
   );
 
   return (
@@ -54,24 +69,27 @@ const FullscreenControl = (props: any) => {
   const map = props.map;
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const toggleFullscreen = useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const container = map.getContainer();
+  const toggleFullscreen = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    try {
-      if (!isFullscreen) {
-        await container.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
+      const container = map.getContainer();
+
+      try {
+        if (!isFullscreen) {
+          await container.requestFullscreen();
+          setIsFullscreen(true);
+        } else {
+          await document.exitFullscreen();
+          setIsFullscreen(false);
+        }
+      } catch (error) {
+        console.error("Error toggling fullscreen:", error);
       }
-    } catch (error) {
-      console.error('Error toggling fullscreen:', error);
-    }
-  }, [isFullscreen, map]);
+    },
+    [isFullscreen, map]
+  );
 
   useEffect(() => {
     const handleFullscreenChange = (e: Event) => {
@@ -86,7 +104,10 @@ const FullscreenControl = (props: any) => {
   }, []);
 
   return (
-    <div className="leaflet-control-container" onClick={e => e.stopPropagation()}>
+    <div
+      className="leaflet-control-container"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="leaflet-top leaflet-right">
         <div className="leaflet-control-fullscreen leaflet-bar leaflet-control">
           <button
@@ -113,7 +134,9 @@ const FullscreenControl = (props: any) => {
 };
 
 const LocationPicker = (props: {
-  onChange?: (position: { lat: number; lng: number }) => void;
+  onChange?: (position: Position) => void;
+  initialPosition?: Position;
+  afterChange?: () => void;
   width?: number | string;
   height?: number | string;
 }) => {
@@ -130,7 +153,7 @@ const LocationPicker = (props: {
   return (
     <MapContainer
       ref={setMap}
-      center={SANTA_MARTA_LOCATION_TUPLE}
+      center={props.initialPosition||SANTA_MARTA_LOCATION_TUPLE}
       zoom={13}
       scrollWheelZoom={true}
       style={{
@@ -142,7 +165,11 @@ const LocationPicker = (props: {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <DraggableMarker  onChange={props.onChange} />
+      <DraggableMarker
+        onChange={props.onChange}
+        initialPosition={props.initialPosition}
+        afterChange={props.afterChange}
+      />
       <FullscreenControl map={map} />
     </MapContainer>
   );

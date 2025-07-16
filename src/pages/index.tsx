@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
 import { JWT_KEY } from "@/constants/constants";
-import { setToken, setUserInfo } from "@/actions/localStorage.actions";
+import { setRefreshToken, setToken, setUserInfo } from "@/actions/localStorage.actions";
 
 export type LogInForm = {
   email: string;
@@ -14,9 +14,9 @@ export type LogInForm = {
 };
 const styles = {
   formItem: {
-    flex: "1 1 300px",
+    flex: "1 1 600px",
     width: "100%",
-    maxWidth: "300px",
+    maxWidth: "600px",
   },
 };
 
@@ -46,26 +46,26 @@ export default function Home() {
         const { token, user } = response.data.data;
         setUserInfo(user);
         setToken(token);
+        setRefreshToken(user.refreshToken)
         if (response.data.data.user.role === "admin") {
           router.push("/a/home");
         } else if (response.data.data.user.role === "vendor") {
           router.push("/v/home");
         } else {
-          message.error("No tienes permisos para acceder a esta sección", 10);
+          message.error("Usted no cuenta con los permisos suficientes para acceder a esta sección", 10);
         }
       },
       () => {}
     );
   };
   return (
-    <main
+    <div
       style={{
         textAlign: "start",
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
         maxWidth: 1500,
-        flex: "1 1 600px",
       }}
     >
       <Form
@@ -74,7 +74,11 @@ export default function Home() {
         autoComplete="off"
         layout="vertical"
         requiredMark={false}
-              >
+/*         initialValues={{
+          email: "julianchos.rivera@gmail.com",
+          password: "123456",
+        }} */
+      >
         <Form.Item<LogInForm>
           name="email"
           rules={[
@@ -112,7 +116,7 @@ export default function Home() {
           </Button>
         </Form.Item>
       </Form>
-    </main>
+    </div>
   );
 }
 

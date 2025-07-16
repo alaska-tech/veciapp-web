@@ -1,16 +1,21 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity, queryEntityById } from "./action";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityById,
+  queryEntityWithParameters,
+  queryMultipleEntitiesById,
+} from "./action";
 import { BaseAttributes, PaginatedResult, Response, Branch } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
-import { QueryKey } from "@tanstack/react-query";
-
+import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 export const QUERY_KEY_BRANCH = "branch" as const;
 
 export const useBranchAction = () => {
   const { notification, message } = App.useApp();
-
+  const queryClient = useQueryClient();
   const getBranchs = queryEntity<
     AxiosResponse<
       Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
@@ -35,8 +40,70 @@ export const useBranchAction = () => {
         const response = await apiClient.get<
           Extract<Response<Branch>, { status: "Success" }>
         >(`/branches/get-details/${id}`);
-        console.log(response)
+        console.log(response);
         return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getBranchesById = queryMultipleEntitiesById<
+    AxiosResponse<Extract<Response<Branch>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_BRANCH] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<Branch>, { status: "Success" }>
+        >(`/branches/get-details/${id}`);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getBranchesByVendorId = queryEntityById<
+    PaginatedResult<Branch>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_BRANCH] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
+        >(`/branches/${id}/all-branches?limit=10&page=1`);
+        return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getBranchesPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, vendorId }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
+        >(`/branches/$${vendorId}/all-branches?limit=${limit}&page=${page}`);
+        console.log(response);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+  const getBranchesByVendorIdPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, vendorId }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
+        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`);
+        console.log(response);
+        return response.data;
       } catch (error) {
         throw error;
       }
@@ -82,6 +149,8 @@ export const useBranchAction = () => {
         });
       },
       onSuccess(data, variables, context) {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_BRANCH] });
+
         message.success({
           content: `Branch was deleted successfully`,
           duration: 4,
@@ -92,7 +161,7 @@ export const useBranchAction = () => {
   const createBranch = mutateEntity<
     AxiosResponse<Extract<Response<Branch>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
-    { body: Omit<Branch, keyof BaseAttributes & "id">, vendorId: string }
+    { body: Omit<Branch, keyof BaseAttributes & "id">; vendorId: string }
   >(
     () => {
       return async function mutationFn({ body, vendorId }) {
@@ -102,7 +171,7 @@ export const useBranchAction = () => {
           }
           const response = await apiClient.post<
             Extract<Response<Branch>, { status: "Success" }>
-          >("/branches/"+vendorId+"/new-branch", body);
+          >("/branches/" + vendorId + "/new-branch", body);
           return response;
         } catch (error) {
           throw error;
@@ -140,7 +209,7 @@ export const useBranchAction = () => {
           }
           const response = await apiClient.put<
             Extract<Response<Branch>, { status: "Success" }>
-          >("/branches" + id, body);
+          >("/branches/edit/" + id, body);
           return response;
         } catch (error) {
           throw error;
@@ -159,7 +228,7 @@ export const useBranchAction = () => {
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
         message.success({
-          content: `Proveedor ${branch.name || ""} se actualizó correctamente`,
+          content: `La tienda ${branch.name || ""} se actualizó correctamente`,
           duration: 4,
         });
       },
@@ -171,5 +240,9 @@ export const useBranchAction = () => {
     deleteBranch,
     createBranch,
     updateBranch,
+    getBranchesByVendorId,
+    getBranchesById,
+    getBranchesByVendorIdPaginated,
+    getBranchesPaginated,
   };
 };

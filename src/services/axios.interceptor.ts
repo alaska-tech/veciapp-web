@@ -8,7 +8,7 @@ const addJwtToHeader = (request: AxiosRequestConfig) => {
       Authorization: `Bearer ${jwt}`,
       'Content-Type': 'application/json',
     }
-    request.headers = newHeader
+    request.headers = {...newHeader, ...request.headers} // Merge new headers with existing ones
   }
   return request
 }
@@ -28,7 +28,7 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
-  if (error.response?.status === 403) { //TODO: Comprobar que el error es 403 para cuando el usuario no tenga permisos
+  if (error.response?.status === 403||error.response?.status === 401) { //TODO: Comprobar que el error es 403 para cuando el usuario no tenga permisos
     localStorage.removeItem(JWT_KEY)
     window.location.href = '/'
   }

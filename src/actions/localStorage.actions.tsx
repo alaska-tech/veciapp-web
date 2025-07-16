@@ -1,7 +1,13 @@
-import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
+import {
+  JWT_KEY,
+  LOGGED_USER_INFO_KEY,
+  REFRESH_JWT_KEY,
+} from "@/constants/constants";
 import { User, Response } from "@/constants/models";
 import { apiClient } from "@/services/clients";
 import { useMutation } from "@tanstack/react-query";
+import { mutateEntity } from "./action";
+import { AxiosError, AxiosResponse } from "axios";
 
 interface DecodedToken {
   exp: number;
@@ -19,7 +25,19 @@ export const setToken = (newToken: string) => {
   if (typeof window === "undefined") return null;
   return localStorage.setItem(JWT_KEY, newToken);
 };
+export const getRefreshToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(REFRESH_JWT_KEY);
+};
 
+export const setRefreshToken = (newRefreshToken: string) => {
+  if (typeof window === "undefined") return null;
+  return localStorage.setItem(REFRESH_JWT_KEY, newRefreshToken);
+};
+
+export const clearRefreshToken = () => {
+  localStorage.removeItem(REFRESH_JWT_KEY);
+};
 export const getUserInfo = (): User | null => {
   if (typeof window === "undefined") return null;
   const rawUserInfo = localStorage.getItem(LOGGED_USER_INFO_KEY) || "null";
@@ -30,12 +48,13 @@ export const getUserInfo = (): User | null => {
 export const setUserInfo = (newUserInfo: User) => {
   if (typeof window === "undefined") return null;
   const stringifiedUserInfo = JSON.stringify(newUserInfo);
-  return localStorage.setItem(JWT_KEY, stringifiedUserInfo);
+  return localStorage.setItem(LOGGED_USER_INFO_KEY, stringifiedUserInfo);
 };
 
 export const clearAllInfoFromLocalStorage = () => {
   localStorage.removeItem(JWT_KEY);
   localStorage.removeItem(LOGGED_USER_INFO_KEY);
+  localStorage.removeItem(REFRESH_JWT_KEY);
 };
 const decodeToken = (token: string): DecodedToken => {
   const base64Url = token.split(".")[1];
@@ -66,27 +85,78 @@ export const isTokenValid = (): boolean => {
   }
 };
 export const useLocalStorageAction = () => {
-  const userInfo = getUserInfo();
-  const currentRefreshToken = userInfo?.refreshToken || null;
-  const mutation = useMutation({
-    mutationFn: () => {
-      return apiClient.post<Response<{ accessToken: string }>>(
+  /*   const mutation = useMutation<
+    Response<{ accessToken: string }>,
+    Error,
+    string | null
+  >({
+    mutationFn: async (currentRefreshToken) => {
+      const response = await apiClient.post<Response<{ accessToken: string }>>(
         "/auth/refresh-token",
         {
           refreshToken: currentRefreshToken,
         }
       );
+      return response.data;
     },
     onSuccess: (data, _variables, _context) => {
-      const accessToken = data.data.data?.accessToken || "";
+      const accessToken = data.data?.accessToken || "";
       setToken(accessToken);
     },
-  });
+  }); */
+
+  const refresh = mutateEntity<
+    AxiosResponse<
+      Extract<
+        Response<{ message: string; accessToken: string }>,
+        { status: "Success" }
+      >
+    >,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { body: { refreshToken: string } }
+  >(
+    () => {
+      return async function mutationFn({ body }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.post<
+            Extract<
+              Response<{ message: string; accessToken: string }>,
+              { status: "Success" }
+            >
+          >("/auth/refresh-token", body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onSuccess: async (data, variables, context) => {
+        const accessToken = data.data?.data?.accessToken || "";
+        setToken(accessToken);
+        clearRefreshToken() //TODO: preguntar cuantas veces sirve ese token
+      },
+    }
+  );
+  const refreshMutation = refresh();
   function refreshCurrentToken() {
     if (isTokenValid()) {
       return;
     }
-    mutation.mutate();
+
+    const currentRefreshToken = getRefreshToken()
+    if (!currentRefreshToken) {
+      return;
+    }
+    try {
+      refreshMutation.mutate({ body: { refreshToken: currentRefreshToken } });
+    } catch (error) {
+      console.error("Error refreshing token", error);
+    }
   }
   return { refreshCurrentToken };
 };

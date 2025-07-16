@@ -105,7 +105,7 @@ const ParameterCard = ({
             label: (
               <Form
                 initialValues={{
-                  value: JSON.parse(parameter.value),
+                  value: parameter.value,
                 }}
                 form={form}
                 /* onChange={(e) => {
