@@ -29,7 +29,7 @@ const Index = () => {
         onFinish={async (values) => {
           await create.mutateAsync({
             body: values,
-            userId: user.data?.id ?? "",
+            vendorId: user.data?.id ?? "",
             branchId: (id as string) || "",
           });
         }}
