@@ -178,9 +178,9 @@ function DashboardLayout({
   const localStorageActions = useLocalStorageAction();
   const { width } = useWindowSize();
   const isSmallScreen = width < SCREEN_BREAKPOINTS["MOBILE"];
-  useEffect(() => {
+/*   useEffect(() => {
     localStorageActions.refreshCurrentToken(); //TODO: Preguntar al tocayo por que falla, si esta bien autenticado
-  }, []);
+  }, []); */
   const dropdownMenu = {
     items: [
       currentUser.data?.role === "vendor"
