@@ -1,7 +1,6 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   CheckCircleOutlined,
-  DownOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -11,12 +10,10 @@ import {
   Space,
   Button,
   TableColumnsType,
-  Dropdown,
   Divider,
 } from "antd";
 import React, { ReactElement } from "react";
 import { Customer, Vendor } from "@models";
-import AsyncButton from "@/components/pure/AsyncButton";
 import { useCustomerAction } from "@/actions/customer.action";
 
 type DataType = Customer;

@@ -134,8 +134,11 @@ export const useProductServiceAction = () => {
         });
       },
       onSuccess(data, variables, context) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY_PRODUCTSERVICE]
+        })
         message.success({
-          content: `ProductService was deleted successfully`,
+          content: `Producto/servicio eliminado correctamente`,
           duration: 4,
         });
       },

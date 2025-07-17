@@ -30,17 +30,25 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
   const hasInitialValues: boolean = !!props.initialValues;
   const handleFinish = async (values: T) => {
     const { cellphone, prefix, ...rest } = values;
-    const restWithoutNonEditableFields = Object.fromEntries(
-      Object.entries(rest).filter(
-        ([key]) => !nonEditableFields.includes(key as any)
-      )
-    );
     const mappedCellphone =
       !!prefix && !!cellphone ? prefix + " " + cellphone : "";
-    const mappedValues = {
-      ...restWithoutNonEditableFields,
-      cellphone: mappedCellphone,
-    } as T;
+    let mappedValues: T = {} as T;
+    if (hasInitialValues) {
+      const restWithoutNonEditableFields = Object.fromEntries(
+        Object.entries(rest).filter(
+          ([key]) => !nonEditableFields.includes(key as any)
+        )
+      );
+      mappedValues = {
+        ...restWithoutNonEditableFields,
+        cellphone: mappedCellphone,
+      } as T;
+    } else {
+      mappedValues = {
+        ...rest,
+        cellphone: mappedCellphone,
+      } as T;
+    }
     if (props.onFinish) {
       await props.onFinish(mappedValues);
     }

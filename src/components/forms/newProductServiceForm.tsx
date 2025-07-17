@@ -93,7 +93,6 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
           ? parseInitialValues(props.initialValues || ({} as ProductService))
           : {
               prefix: "57",
-              password: "Vcapp20251",
             }
       }
       requiredMark={false}

@@ -63,11 +63,12 @@ function parseInitialValues(values: Branch) {
     operatingHours: parsedOperatingHours,
   };
 }
+const nonEditableFields = ["vendorId", "rank", "state"] as const;
 export const FormElement = <T extends entityWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
   initialValues?: T;
-  vendorId: string
+  vendorId: string;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
   const mapValues = (values: any) => {
@@ -80,6 +81,16 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       operatingHours,
       ...rest
     } = values;
+    let mappedRest;
+    if (hasInitialValues) {
+      mappedRest = Object.fromEntries(
+        Object.entries(rest).filter(
+          ([key]) => !nonEditableFields.includes(key as any)
+        )
+      );
+    } else {
+      mappedRest = { ...rest };
+    }
     const mappedOperatingHours = Object.entries(operatingHours).reduce(
       (acc, [key, value]: [string, any]) => ({
         ...acc,
@@ -99,9 +110,9 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
         type: "Point",
         coordinates: [location.lng, location.lat],
       },
-      vendorId: props.vendorId,
+      vendorId: hasInitialValues ? undefined : props.vendorId,
       operatingHours: mappedOperatingHours,
-      ...rest,
+      ...mappedRest,
     };
     return mappedValues;
   };

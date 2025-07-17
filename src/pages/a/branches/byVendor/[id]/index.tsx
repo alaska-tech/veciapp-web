@@ -153,6 +153,7 @@ const Users = () => {
                         deleteBranch.mutateAsync({ id: record.id });
                       }}
                       popConfirm
+                      type="text"
                     >
                       Eliminar
                     </AsyncButton>
