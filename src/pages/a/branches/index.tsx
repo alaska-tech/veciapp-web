@@ -164,7 +164,9 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/a/products/byBranch/${record.id}?name=${record.name}`}>
+          <Link
+            href={`/a/products/byBranch/${record.id}?vendorId=${record.vendorId}&name=${record.name}`}
+          >
             Inventario
           </Link>
           <Link href={`/a/branches/${record.id}?name=${record.name}`}>
@@ -182,6 +184,7 @@ const Users = () => {
                         deleteBranch.mutateAsync({ id: record.id });
                       }}
                       popConfirm
+                      type="text"
                     >
                       Eliminar
                     </AsyncButton>

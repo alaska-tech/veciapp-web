@@ -212,6 +212,7 @@ const Users = () => {
                         deleteProduct.mutateAsync({ id: record.id });
                       }}
                       popConfirm
+                      type="text"
                     >
                       Eliminar
                     </AsyncButton>

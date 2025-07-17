@@ -1,5 +1,6 @@
 import { QUERY_KEY_VENDOR, useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import AsyncButton from "@/components/pure/AsyncButton";
 import { Vendor } from "@/constants/models";
 import {
   CheckCircleOutlined,
@@ -53,7 +54,7 @@ const getVendorStatusTagProps = (status: Vendor["state"]) => {
 const Users = () => {
   const vendorActions = useVendorAction();
   const vendorQuery = vendorActions.getVendors();
-  const queryClient = useQueryClient();
+  const deleteVendor = vendorActions.deleteVendor()
   const columns: TableColumnsType<Vendor> = [
     {
       title: "Nombre",
@@ -102,14 +103,15 @@ const Users = () => {
                 {
                   key: "2",
                   label: (
-                    <DeleteVendorButton
-                      courseId={record.id}
-                      onSuccess={() => {
-                        queryClient.invalidateQueries({
-                          queryKey: [QUERY_KEY_VENDOR + "s"],
-                        });
+                    <AsyncButton
+                      onClick={() => {
+                        deleteVendor.mutateAsync({ id: record.id });
                       }}
-                    />
+                      popConfirm
+                      type="text"
+                    >
+                      Eliminar
+                    </AsyncButton>
                   ),
                 },
               ],
@@ -151,50 +153,4 @@ export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout> {page}</DashboardLayout>;
-};
-interface deleteCourseProps {
-  courseId: string;
-  onSuccess?: (values: any) => void;
-}
-const DeleteVendorButton = ({ courseId, onSuccess }: deleteCourseProps) => {
-  const vendorActions = useVendorAction();
-  const deleteVendor = vendorActions.deleteVendor();
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-
-  const showPopconfirm = () => {
-    setOpen(true);
-  };
-
-  const handleOk = async () => {
-    setConfirmLoading(true);
-    await deleteVendor.mutateAsync({ id: courseId }).then(
-      (res) => {
-        if (onSuccess) {
-          onSuccess(res);
-        }
-        setOpen(false);
-        setConfirmLoading(false);
-      },
-      () => {}
-    );
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  return (
-    <Popconfirm
-      title={`¿Estás seguro?`}
-      description="Esta acción no se puede deshacer"
-      open={open}
-      onConfirm={handleOk}
-      okButtonProps={{ loading: confirmLoading }}
-      cancelButtonProps={{ disabled: confirmLoading }}
-      onCancel={handleCancel}
-    >
-      <div onClick={showPopconfirm}>Eliminar</div>
-    </Popconfirm>
-  );
 };

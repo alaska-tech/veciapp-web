@@ -29,7 +29,7 @@ type DataType = Branch;
 const Users = () => {
   const user = getUserInfo();
   const actions = useBranchAction();
-  const deleteBranch = actions.deleteBranch()
+  const deleteBranch = actions.deleteBranch();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -148,11 +148,11 @@ const Users = () => {
                   key: "2",
                   label: (
                     <AsyncButton
-                    type="text"
                       onClick={() => {
                         deleteBranch.mutateAsync({ id: record.id });
                       }}
                       popConfirm
+                      type="text"
                     >
                       Eliminar
                     </AsyncButton>
