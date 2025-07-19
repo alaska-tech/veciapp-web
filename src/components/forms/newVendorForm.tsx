@@ -82,7 +82,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
             <Form.Item
               name="internalCode"
               label="Código interno"
-              tooltip="Escriba el código interno de la fundación Malewa"
+              tooltip="Escriba el código interno de la fundación Maleua"
               rules={[
                 {
                   required: true,

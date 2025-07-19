@@ -243,12 +243,14 @@ function DashboardLayout({
               margin: "16px auto",
             }}
           ></Image>
-          <Typography.Title
-            level={3}
-            style={{ textAlign: "center", color: colorPrimary }}
-          >
-            {roleLabels[primaryUrlSegment]}
-          </Typography.Title>
+          {!sideMenuCollapsed && (
+            <Typography.Title
+              level={3}
+              style={{ textAlign: "center", color: colorPrimary }}
+            >
+              {roleLabels[primaryUrlSegment]}
+            </Typography.Title>
+          )}
           <AutoMenu items={lateralMenuItems[router.pathname.split("/")[1]]} />
         </div>
         <ProfileButton
@@ -285,6 +287,8 @@ function DashboardLayout({
               flexDirection: "column",
               justifyContent: "space-between",
               flexWrap: "wrap",
+              alignItems: "flex-start",
+              width: "100%"
             }}
           >
             {/* <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} /> */}

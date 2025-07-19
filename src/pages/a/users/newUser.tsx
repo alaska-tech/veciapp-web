@@ -1,6 +1,5 @@
 import { useCustomerAction } from "@/actions/customer.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import React, { ReactElement } from "react";
 import FormElement from "@/components/forms/newUserForm"
