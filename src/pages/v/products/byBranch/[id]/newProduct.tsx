@@ -22,7 +22,7 @@ const Index = () => {
   const authActions = useAuthAction();
   const user = authActions.userSession;
   return (
-    <Space direction="vertical">
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({
@@ -35,7 +35,7 @@ const Index = () => {
         branchId={(id as string) || ""}
         userId={user.data?.id || ""}
       />
-    </Space>
+    </div>
   );
 };
 
