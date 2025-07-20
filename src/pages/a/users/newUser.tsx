@@ -8,15 +8,14 @@ const Index = () => {
   const actions = useCustomerAction();
   const create = actions.createCustomer();
   return (
-    <Space direction="vertical">
-      
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
       <FormElement
         onFinish={async (values) => {
           await create.mutateAsync({ body: values });
         }}
         loading={create.isPending}
       />
-    </Space>
+    </div>
   );
 };
 

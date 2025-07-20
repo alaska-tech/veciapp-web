@@ -9,6 +9,8 @@ import {
   Select,
   Switch,
   Typography,
+  Row,
+  Col,
 } from "antd";
 import { Parameter } from "@models";
 
@@ -67,52 +69,75 @@ export const FormElement = <T extends Parameter>(props: {
       initialValues={{ isActive: true }}
       loading={props.loading}
     >
-      <div>
-        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-          <Input placeholder="Name" />
-        </Form.Item>
-        <Form.Item
-          label="Display Name"
-          name="displayName"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="Display Name" />
-        </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true }]}
-        >
-          <Input.TextArea placeholder="Description" rows={4} />
-        </Form.Item>
-        <Form.Item label="Type" name="type" rules={[{ required: true }]}>
-          <Select
-            placeholder="Select a type"
-            onChange={() => {
-              formRef.setFieldsValue({ value: undefined });
-              if (formRef.isFieldTouched("value" as any)) {
-                formRef.validateFields(["value"]);
-              }
-            }}
+      <Row gutter={[24, 16]}>
+        {/* Primera fila - Name y Display Name (mitad cada uno) */}
+        <Col xs={24} md={12}>
+          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
+            <Input placeholder="Name" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Display Name"
+            name="displayName"
+            rules={[{ required: true }]}
           >
-            <Select.Option value="string">String</Select.Option>
-            <Select.Option value="number">Number</Select.Option>
-            <Select.Option value="boolean">Boolean</Select.Option>
-            <Select.Option value="json">Array</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="Value" name="value" rules={[{ required: true }]}>
-          {valueInput[selectedParameterType] || (
-            <Input placeholder="Value" disabled={!selectedParameterType} />
-          )}
-        </Form.Item>
-        <Form.Item label="Is Active" name="isActive" valuePropName="checked">
-          <Switch defaultChecked />
-        </Form.Item>
-        <Form.Item label="data" name="data">
-          <Input.TextArea placeholder="data" rows={4} />
-        </Form.Item>
-      </div>
+            <Input placeholder="Display Name" />
+          </Form.Item>
+        </Col>
+
+        {/* Segunda fila - Description (ancho completo) */}
+        <Col span={24}>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true }]}
+          >
+            <Input.TextArea placeholder="Description" rows={4} />
+          </Form.Item>
+        </Col>
+
+        {/* Tercera fila - Type y Value (mitad cada uno) */}
+        <Col xs={24} md={12}>
+          <Form.Item label="Type" name="type" rules={[{ required: true }]}>
+            <Select
+              placeholder="Select a type"
+              onChange={() => {
+                formRef.setFieldsValue({ value: undefined });
+                if (formRef.isFieldTouched("value" as any)) {
+                  formRef.validateFields(["value"]);
+                }
+              }}
+            >
+              <Select.Option value="string">String</Select.Option>
+              <Select.Option value="number">Number</Select.Option>
+              <Select.Option value="boolean">Boolean</Select.Option>
+              <Select.Option value="json">Array</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="Value" name="value" rules={[{ required: true }]}>
+            {valueInput[selectedParameterType] || (
+              <Input placeholder="Value" disabled={!selectedParameterType} />
+            )}
+          </Form.Item>
+        </Col>
+
+        {/* Cuarta fila - Is Active (ancho completo) */}
+        <Col span={24}>
+          <Form.Item label="Is Active" name="isActive" valuePropName="checked">
+            <Switch defaultChecked />
+          </Form.Item>
+        </Col>
+
+        {/* Quinta fila - Data (ancho completo) */}
+        <Col span={24}>
+          <Form.Item label="data" name="data">
+            <Input.TextArea placeholder="data" rows={4} />
+          </Form.Item>
+        </Col>
+      </Row>
     </FormWrapper>
   );
 };

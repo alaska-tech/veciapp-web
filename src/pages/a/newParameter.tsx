@@ -8,15 +8,14 @@ const Index = () => {
   const parameterActions = useParameterAction();
   const createParameter = parameterActions.createParameter();
   return (
-    <Space direction="vertical">
-      
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
       <FormElement
         onFinish={async (values) => {
           await createParameter.mutateAsync({ body: values });
         }}
         loading={createParameter.isPending}
       />
-    </Space>
+    </div>
   );
 };
 
