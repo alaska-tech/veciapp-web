@@ -1,6 +1,5 @@
 import { useParameterAction } from "@/actions/parameter.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import React, { ReactElement } from "react";
 import FormElement from "@/components/forms/newParameterForm";
@@ -9,15 +8,14 @@ const Index = () => {
   const parameterActions = useParameterAction();
   const createParameter = parameterActions.createParameter();
   return (
-    <Space direction="vertical">
-      
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
       <FormElement
         onFinish={async (values) => {
           await createParameter.mutateAsync({ body: values });
         }}
         loading={createParameter.isPending}
       />
-    </Space>
+    </div>
   );
 };
 

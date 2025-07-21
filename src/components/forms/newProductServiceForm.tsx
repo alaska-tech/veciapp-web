@@ -4,6 +4,8 @@ import {
   InputNumber,
   Radio,
   TimePicker,
+  Row,
+  Col,
 } from "antd";
 import React from "react";
 import { ProductService, weekDay, WEEKDAY_LABEL } from "@models";
@@ -101,136 +103,164 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
       highligthOnChange={hasInitialValues}
     >
       {(formInstance, setAsTouched) => (
-        <div>
-          <Form.Item
-            name="name"
-            label="Nombre del producto"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled={hasInitialValues} />
-          </Form.Item>
-          <Form.Item
-            name="categoryId"
-            label="Categoria"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Radio.Group
-              disabled={hasInitialValues}
-              options={[
-                { label: "Confecciones", value: "Confecciones" },
-                { label: "Belleza", value: "Belleza" },
-                { label: "Gastronomía", value: "Gastronomía" },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item
-            name="type"
-            label="Tipo"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Radio.Group
-              disabled={hasInitialValues}
-              options={[
+        <Row gutter={[24, 16]}>
+          {/* Primera fila - Nombre del producto (ancho completo) */}
+          <Col span={24}>
+            <Form.Item
+              name="name"
+              label="Nombre del producto"
+              rules={[
                 {
-                  label: "Producto",
-                  value: "product",
+                  required: true,
                 },
-                { label: "Servicio", value: "service" },
               ]}
-            />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Descripcion"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input.TextArea />
-          </Form.Item>
-          <Form.Item
-            name="shortDescription"
-            label="Descripcion corta"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input.TextArea />
-          </Form.Item>
+            >
+              <Input disabled={hasInitialValues} />
+            </Form.Item>
+          </Col>
 
+          {/* Segunda fila - Categoría y Tipo (mitad cada uno) */}
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="categoryId"
+              label="Categoria"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Radio.Group
+                disabled={hasInitialValues}
+                options={[
+                  { label: "Confecciones", value: "Confecciones" },
+                  { label: "Belleza", value: "Belleza" },
+                  { label: "Gastronomía", value: "Gastronomía" },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="type"
+              label="Tipo"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Radio.Group
+                disabled={hasInitialValues}
+                options={[
+                  {
+                    label: "Producto",
+                    value: "product",
+                  },
+                  { label: "Servicio", value: "service" },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+
+          {/* Tercera fila - Descripciones (ancho completo) */}
+          <Col span={24}>
+            <Form.Item
+              name="description"
+              label="Descripcion"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input.TextArea rows={3} />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name="shortDescription"
+              label="Descripcion corta"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input.TextArea rows={2} />
+            </Form.Item>
+          </Col>
+
+          {/* Campos específicos de servicio */}
           {type === "service" && (
             <>
-              <Form.Item
-                label="Se requiere asistencia de un profesional?"
-                name={["serviceScheduling", "professionalRequired"]}
-              >
-                <Radio.Group>
-                  <Radio value={true}>Si</Radio>
-                  <Radio value={false}>No</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item
-                label="Personas por servicio"
-                name={["serviceScheduling", "attentionLimitPerSlot"]}
-              >
-                <InputNumber min={1} />
-              </Form.Item>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Se requiere asistencia de un profesional?"
+                  name={["serviceScheduling", "professionalRequired"]}
+                >
+                  <Radio.Group>
+                    <Radio value={true}>Si</Radio>
+                    <Radio value={false}>No</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Personas por servicio"
+                  name={["serviceScheduling", "attentionLimitPerSlot"]}
+                >
+                  <InputNumber min={1} style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              {/* Horarios de la semana - cada día en su propia fila */}
               {weekDay.map((day: string) => {
                 return (
-                  <Form.Item
-                    name={["serviceScheduling", "availableHours", day]}
-                    label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
-                    key={day}
-                  >
-                    <TimePicker.RangePicker
-                      format={TIME_PICKER_FORMAT}
-                      minuteStep={10}
-                      onCalendarChange={setAsTouched}
-                    />
-                  </Form.Item>
+                  <Col span={24} key={day}>
+                    <Form.Item
+                      name={["serviceScheduling", "availableHours", day]}
+                      label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
+                    >
+                      <TimePicker.RangePicker
+                        format={TIME_PICKER_FORMAT}
+                        minuteStep={10}
+                        onCalendarChange={setAsTouched}
+                        style={{ width: '100%' }}
+                      />
+                    </Form.Item>
+                  </Col>
                 );
               })}
             </>
           )}
-          <Form.Item
-            name="price"
-            label="Precio"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
 
-          <Form.Item
-            name="inventory"
-            label="Cantidad disponible"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
+          {/* Última fila - Precio y Cantidad (mitad cada uno) */}
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="price"
+              label="Precio"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="inventory"
+              label="Cantidad disponible"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
           {/* <Form.Item>
             <Upload
               action={async (file)=>{
@@ -258,7 +288,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
               />
             )}
           </Form.Item> */}
-        </div>
+        </Row>
       )}
     </FormWrapper>
   );

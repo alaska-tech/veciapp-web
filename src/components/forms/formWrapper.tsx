@@ -4,6 +4,7 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { App, Button, Flex, Form, FormInstance, FormProps, Modal } from "antd";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export interface FormWrapperProps<T>
   extends Omit<FormProps<any>, "children" | "onFinish"> {
@@ -99,45 +100,52 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
     }
   }
   return (
-    <Form<T>
-      form={formProps.form || form}
-      onChange={() => {
-        if (preserveDataInCache) {
-          const actualFormInstance = formProps.form || form;
-          const values = actualFormInstance.getFieldsValue();
-          setFormValues(values);
-        }
-        setAsTouched();
-      }}
-      initialValues={formValues || initialValues}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 24 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
       style={formStyles}
-      scrollToFirstError
-      labelWrap
-      requiredMark={false}
-      layout={"vertical"}
-      {...formProps}
-      onFinish={onFinish}
     >
-      {hasNewValue && (
-        <Button onClick={resetForm} style={{ alignSelf: "end" }}>
-          Resetear
-        </Button>
-      )}
-      {typeof children === "function"
-        ? children(formProps.form || form, setAsTouched)
-        : children}
-      <Form.Item style={{ textAlign: "center" }}>
-        <Button
-          type="primary"
-          htmlType="submit"
-          style={buttonStyles}
-          icon={<SaveOutlined />}
-          loading={formProps.loading}
-        >
-          Guardar
-        </Button>
-      </Form.Item>
-    </Form>
+      <Form<T>
+        form={formProps.form || form}
+        onChange={() => {
+          if (preserveDataInCache) {
+            const actualFormInstance = formProps.form || form;
+            const values = actualFormInstance.getFieldsValue();
+            setFormValues(values);
+          }
+          setAsTouched();
+        }}
+        initialValues={formValues || initialValues}
+        scrollToFirstError
+        labelWrap
+        requiredMark={false}
+        layout={"vertical"}
+        {...formProps}
+        onFinish={onFinish}
+      >
+        {hasNewValue && (
+          <Button onClick={resetForm} style={{ alignSelf: "end" }}>
+            Resetear
+          </Button>
+        )}
+        {typeof children === "function"
+          ? children(formProps.form || form, setAsTouched)
+          : children}
+        <Form.Item style={{ textAlign: "center" }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={buttonStyles}
+            icon={<SaveOutlined />}
+            loading={formProps.loading}
+          >
+            Guardar
+          </Button>
+        </Form.Item>
+      </Form>
+    </motion.div>
   );
 };
 

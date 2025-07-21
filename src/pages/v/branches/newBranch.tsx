@@ -1,7 +1,6 @@
 import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";

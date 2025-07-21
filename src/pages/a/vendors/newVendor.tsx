@@ -8,14 +8,14 @@ const Index = () => {
   const vendorActions = useVendorAction();
   const createVendor = vendorActions.createVendor();
   return (
-    <Space direction="vertical">
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
       <FormElement
         onFinish={async (values) => {
           await createVendor.mutateAsync({ body: values });
         }}
         loading={createVendor.isPending}
       />
-    </Space>
+    </div>
   );
 };
 

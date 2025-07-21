@@ -1,7 +1,6 @@
 import useAuthAction from "@/actions/auth.action";
 import { useProductServiceAction } from "@/actions/productservice.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import GoBackButton from "@/components/pure/goBackButton";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -23,8 +22,7 @@ const Index = () => {
   const authActions = useAuthAction();
   const user = authActions.userSession;
   return (
-    <Space direction="vertical">
-      <GoBackButton />
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({
@@ -37,7 +35,7 @@ const Index = () => {
         branchId={(id as string) || ""}
         userId={user.data?.id || ""}
       />
-    </Space>
+    </div>
   );
 };
 

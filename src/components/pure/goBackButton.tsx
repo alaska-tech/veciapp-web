@@ -8,7 +8,13 @@ const GoBackButton = () => {
       type="link"
       onClick={() => window.history.back()}
       icon={<ArrowLeftOutlined />}
-      style={{padding: 0}}
+      style={{
+        padding: 0,
+        textAlign: "left",
+        justifyContent: "flex-start",
+        display: "flex",
+        alignItems: "center"
+      }}
     >
       Volver a la página anterior
     </Button>
