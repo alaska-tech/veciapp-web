@@ -5,6 +5,7 @@ import {
   PopconfirmProps,
 } from "antd";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const AsyncButton = (
   props: ButtonProps & {
@@ -37,26 +38,38 @@ const AsyncButton = (
         {...popConfirmProps}
         onConfirm={handleClick}
       >
-        <Button
-          {...rest}
-          loading={loading}
-          disabled={loading || rest.disabled}
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          style={{ border: "none", background: "none", padding: 0, width: "100%" }}
         >
-          {rest.children}
-        </Button>
+          <Button
+            {...rest}
+            loading={loading}
+            disabled={loading || rest.disabled}
+          >
+            {rest.children}
+          </Button>
+        </motion.button>
       </Popconfirm>
     );
   }
 
   return (
-    <Button
-      {...rest}
-      loading={loading}
-      disabled={loading || rest.disabled}
-      onClick={handleClick}
+    <motion.button
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.97 }}
+      style={{ border: "none", background: "none", padding: 0, width: "100%" }}
     >
-      {rest.children}
-    </Button>
+      <Button
+        {...rest}
+        loading={loading}
+        disabled={loading || rest.disabled}
+        onClick={handleClick}
+      >
+        {rest.children}
+      </Button>
+    </motion.button>
   );
 };
 export default AsyncButton;
