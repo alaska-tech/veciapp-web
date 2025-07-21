@@ -201,7 +201,7 @@ function DashboardLayout({
         onClick: async () => {
           await logout.mutateAsync({ body: null });
           clearAllInfoFromLocalStorage();
-          router.push("/");
+          router.push("");
         },
       },
     ],
