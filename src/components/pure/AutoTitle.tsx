@@ -20,10 +20,10 @@ export const AutoTitle = ({ titles, subtitles }: AutoTitleProps) => {
 
   return (
     <>
-      <Typography.Title level={2} style={{ margin: 0 }}>
+      <Typography.Title level={2} style={{ paddingLeft: 12 }}>
         {replacePlaceholders(title)}
       </Typography.Title>
-      <Typography.Text type="secondary">
+      <Typography.Text type="secondary" style={{ paddingLeft: 12 }}>
         {replacePlaceholders(subtitle)}
       </Typography.Text>
     </>
