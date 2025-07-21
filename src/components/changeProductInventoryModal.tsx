@@ -8,6 +8,7 @@ import { Modal, Button } from "antd";
 import { useState } from "react";
 import { FormElement } from "./forms/updateProductServiceInventory";
 import { useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 
 const ChangeProductStateModal = (props: {
   productId: string;
@@ -28,37 +29,44 @@ const ChangeProductStateModal = (props: {
         title="Actualizar inventario"
         footer={null}
       >
-        <FormElement
-          onFinish={async (values) => {
-            const quantityDifference = values.inventory - numericalCurrentValue;
-            if (quantityDifference === 0) {
-              return;
-            }
-            const isAdditionAction = quantityDifference > 0;
-            const action = isAdditionAction ? "addition" : "subtraction";
-            const quantity = Math.abs(quantityDifference);
-            await changeInventory
-              .mutateAsync({
-                id: props.productId,
-                body: {
-                  action,
-                  quantity,
-                  updatedBy: user?.data?.email || "",
-                },
-              })
-              .then(
-                () => {
-                  queryClient.invalidateQueries({
-                    queryKey: [QUERY_KEY_PRODUCTSERVICE],
-                  });
-                  setOpen(false);
-                },
-                () => {}
-              );
-          }}
-          loading={changeInventory.isPending}
-          initialValues={{ inventory: numericalCurrentValue }}
-        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <FormElement
+            onFinish={async (values) => {
+              const quantityDifference = values.inventory - numericalCurrentValue;
+              if (quantityDifference === 0) {
+                return;
+              }
+              const isAdditionAction = quantityDifference > 0;
+              const action = isAdditionAction ? "addition" : "subtraction";
+              const quantity = Math.abs(quantityDifference);
+              await changeInventory
+                .mutateAsync({
+                  id: props.productId,
+                  body: {
+                    action,
+                    quantity,
+                    updatedBy: user?.data?.email || "",
+                  },
+                })
+                .then(
+                  () => {
+                    queryClient.invalidateQueries({
+                      queryKey: [QUERY_KEY_PRODUCTSERVICE],
+                    });
+                    setOpen(false);
+                  },
+                  () => {}
+                );
+            }}
+            loading={changeInventory.isPending}
+            initialValues={{ inventory: numericalCurrentValue }}
+          />
+        </motion.div>
       </Modal>
       <Button
         type="text"

@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
 
 const LandingPageLayout = (props: {
   children: React.ReactNode;
@@ -56,7 +57,15 @@ const LandingPageLayout = (props: {
           </Button>
         )}
         <AutoTitle />
-        <div style={{ flex: 1 }}>{props.children}</div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 24 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          style={{ flex: 1 }}
+        >
+          {props.children}
+        </motion.div>
       </Content>
 
       <div

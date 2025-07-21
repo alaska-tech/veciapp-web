@@ -1,4 +1,4 @@
-import { Form, Input, Radio } from "antd";
+import { Form, Input, Radio, Row, Col } from "antd";
 import React from "react";
 import { Customer, User } from "@models";
 import FormWrapper from "./formWrapper";
@@ -50,178 +50,167 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
       highligthOnChange={hasInitialValues}
     >
       {(formInstance) => (
-        <div>
-          <Form.Item
-            name="fullName"
-            label="Nombre completo"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled={hasInitialValues} />
-          </Form.Item>
-          <Form.Item
-            name="identification"
-            label="Número de identidad"
-            tooltip="Escriba el número de identidad sin puntos ni espacios"
-            rules={[
-              {
-                pattern: /^[0-9]+$/,
-                message: "El número de identidad solo puede contener números",
-              },
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled={hasInitialValues} />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            label="E-mail"
-            rules={[
-              {
-                type: "email",
-              },
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="cellphone"
-            label="Teléfono celular"
-            tooltip="Escriba el número de celular sin puntos ni espacios"
-            rules={[
-              {
-                pattern: /^[0-9]+$/,
-                message: "El teléfono solo puede contener números",
-              },
-              { required: true },
-            ]}
-          >
-            <Input
-              addonBefore={
-                <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
-                  <CustomSelectWithInput
-                    selectProps={{
-                      options: [
-                        {
-                          value: "57",
-                          label: "+57",
-                        },
-                      ],
-                      style: { width: 75 },
-                      popupMatchSelectWidth: false,
-                    }}
-                    inputProps={{
-                      placeholder: "Escriba...",
-                      style: {
-                        width: 65,
-                      },
-                    }}
-                  />
-                </Form.Item>
-              }
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-          {/*  <Form.Item
-            name="address"
-            label="Dirección"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="age"
-            label="Edad"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <InputNumber />
-          </Form.Item>
-          <Form.Item
-            name="birthdate"
-            label="Fecha de nacimiento"
-            rules={[
-              {
-                type: "object" as const,
-                required: true,
-              },
-            ]}
-          >
-            <DatePicker />
-          </Form.Item> */}
-          <Form.Item
-            name="gender"
-            label="Género"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Radio.Group
-              options={[
-                { value: "male", label: "Hombre" },
-                { value: "female", label: "Mujer" },
-                { value: "other", label: "Otro" },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Password"
-            rules={[
-              {
-                required: true,
-              },
-              {
-                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                message: "La contraseña no cumple con las reglas de seguridad",
-              },
-            ]}
-            hasFeedback
-            help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            name="confirm-password"
-            label="Repita el password"
-            dependencies={["password"]}
-            rules={[
-              {
-                required: true,
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error("Las contraseñas no coinciden")
-                  );
+        <Row gutter={[24, 16]}>
+          {/* Primera fila - Nombre completo (ancho completo) */}
+          <Col span={24}>
+            <Form.Item
+              name="fullName"
+              label="Nombre completo"
+              rules={[
+                {
+                  required: true,
                 },
-              }),
-            ]}
-            hasFeedback
-          >
-            <Input.Password />
-          </Form.Item>
-        </div>
+              ]}
+            >
+              <Input disabled={hasInitialValues} />
+            </Form.Item>
+          </Col>
+
+          {/* Segunda fila - Identificación y Email (mitad cada uno) */}
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="identification"
+              label="Número de identidad"
+              tooltip="Escriba el número de identidad sin puntos ni espacios"
+              rules={[
+                {
+                  pattern: /^[0-9]+$/,
+                  message: "El número de identidad solo puede contener números",
+                },
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input disabled={hasInitialValues} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="email"
+              label="E-mail"
+              rules={[
+                {
+                  type: "email",
+                },
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+
+          {/* Tercera fila - Teléfono (ancho completo) */}
+          <Col span={24}>
+            <Form.Item
+              name="cellphone"
+              label="Teléfono celular"
+              tooltip="Escriba el número de celular sin puntos ni espacios"
+              rules={[
+                {
+                  pattern: /^[0-9]+$/,
+                  message: "El teléfono solo puede contener números",
+                },
+                { required: true },
+              ]}
+            >
+              <Input
+                addonBefore={
+                  <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
+                    <CustomSelectWithInput
+                      selectProps={{
+                        options: [
+                          {
+                            value: "57",
+                            label: "+57",
+                          },
+                        ],
+                        style: { width: 75 },
+                        popupMatchSelectWidth: false,
+                      }}
+                      inputProps={{
+                        placeholder: "Escriba...",
+                        style: {
+                          width: 65,
+                        },
+                      }}
+                    />
+                  </Form.Item>
+                }
+                style={{ width: "100%" }}
+              />
+            </Form.Item>
+          </Col>
+
+          {/* Cuarta fila - Género (ancho completo) */}
+          <Col span={24}>
+            <Form.Item
+              name="gender"
+              label="Género"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Radio.Group
+                options={[
+                  { value: "male", label: "Hombre" },
+                  { value: "female", label: "Mujer" },
+                  { value: "other", label: "Otro" },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+
+          {/* Quinta fila - Contraseñas (mitad cada uno) */}
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[
+                {
+                  required: true,
+                },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                  message: "La contraseña no cumple con las reglas de seguridad",
+                },
+              ]}
+              hasFeedback
+              help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
+            >
+              <Input.Password />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="confirm-password"
+              label="Repita el password"
+              dependencies={["password"]}
+              rules={[
+                {
+                  required: true,
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Las contraseñas no coinciden")
+                    );
+                  },
+                }),
+              ]}
+              hasFeedback
+            >
+              <Input.Password />
+            </Form.Item>
+          </Col>
+        </Row>
       )}
     </FormWrapper>
   );
