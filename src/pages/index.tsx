@@ -7,6 +7,7 @@ import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
 import { JWT_KEY } from "@/constants/constants";
 import { setRefreshToken, setToken, setUserInfo } from "@/actions/localStorage.actions";
+import { motion } from "framer-motion";
 
 export type LogInForm = {
   email: string;
@@ -59,7 +60,11 @@ export default function Home() {
     );
   };
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 24 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
       style={{
         textAlign: "start",
         display: "flex",
@@ -116,7 +121,7 @@ export default function Home() {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </motion.div>
   );
 }
 

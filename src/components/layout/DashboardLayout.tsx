@@ -31,6 +31,7 @@ import { AutoTitle } from "../pure/AutoTitle";
 import { AutoMenu } from "../pure/AutoMenu";
 import { ProfileButton } from "../pure/ProfileButton";
 import { useWindowSize } from "../../../hooks/useWindowSize";
+import { motion } from "framer-motion";
 
 export const SIDER_WIDTH = {
   COLLAPSED: 80,
@@ -215,7 +216,7 @@ function DashboardLayout({
     </Footer>
   );
   const desktopLayout = (
-    <Layout>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
         onCollapse={(collapsed) => setSideMenuCollapsed(collapsed)}
@@ -296,14 +297,16 @@ function DashboardLayout({
             <AutoTitle titles={titles} subtitles={subtitles} />
           </div>
         </Header>
-        <Content
-          style={{
-            padding: "12px 50px",
-            overflow: "auto",
-            alignSelf: "center",
-          }}
-        >
-          {children}
+        <Content style={{ margin: "24px 16px 0" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            style={{ minHeight: 360 }}
+          >
+            {children}
+          </motion.div>
         </Content>
         {footer}
       </Layout>
