@@ -69,8 +69,7 @@ const decodeToken = (token: string): DecodedToken => {
   return JSON.parse(jsonPayload);
 };
 
-export const isTokenValid = (): boolean => {
-  const token = getToken();
+export const isTokenValid = (token: string): boolean => {
   if (!token) return false;
   try {
     const decodedToken = decodeToken(token);
@@ -85,25 +84,6 @@ export const isTokenValid = (): boolean => {
   }
 };
 export const useLocalStorageAction = () => {
-  /*   const mutation = useMutation<
-    Response<{ accessToken: string }>,
-    Error,
-    string | null
-  >({
-    mutationFn: async (currentRefreshToken) => {
-      const response = await apiClient.post<Response<{ accessToken: string }>>(
-        "/auth/refresh-token",
-        {
-          refreshToken: currentRefreshToken,
-        }
-      );
-      return response.data;
-    },
-    onSuccess: (data, _variables, _context) => {
-      const accessToken = data.data?.accessToken || "";
-      setToken(accessToken);
-    },
-  }); */
 
   const refresh = mutateEntity<
     AxiosResponse<
@@ -138,17 +118,18 @@ export const useLocalStorageAction = () => {
       onSuccess: async (data, variables, context) => {
         const accessToken = data.data?.data?.accessToken || "";
         setToken(accessToken);
-        clearRefreshToken() //TODO: preguntar cuantas veces sirve ese token
+        clearRefreshToken(); //TODO: preguntar cuantas veces sirve ese token
       },
     }
   );
   const refreshMutation = refresh();
   function refreshCurrentToken() {
-    if (isTokenValid()) {
+    const token = getToken();
+    if (token && isTokenValid(token)) {
       return;
     }
 
-    const currentRefreshToken = getRefreshToken()
+    const currentRefreshToken = getRefreshToken();
     if (!currentRefreshToken) {
       return;
     }
