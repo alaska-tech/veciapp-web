@@ -42,7 +42,7 @@ export const useProductServiceAction = () => {
   const getProductServicesPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId }) => {
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId, vendorId }) => {
     return async function queryFn() {
       try {
         const branch = branchId ? `&branchId=${branchId}` : "";
