@@ -10,8 +10,11 @@ import { AppstoreOutlined, TeamOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
+  Divider,
   Drawer,
+  Input,
   message,
+  Radio,
   Space,
   Table,
   TableColumnsType,
@@ -768,7 +771,6 @@ const mockedData: DataType[] = [
     customer: clients[0],
     vendor: vendors[0],
   },
-  // --- NUEVOS DATOS DE PRUEBA ---
   {
     id: "0002",
     createdAt: new Date(Date.now() - 86400000),
@@ -830,7 +832,8 @@ const mockedData: DataType[] = [
         {
           id: "msg-003-2",
           createdAt: new Date(Date.now() - 2 * 86400000 + 3600000),
-          content: "Lamentamos el inconveniente, ¿desea un reembolso o reposición?",
+          content:
+            "Lamentamos el inconveniente, ¿desea un reembolso o reposición?",
           sender: "vendor",
           createdBy: "julianchos.rivera@gmail.com",
         },
@@ -1152,15 +1155,16 @@ const Index = () => {
       },
     },
     {
-      title: "Accones",
+      title: "Acciones",
       dataIndex: "id",
       key: "id",
       render: (id, record) => {
         return (
-          <>
+          <Space wrap split={<Divider type="vertical" />}>
             <ChatDrawer chat={record.chat} />
             <DisputeStateDrawer conciliation={record} />
-          </>
+            <PenalizeDrawer customer={record.customer} vendor={record.vendor} />
+          </Space>
         );
       },
     },
@@ -1262,6 +1266,95 @@ const DisputeStateDrawer = ({
           >
             Descartar
           </Button>
+        </Space>
+      </Drawer>
+    </>
+  );
+};
+const PenalizeDrawer = ({
+  customer,
+  vendor,
+}: {
+  customer: any;
+  vendor: any;
+}) => {
+  const [selectedUser, setSelectedUser] = useState<"customer" | "vendor">(
+    "customer"
+  );
+  const [penaltyType, setPenaltyType] = useState<"penalty" | "ban">("penalty");
+  const [reason, setReason] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handlePenalize = () => {
+    // Here would go the API call to penalize/ban the user
+    message.success(
+      `${penaltyType === "penalty" ? "Penalizado" : "Bloqueado"} ${
+        selectedUser === "customer" ? customer.fullName : vendor.fullName
+      } exitosamente`
+    );
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <Button type="text" onClick={() => setIsOpen(true)}>
+        Penalizar
+      </Button>
+      <Drawer
+        title="Penalizar usuario"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        extra={
+          <Button type="primary" onClick={handlePenalize} disabled={!reason}>
+            Confirmar
+          </Button>
+        }
+      >
+        <Space direction="vertical" style={{ width: "100%" }} size="large">
+          <div>
+            <Typography.Text strong>Seleccionar usuario</Typography.Text>
+            <Radio.Group
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginTop: 8,
+              }}
+            >
+              <Radio value="customer">Cliente: {customer.fullName}</Radio>
+              <Radio value="vendor">Veciproveedor: {vendor.fullName}</Radio>
+            </Radio.Group>
+          </div>
+
+          <div>
+            <Typography.Text strong>Tipo de sanción</Typography.Text>
+            <Radio.Group
+              value={penaltyType}
+              onChange={(e) => setPenaltyType(e.target.value)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginTop: 8,
+              }}
+            >
+              <Radio value="penalty">Penalizar (reducir calificación)</Radio>
+              <Radio value="ban">Bloquear cuenta</Radio>
+            </Radio.Group>
+          </div>
+
+          <div>
+            <Typography.Text strong>Razón</Typography.Text>
+            <Input.TextArea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Ingrese el motivo de la sanción"
+              rows={4}
+              style={{ marginTop: 8 }}
+            />
+          </div>
         </Space>
       </Drawer>
     </>
