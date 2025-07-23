@@ -10,6 +10,7 @@ import {
   setRefreshToken,
   setToken,
   setUserInfo,
+  clearAllInfoFromLocalStorage,
 } from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 
@@ -27,16 +28,11 @@ const styles = {
 
 export default function Home() {
   const router = useRouter();
-  const { isLogginOut } = router.query;
   const authActions = useAuthAction();
   const login = authActions.logIn();
   const { message } = App.useApp();
 
   useEffect(() => {
-    if (isLogginOut) {
-      router.replace("/");
-      return;
-    }
     const jwt = localStorage.getItem(JWT_KEY);
     if (jwt) {
       const user = JSON.parse(atob(jwt.split(".")[1]));
@@ -97,7 +93,6 @@ export default function Home() {
           rules={[
             {
               required: true,
-              message: "Please enter your email",
             },
           ]}
         >
@@ -109,7 +104,6 @@ export default function Home() {
           rules={[
             {
               required: true,
-              message: "Please enter your password",
             },
           ]}
         >

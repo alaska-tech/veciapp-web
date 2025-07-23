@@ -67,7 +67,7 @@ const Users = () => {
       key: "email",
     },
     {
-      title: "Telefono",
+      title: "Teléfono",
       dataIndex: "cellphone",
       key: "cellphone",
     },
@@ -120,7 +120,7 @@ const Users = () => {
           >
             <a onClick={(e) => e.preventDefault()}>
               <Space>
-                Mas...
+                Más...
                 <DownOutlined />
               </Space>
             </a>
