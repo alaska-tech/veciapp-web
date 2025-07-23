@@ -58,7 +58,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/a/vendors">Gerentes</Link>,
+          label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
         {
@@ -70,7 +70,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/a/products`,
           icon: React.createElement(AppleOutlined),
-          label: <Link href="/a/products">Productos</Link>,
+          label: <Link href="/a/products">Productos y servicios</Link>,
           children: undefined,
         },
       ],
@@ -93,10 +93,10 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           children: undefined,
         },
         {
-          key: `/a/conciliations`,
+          key: `/a/disputes`,
           disabled: true,
           icon: React.createElement(ReconciliationOutlined),
-          label: <Link href="/a/conciliations">Conciliaciones</Link>,
+          label: <Link href="/a/disputes">Disputas</Link>,
           children: undefined,
         },
       ],
@@ -200,8 +200,8 @@ function DashboardLayout({
         icon: <LogoutOutlined />,
         onClick: async () => {
           await logout.mutateAsync({ body: null });
+          router.push("/?isLogginOut=true");
           clearAllInfoFromLocalStorage();
-          router.push("");
         },
       },
     ],

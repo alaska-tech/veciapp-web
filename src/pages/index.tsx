@@ -6,7 +6,11 @@ import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
 import { JWT_KEY } from "@/constants/constants";
-import { setRefreshToken, setToken, setUserInfo } from "@/actions/localStorage.actions";
+import {
+  setRefreshToken,
+  setToken,
+  setUserInfo,
+} from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 
 export type LogInForm = {
@@ -23,11 +27,16 @@ const styles = {
 
 export default function Home() {
   const router = useRouter();
+  const { isLogginOut } = router.query;
   const authActions = useAuthAction();
   const login = authActions.logIn();
   const { message } = App.useApp();
 
   useEffect(() => {
+    if (isLogginOut) {
+      router.replace("/");
+      return;
+    }
     const jwt = localStorage.getItem(JWT_KEY);
     if (jwt) {
       const user = JSON.parse(atob(jwt.split(".")[1]));
@@ -47,13 +56,16 @@ export default function Home() {
         const { token, user } = response.data.data;
         setUserInfo(user);
         setToken(token);
-        setRefreshToken(user.refreshToken)
+        setRefreshToken(user.refreshToken);
         if (response.data.data.user.role === "admin") {
           router.push("/a/home");
         } else if (response.data.data.user.role === "vendor") {
           router.push("/v/home");
         } else {
-          message.error("Usted no cuenta con los permisos suficientes para acceder a esta sección", 10);
+          message.error(
+            "Usted no cuenta con los permisos suficientes para acceder a esta sección",
+            10
+          );
         }
       },
       () => {}
@@ -79,10 +91,6 @@ export default function Home() {
         autoComplete="off"
         layout="vertical"
         requiredMark={false}
-/*         initialValues={{
-          email: "julianchos.rivera@gmail.com",
-          password: "123456",
-        }} */
       >
         <Form.Item<LogInForm>
           name="email"
