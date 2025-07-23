@@ -80,32 +80,18 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   name="internalCode"
                   label="Código interno"
                   tooltip="Escriba el código interno de la fundación Maleua"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                    {
-                      max: 100,
-                    },
-                  ]}
+                  rules={[{ required: true }, { max: 100 }]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el código interno" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col span={24}>
                 <Form.Item
                   name="fullName"
                   label="Nombre completo"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                    {
-                      max: 255,
-                    },
-                  ]}
+                  rules={[{ required: true }, { max: 255 }]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el nombre completo" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -126,7 +112,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     },
                   ]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el número de identidad" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -145,7 +131,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     },
                   ]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el correo electrónico" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -195,16 +181,9 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 <Form.Item
                   name="address"
                   label="Dirección"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                    {
-                      max: 255,
-                    },
-                  ]}
+                  rules={[{ required: true }, { max: 255 }]}
                 >
-                  <Input />
+                  <Input placeholder="Ingrese la dirección completa" />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -242,7 +221,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
               </Col>
               <Col span={24}>
                 <Form.Item name={"bio"} label="Biografía" rules={[]}>
-                  <Input.TextArea rows={3} />
+                  <Input.TextArea placeholder="Escriba una breve biografía" rows={3} />
                 </Form.Item>
               </Col>
             </Row>
@@ -256,26 +235,18 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 <Form.Item
                   name={"commercialRegistry"}
                   label="Registro comercial"
-                  rules={[
-                    {
-                      max: 255,
-                    },
-                  ]}
+                  rules={[{ max: 255 }]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el registro comercial" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col span={24}>
                 <Form.Item
                   name={"rut"}
                   label="RUT"
-                  rules={[
-                    {
-                      max: 255,
-                    },
-                  ]}
+                  rules={[{ max: 255 }]}
                 >
-                  <Input disabled={hasInitialValues} />
+                  <Input placeholder="Ingrese el RUT" disabled={hasInitialValues} />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -297,7 +268,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     }),
                   ]}
                 >
-                  <Input />
+                  <Input placeholder="Ingrese el nombre del banco" />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -319,7 +290,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     }),
                   ]}
                 >
-                  <Input />
+                  <Input placeholder="Ingrese el número de cuenta" />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>

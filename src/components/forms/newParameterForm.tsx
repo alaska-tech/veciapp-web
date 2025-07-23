@@ -73,7 +73,7 @@ export const FormElement = <T extends Parameter>(props: {
         {/* Primera fila - Name y Display Name (mitad cada uno) */}
         <Col xs={24} md={12}>
           <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input placeholder="Name" />
+            <Input placeholder="Nombre" />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
@@ -82,7 +82,7 @@ export const FormElement = <T extends Parameter>(props: {
             name="displayName"
             rules={[{ required: true }]}
           >
-            <Input placeholder="Display Name" />
+            <Input placeholder="Nombre en pantalla" />
           </Form.Item>
         </Col>
 
@@ -93,7 +93,7 @@ export const FormElement = <T extends Parameter>(props: {
             name="description"
             rules={[{ required: true }]}
           >
-            <Input.TextArea placeholder="Description" rows={4} />
+            <Input.TextArea placeholder="Descripción" rows={4} />
           </Form.Item>
         </Col>
 
@@ -101,7 +101,7 @@ export const FormElement = <T extends Parameter>(props: {
         <Col xs={24} md={12}>
           <Form.Item label="Type" name="type" rules={[{ required: true }]}>
             <Select
-              placeholder="Select a type"
+              placeholder="Selecciona un tipo"
               onChange={() => {
                 formRef.setFieldsValue({ value: undefined });
                 if (formRef.isFieldTouched("value" as any)) {
