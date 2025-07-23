@@ -1,4 +1,5 @@
 import useAuthAction from "@/actions/auth.action";
+import { clearAllInfoFromLocalStorage } from "@/actions/localStorage.actions";
 import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@constants";
 import { User, CustomerRoleType } from "@models";
 import { useRouter } from "next/router";
@@ -30,8 +31,7 @@ const AuthVerifier = ({
 
   if (requireAuth && !user) {
     // Si requireAuth es true y el usuario no está autenticado, redirigir al inicio de sesión.
-    localStorage.removeItem(JWT_KEY);
-    localStorage.removeItem(LOGGED_USER_INFO_KEY);
+    clearAllInfoFromLocalStorage();
     router.replace("/");
     return null;
   }

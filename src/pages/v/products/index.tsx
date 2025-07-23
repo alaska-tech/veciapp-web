@@ -211,7 +211,7 @@ const Users = () => {
             }}
             placement="bottomRight"
           >
-            <Button type="link">Mas...</Button>
+            <Button type="link">Más...</Button>
           </Dropdown>
         </Space>
       ),

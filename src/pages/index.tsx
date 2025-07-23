@@ -6,7 +6,12 @@ import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
 import { JWT_KEY } from "@/constants/constants";
-import { setRefreshToken, setToken, setUserInfo } from "@/actions/localStorage.actions";
+import {
+  setRefreshToken,
+  setToken,
+  setUserInfo,
+  clearAllInfoFromLocalStorage,
+} from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 
 export type LogInForm = {
@@ -47,13 +52,16 @@ export default function Home() {
         const { token, user } = response.data.data;
         setUserInfo(user);
         setToken(token);
-        setRefreshToken(user.refreshToken)
+        setRefreshToken(user.refreshToken);
         if (response.data.data.user.role === "admin") {
           router.push("/a/home");
         } else if (response.data.data.user.role === "vendor") {
           router.push("/v/home");
         } else {
-          message.error("Usted no cuenta con los permisos suficientes para acceder a esta sección", 10);
+          message.error(
+            "Usted no cuenta con los permisos suficientes para acceder a esta sección",
+            10
+          );
         }
       },
       () => {}
@@ -79,17 +87,12 @@ export default function Home() {
         autoComplete="off"
         layout="vertical"
         requiredMark={false}
-/*         initialValues={{
-          email: "julianchos.rivera@gmail.com",
-          password: "123456",
-        }} */
       >
         <Form.Item<LogInForm>
           name="email"
           rules={[
             {
               required: true,
-              message: "Please enter your email",
             },
           ]}
         >
@@ -101,7 +104,6 @@ export default function Home() {
           rules={[
             {
               required: true,
-              message: "Please enter your password",
             },
           ]}
         >

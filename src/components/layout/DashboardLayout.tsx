@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { Layout, theme, Typography, Button, Drawer } from "antd";
 import {
@@ -18,15 +18,12 @@ import type { MenuProps } from "antd";
 import Link from "next/link";
 import AuthVerifier from "../auth/AuthVerifier";
 import useAuthAction from "@/actions/auth.action";
-import { CustomerRoleType, User } from "@/constants/models";
+import { User } from "@/constants/models";
 import GoBackButton from "../pure/goBackButton";
 import { subtitles, titles } from "@/constants/titles";
-import { breadcrumItemTree } from "@/constants/breadcrumbItems";
 import {
   clearAllInfoFromLocalStorage,
-  useLocalStorageAction,
 } from "@/actions/localStorage.actions";
-import { AutoBreadcrumb } from "../pure/AutoBreadcrumb";
 import { AutoTitle } from "../pure/AutoTitle";
 import { AutoMenu } from "../pure/AutoMenu";
 import { ProfileButton } from "../pure/ProfileButton";
@@ -58,7 +55,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/a/vendors">Gerentes</Link>,
+          label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
         {
@@ -70,7 +67,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/a/products`,
           icon: React.createElement(AppleOutlined),
-          label: <Link href="/a/products">Productos</Link>,
+          label: <Link href="/a/products">Productos y servicios</Link>,
           children: undefined,
         },
       ],
@@ -93,10 +90,10 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           children: undefined,
         },
         {
-          key: `/a/conciliations`,
+          key: `/a/disputes`,
           disabled: true,
           icon: React.createElement(ReconciliationOutlined),
-          label: <Link href="/a/conciliations">Conciliaciones</Link>,
+          label: <Link href="/a/disputes">Disputas</Link>,
           children: undefined,
         },
       ],
@@ -144,10 +141,6 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   ],
 };
 
-const roleKeyMap: Record<string, string> = {
-  a: "admin",
-  v: "vendor",
-};
 const roleLabels: Record<string, string> = {
   a: "Administrador",
   v: "Veciproveedor",
@@ -175,11 +168,10 @@ function DashboardLayout({
   } = theme.useToken();
   const [sideMenuCollapsed, setSideMenuCollapsed] = useState<boolean>(false);
   const primaryUrlSegment = router.pathname.split("/")[1];
-  const rolesAllowed = roleKeyMap[primaryUrlSegment] || undefined;
-  const localStorageActions = useLocalStorageAction();
+  /* const localStorageActions = useLocalStorageAction(); */
   const { width } = useWindowSize();
   const isSmallScreen = width < SCREEN_BREAKPOINTS["MOBILE"];
-/*   useEffect(() => {
+  /*   useEffect(() => {
     localStorageActions.refreshCurrentToken(); //TODO: Preguntar al tocayo por que falla, si esta bien autenticado
   }, []); */
   const dropdownMenu = {
@@ -193,15 +185,15 @@ function DashboardLayout({
               router.push(`/${router.pathname.split("/")[1]}/profile`);
             },
           }
-        : ({} as any),
+        : null,
       {
         key: "logout",
         label: "Cerrar sesión",
         icon: <LogoutOutlined />,
         onClick: async () => {
           await logout.mutateAsync({ body: null });
+          router.push("/");
           clearAllInfoFromLocalStorage();
-          router.push("");
         },
       },
     ],
@@ -289,7 +281,7 @@ function DashboardLayout({
               justifyContent: "space-between",
               flexWrap: "wrap",
               alignItems: "flex-start",
-              width: "100%"
+              width: "100%",
             }}
           >
             {/* <AutoBreadcrumb breadcrumItemTree={breadcrumItemTree} /> */}
@@ -387,7 +379,7 @@ function DashboardLayout({
   return (
     <AuthVerifier
       requireAuth={true}
-      roles={[rolesAllowed as CustomerRoleType[number]]}
+      roles={["admin", "vendor"]}
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}
     >
