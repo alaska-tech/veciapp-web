@@ -15,6 +15,26 @@ const theme: ThemeConfig = {
     Button: {
       defaultGhostColor: "rgb(209,209,209)",
     },
+    Input: {
+      controlHeight: 45,
+      controlHeightLG: 45,
+      controlHeightSM: 8,
+    },
+    InputNumber: {
+      controlHeight: 45,
+      controlHeightLG: 45,
+      controlHeightSM: 8,
+    },
+    Dropdown: {
+      controlHeight: 45,
+      controlHeightLG: 45,
+      controlHeightSM: 8,
+    },
+    Select: {
+      controlHeight: 45,
+      controlHeightLG: 45,
+      controlHeightSM: 8,
+    },
   },
 };
 
