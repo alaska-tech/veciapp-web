@@ -56,13 +56,9 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
             <Form.Item
               name="fullName"
               label="Nombre completo"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ required: true }]}
             >
-              <Input disabled={hasInitialValues} />
+              <Input placeholder="Ingrese su nombre completo" disabled={hasInitialValues} />
             </Form.Item>
           </Col>
 
@@ -82,7 +78,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input disabled={hasInitialValues} />
+              <Input placeholder="Ingrese su número de identidad" disabled={hasInitialValues} />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -98,7 +94,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input />
+              <Input placeholder="Ingrese su correo electrónico" />
             </Form.Item>
           </Col>
 
@@ -182,7 +178,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               hasFeedback
               help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
             >
-              <Input.Password />
+              <Input.Password placeholder="Ingrese su contraseña" />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -207,7 +203,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               ]}
               hasFeedback
             >
-              <Input.Password />
+              <Input.Password placeholder="Repita su contraseña" />
             </Form.Item>
           </Col>
         </Row>
