@@ -35,7 +35,6 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
-  //const getBranchById = actions.getBranchesByVendorId(user?.foreignPersonId);
   const branchQuery = actions.getBranchesByVendorIdPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,

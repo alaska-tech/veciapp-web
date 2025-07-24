@@ -85,7 +85,7 @@ export const useBranchAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches?limit=${limit}&page=${page}`);
+        >(`/branches/all?limit=${limit}&page=${page}`);
         console.log(response);
         return response.data;
       } catch (error) {

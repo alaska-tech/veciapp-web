@@ -41,7 +41,6 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
           ? parseInitialValues(props.initialValues || ({} as Customer))
           : {
               prefix: "57",
-              password: "Vcapp20251",
             }
       }
       requiredMark={false}
@@ -58,7 +57,10 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               label="Nombre completo"
               rules={[{ required: true }]}
             >
-              <Input placeholder="Ingrese su nombre completo" disabled={hasInitialValues} />
+              <Input
+                placeholder="Ingrese su nombre completo"
+                disabled={hasInitialValues}
+              />
             </Form.Item>
           </Col>
 
@@ -78,7 +80,10 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
                 },
               ]}
             >
-              <Input placeholder="Ingrese su número de identidad" disabled={hasInitialValues} />
+              <Input
+                placeholder="Ingrese su número de identidad"
+                disabled={hasInitialValues}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -162,56 +167,61 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
           </Col>
 
           {/* Quinta fila - Contraseñas (mitad cada uno) */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                  message: "La contraseña no cumple con las reglas de seguridad",
-                },
-              ]}
-              hasFeedback
-              help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
-            >
-              <Input.Password placeholder="Ingrese su contraseña" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="confirm-password"
-              label="Repita el password"
-              dependencies={["password"]}
-              rules={[
-                {
-                  required: true,
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("Las contraseñas no coinciden")
-                    );
-                  },
-                }),
-              ]}
-              hasFeedback
-            >
-              <Input.Password placeholder="Repita su contraseña" />
-            </Form.Item>
-          </Col>
+          {!!hasInitialValues && (
+            <>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  name="password"
+                  label="Password"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    {
+                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                      message:
+                        "La contraseña no cumple con las reglas de seguridad",
+                    },
+                  ]}
+                  hasFeedback
+                  help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
+                >
+                  <Input.Password placeholder="Ingrese su contraseña" />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  name="confirm-password"
+                  label="Repita el password"
+                  dependencies={["password"]}
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error("Las contraseñas no coinciden")
+                        );
+                      },
+                    }),
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password placeholder="Repita su contraseña" />
+                </Form.Item>
+              </Col>
+            </>
+          )}
         </Row>
       )}
     </FormWrapper>
   );
 };
-export default FormElement
+export default FormElement;
 
 //ddddddddddddddddddddddddddddddddddddddddddd
 /* import { PlusOutlined } from "@ant-design/icons";
