@@ -31,7 +31,7 @@ const Index = () => {
           <Input />
         </Form.Item>
         <Button htmlType="submit" type="primary" icon={<LockOutlined />}>
-          Confirm
+          Confirmar
         </Button>
       </Form>
     </div>
