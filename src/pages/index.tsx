@@ -144,29 +144,6 @@ export default function Home() {
             Entrar al panel
           </Button>
         </Form.Item>
-
-        <Button
-          type="link"
-          onClick={() => {
-            onFinish({
-              email: "julianangulop@gmail.com",
-              password: "123456",
-            });
-          }}
-        >
-          Admin julianangulop@gmail.com
-        </Button>
-        <Button
-          type="link"
-          onClick={() => {
-            onFinish({
-              email: "jutololla@hotmail.com",
-              password: "Qa151523",
-            });
-          }}
-        >
-          Vendor jutololla@hotmail.com
-        </Button>
       </Form>
     </motion.div>
   );
