@@ -42,16 +42,43 @@ export const useProductServiceAction = () => {
   const getProductServicesPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId, vendorId }) => {
+  >(
+    [QUERY_KEY_PRODUCTSERVICE] as QueryKey,
+    ({ limit, page, branchId, vendorId }) => {
+      return async function queryFn() {
+        try {
+          const branch = branchId ? `&branchId=${branchId}` : "";
+          const vendor = vendorId ? `&vendorId=${vendorId}` : "";
+          const response = await apiClient.get<
+            Extract<
+              Response<PaginatedResult<ProductService>>,
+              { status: "Success" }
+            >
+          >(
+            `/productservice/list?limit=${limit}&page=${page}${branch}${vendor}`
+          );
+          console.log(response);
+          return response.data;
+        } catch (error) {
+          throw error;
+        }
+      };
+    }
+  );
+  const getProductServicesByBranchIdPaginated = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId }) => {
     return async function queryFn() {
       try {
-        const branch = branchId ? `&branchId=${branchId}` : "";
         const response = await apiClient.get<
           Extract<
             Response<PaginatedResult<ProductService>>,
             { status: "Success" }
           >
-        >(`/productservice/list?limit=${limit}&page=${page}${branch}`);
+        >(
+          `/productservice/${branchId}/all-productservices?limit=${limit}&page=${page}`
+        );
         console.log(response);
         return response.data;
       } catch (error) {
@@ -135,8 +162,8 @@ export const useProductServiceAction = () => {
       },
       onSuccess(data, variables, context) {
         queryClient.invalidateQueries({
-          queryKey: [QUERY_KEY_PRODUCTSERVICE]
-        })
+          queryKey: [QUERY_KEY_PRODUCTSERVICE],
+        });
         message.success({
           content: `Producto/servicio eliminado correctamente`,
           duration: 4,
@@ -378,5 +405,6 @@ export const useProductServiceAction = () => {
     updateProductServiceState,
     updateProductServiceInventory,
     getProductServicesPaginated,
+    getProductServicesByBranchIdPaginated,
   };
 };

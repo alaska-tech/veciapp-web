@@ -58,11 +58,10 @@ const Users = () => {
     total: 0,
   });
   const branchActions = useBranchAction();
-  const productsQuery = actions.getProductServicesPaginated({
+  const productsQuery = actions.getProductServicesByBranchIdPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
     branchId: id as string,
-    vendorId: user?.foreignPersonId,
   });
   const branchQuery = branchActions.getBranchById(id as string);
   const columns: TableColumnsType<DataType> = [

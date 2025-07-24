@@ -56,7 +56,7 @@ const Users = () => {
   const productsQuery = actions.getProductServicesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.foreignPersonId,
+    vendorId: user?.id,
   });
   const branchActions = useBranchAction();
   const branchesQuery = branchActions.getBranchesById(
