@@ -87,6 +87,14 @@ export default function Home() {
         autoComplete="off"
         layout="vertical"
         requiredMark={false}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 12,
+          width: "100%",
+          maxWidth: 400,
+        }}
       >
         <Form.Item<LogInForm>
           name="email"
@@ -96,7 +104,7 @@ export default function Home() {
             },
           ]}
         >
-          <Input placeholder="Ejemplo@email.com" style={styles.formItem} />
+          <Input placeholder="Ejemplo@email.com" style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }} />
         </Form.Item>
 
         <Form.Item<LogInForm>
@@ -107,17 +115,20 @@ export default function Home() {
             },
           ]}
         >
-          <Input.Password placeholder="Contraseña" style={styles.formItem} />
+          <Input.Password placeholder="Contraseña" style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }} />
         </Form.Item>
-        <Form.Item style={{ textAlign: "start" }}>
-          <Link href={"/(auth)/forgotPassword"}>¿Olvidaste tu contraseña?</Link>
+        <Form.Item style={{ width: 320, textAlign: "center", marginBottom: 0 }}>
+          <Link href={"/(auth)/forgotPassword"} style={{ fontSize: 14 }}>
+            ¿Olvidaste tu contraseña?
+          </Link>
         </Form.Item>
-        <Form.Item>
+        <Form.Item style={{ width: 320, marginBottom: 0 }}>
           <Button
             type="primary"
             htmlType="submit"
             icon={<LoginOutlined />}
             loading={login.isPending}
+            style={{ width: "100%", height: 44, fontSize: 16, borderRadius: 22 }}
           >
             Entrar al panel
           </Button>
