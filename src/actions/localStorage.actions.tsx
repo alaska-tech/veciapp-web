@@ -52,8 +52,8 @@ export const setUserInfo = (newUserInfo: User) => {
 };
 
 export const clearAllInfoFromLocalStorage = () => {
-  localStorage.removeItem(JWT_KEY);
   localStorage.removeItem(LOGGED_USER_INFO_KEY);
+  localStorage.removeItem(JWT_KEY);
   localStorage.removeItem(REFRESH_JWT_KEY);
 };
 const decodeToken = (token: string): DecodedToken => {

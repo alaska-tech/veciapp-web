@@ -64,8 +64,8 @@ export const breadcrumItemTree: TreeStruct[] = [
         value: "Pagos",
       },
       {
-        key: "conciliations",
-        value: "Conciliaciones",
+        key: "disputes",
+        value: "Disputas",
       },
       {
         key: "configuration",

@@ -37,7 +37,7 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
-  const productsQuery = actions.getBranchesPaginated({
+  const productsQuery = actions.getBranchesByVendorIdPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
     vendorId: id as string,
@@ -163,7 +163,7 @@ const Users = () => {
             }}
             placement="bottomRight"
           >
-            <Button type="link">Mas...</Button>
+            <Button type="link">Más...</Button>
           </Dropdown>
         </Space>
       ),

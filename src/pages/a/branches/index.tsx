@@ -38,10 +38,9 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
-  const branchQuery = actions.getBranchesByVendorIdPaginated({
+  const branchQuery = actions.getBranchesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.foreignPersonId,
   });
   const vendorActions = useVendorAction();
   const vendorQueries = vendorActions.getVendorsById(
@@ -194,7 +193,7 @@ const Users = () => {
             }}
             placement="bottomRight"
           >
-            <Button type="link">Mas...</Button>
+            <Button type="link">Más...</Button>
           </Dropdown>
         </Space>
       ),

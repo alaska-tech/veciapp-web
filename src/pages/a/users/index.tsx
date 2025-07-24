@@ -63,7 +63,7 @@ const Index = () => {
       key: "email",
     },
     {
-      title: "Telefono",
+      title: "Teléfono",
       dataIndex: "cellphone",
       key: "cellphone",
     },
