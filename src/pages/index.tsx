@@ -104,7 +104,10 @@ export default function Home() {
             },
           ]}
         >
-          <Input placeholder="Ejemplo@email.com" style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }} />
+          <Input
+            placeholder="Ejemplo@email.com"
+            style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }}
+          />
         </Form.Item>
 
         <Form.Item<LogInForm>
@@ -115,7 +118,10 @@ export default function Home() {
             },
           ]}
         >
-          <Input.Password placeholder="Contraseña" style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }} />
+          <Input.Password
+            placeholder="Contraseña"
+            style={{ width: 320, height: 44, fontSize: 16, textAlign: "left" }}
+          />
         </Form.Item>
         <Form.Item style={{ width: 320, textAlign: "center", marginBottom: 0 }}>
           <Link href={"/(auth)/forgotPassword"} style={{ fontSize: 14 }}>
@@ -128,11 +134,39 @@ export default function Home() {
             htmlType="submit"
             icon={<LoginOutlined />}
             loading={login.isPending}
-            style={{ width: "100%", height: 44, fontSize: 16, borderRadius: 22 }}
+            style={{
+              width: "100%",
+              height: 44,
+              fontSize: 16,
+              borderRadius: 22,
+            }}
           >
             Entrar al panel
           </Button>
         </Form.Item>
+
+        <Button
+          type="link"
+          onClick={() => {
+            onFinish({
+              email: "julianangulop@gmail.com",
+              password: "123456",
+            });
+          }}
+        >
+          Admin julianangulop@gmail.com
+        </Button>
+        <Button
+          type="link"
+          onClick={() => {
+            onFinish({
+              email: "jutololla@hotmail.com",
+              password: "Qa151523",
+            });
+          }}
+        >
+          Vendor jutololla@hotmail.com
+        </Button>
       </Form>
     </motion.div>
   );

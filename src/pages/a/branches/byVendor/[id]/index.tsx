@@ -29,7 +29,7 @@ type DataType = Branch;
 const Users = () => {
   const user = getUserInfo();
   const router = useRouter();
-  const { name: vendorName, id } = router.query;
+  const { name: vendorName, id: vendorId } = router.query;
   const actions = useBranchAction();
   const deleteBranch = actions.deleteBranch()
   const [pagination, setPagination] = useState({
@@ -40,7 +40,7 @@ const Users = () => {
   const productsQuery = actions.getBranchesByVendorIdPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: id as string,
+    vendorId: vendorId as string,
   });
   const columns: TableColumnsType<DataType> = [
     {
@@ -135,7 +135,7 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/a/products/byBranch/${record.id}?vendorId=${id}&name=${record.name}`}>
+          <Link href={`/a/products/byBranch/${record.id}?vendorId=${vendorId}&name=${record.name}`}>
             Inventario
           </Link>
           <Link href={`/a/branches/${record.id}?name=${record.name}`}>
@@ -177,7 +177,7 @@ const Users = () => {
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
           type="default"
-          href={`/a/branches/byVendor/${id}/newBranch?name=${vendorName}`}
+          href={`/a/branches/byVendor/${vendorId}/newBranch?name=${vendorName}`}
           style={{ float: "inline-end" }}
           icon={<PlusOutlined />}
         >
