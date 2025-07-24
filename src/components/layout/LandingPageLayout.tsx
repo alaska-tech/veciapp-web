@@ -40,6 +40,7 @@ const LandingPageLayout = (props: {
           padding: "2rem",
           gap: "0.5rem",
           height: isSmallScreen ? "90vh" : "inherit",
+          position: "relative", // Para posicionar el botón de regresar
         }}
       >
         {props.backButton && (
@@ -50,7 +51,18 @@ const LandingPageLayout = (props: {
             }}
             icon={<ArrowLeftOutlined />}
             style={{
-              alignSelf: "start",
+              position: "absolute",
+              top: 24,
+              left: 24,
+              zIndex: 10,
+              background: "#fff",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              borderRadius: 8,
+              fontWeight: 500,
+              display: "flex",
+              alignItems: "center",
+              padding: "0 12px",
+              height: 40,
             }}
           >
             Regresar
@@ -113,6 +125,11 @@ const titles: Record<string, [string, string, string]> = {
     "Inicio de sesión",
     "Ingresa tu correo y contraseña",
   ],
+  "/(auth)/forgotPassword": [
+    "Recupera el acceso a tu cuenta",
+    "Olvidé mi contraseña",
+    "Ingresa el correo asociado a tu constraseña",
+  ],
   "/a/forgotPassword": [
     "Recupera el acceso a tu cuenta",
     "Olvidé mi contraseña",
@@ -120,6 +137,11 @@ const titles: Record<string, [string, string, string]> = {
   ],
   "/a/createNewPassword": [
     "Restablecer contraseña",
+    "Crear nueva contraseña",
+    "Ingresa tu nueva contraseña para continuar",
+  ],
+  "/(auth)/createNewPassword": [
+    "Nueva Contraseña",
     "Crear nueva contraseña",
     "Ingresa tu nueva contraseña para continuar",
   ],
