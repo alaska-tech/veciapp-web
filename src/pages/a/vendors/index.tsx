@@ -1,6 +1,7 @@
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
+import { VENDOR_STATUS_TAG_PROPS } from "@/constants/labels";
 import { Vendor } from "@/constants/models";
 import {
   CheckCircleOutlined,
@@ -18,27 +19,6 @@ import {
   Tag,
 } from "antd";
 import React, { ReactElement, useState } from "react";
-
-const VENDOR_STATUS_TAG_PROPS = {
-  created: {
-    props: {},
-    text: "Creado",
-  },
-  verified: {
-    props: {
-      icon: <CheckCircleOutlined />,
-      color: "success",
-    },
-    text: "Verificado",
-  },
-  suspended: {
-    props: {
-      icon: <ExclamationCircleOutlined />,
-      color: "warning",
-    },
-    text: "Suspendido",
-  },
-};
 
 const getVendorStatusTagProps = (status: Vendor["state"]) => {
   return (
