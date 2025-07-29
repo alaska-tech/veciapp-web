@@ -144,6 +144,9 @@ export interface Parameter extends BaseAttributes {
 
 export const BranchState = [
   "active",
+  "created",
+  "verified",
+  "suspended",
   "temporarily_closed",
   "maintenance",
   "inactive",
@@ -191,7 +194,12 @@ export interface Branch extends BaseAttributes {
   phone: string; //max 20
   email: string; //max 150
   rank: number; //default 0
-  state: LocationTypeType[number]; //default active
+  state: BranchStateType[number]; //default active
+  stateHistory: Array<{
+    state: BranchStateType[number];
+    changedAt: Date;
+    reason: string;
+  }>; //default []
   businessType: BranchBusinessType[number]; //default individual
   operatingHours?: Record<weekDayType[number], [string, string]>;
   logo?: string; //max 255

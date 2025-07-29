@@ -3,10 +3,16 @@ import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
-import { Branch, weekDay, WEEKDAY_LABEL } from "@/constants/models";
+import {
+  Branch,
+  BranchBusiness,
+  weekDay,
+  WEEKDAY_LABEL,
+} from "@/constants/models";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
+import { BRANCH_TYPE_LABELS } from "@/constants/labels";
 
 dayjs.extend(customParseFormat);
 
@@ -173,7 +179,10 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               ]}
             >
               <Radio.Group
-                options={["individual", "empresa"]}
+                options={BranchBusiness.map((business) => ({
+                  value: business,
+                  label: BRANCH_TYPE_LABELS[business] || business,
+                }))}
                 disabled={hasInitialValues}
               />
             </Form.Item>

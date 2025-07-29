@@ -57,15 +57,19 @@ const Index = () => {
       dataIndex: "fullName",
       key: "fullName",
     },
+    
     {
-      title: "Correo",
+      title: "Contacto",
       dataIndex: "email",
       key: "email",
-    },
-    {
-      title: "Teléfono",
-      dataIndex: "cellphone",
-      key: "cellphone",
+      render: (email, record) => {
+        return (
+          <Space direction="vertical">
+            <a href={`mailto:${email}`}>{email}</a>
+            <a href={`tel:${record.cellphone}`}>+{record.cellphone}</a>
+          </Space>
+        );
+      },
     },
     {
       title: "Estado",
