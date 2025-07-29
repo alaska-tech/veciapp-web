@@ -12,6 +12,9 @@ import {
   Tag,
   Image,
   Typography,
+  Form,
+  App,
+  Select,
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
@@ -21,6 +24,8 @@ import ChangeProductInventoryModal from "@/components/changeProductInventoryModa
 import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { ImagePreviewCardFlower } from "@/components/pure/ImagePreviewCardFlower";
+import { PlusOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 
 type DataType = ProductService;
 const PRODUCT_TYPE_TAG: Record<string, any> = {
@@ -64,6 +69,11 @@ const Users = () => {
   const branchesQuery = branchActions.getBranchesById(
     productsQuery.data?.data.data.map((e) => e.branchId)
   );
+  const { data: branchesData } = branchActions.getBranchesPaginated({
+    limit: 0,
+    page: 0,
+  });
+  const totalBranches = branchesData?.data.meta.total || 0;
   const columns: TableColumnsType<DataType> = [
     {
       title: "Tienda",
@@ -227,6 +237,9 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
+      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+        <NewProductButton totalBranches={totalBranches} />
+      </Space>
       <Table<DataType>
         columns={columns}
         dataSource={productsQuery.data?.data.data}
@@ -258,4 +271,77 @@ export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout> {page}</DashboardLayout>;
+};
+
+const NewProductButton = ({ totalBranches }: { totalBranches: number }) => {
+  const { modal } = App.useApp();
+  const actions = useBranchAction();
+  const query = actions.getBranchesPaginated({
+    limit: totalBranches,
+    page: 0,
+  });
+  const router = useRouter();
+  const form = Form.useFormInstance();
+  const handleClick = () => {
+    const modalRef = modal.info({
+      title: "Escoja un tienda",
+      okButtonProps: {
+        style: {
+          display: "none",
+        },
+      },
+      closable: true,
+      content: (
+        <Form
+          form={form}
+          onFinish={(values) => {
+            const [branchId, branchName] = values.branchId.split("/");
+            router.push(
+              `/a/products/byBranch/${branchId}/newProduct?name=${branchName}`
+            );
+            modalRef.destroy();
+          }}
+        >
+          <Form.Item
+            name="branchId"
+            label="Tienda"
+            rules={[{ required: true }]}
+          >
+            <Select
+              options={query.data?.data.data.map((branch) => ({
+                label: `${branch.name} (${branch.address})`,
+                value: `${branch.id}/${branch.name}`,
+              }))}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              popupMatchSelectWidth={false}
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{
+              float: "inline-end",
+            }}
+          >
+            Escoger
+          </Button>
+        </Form>
+      ),
+    });
+  };
+  return (
+    <Button
+      type="default"
+      style={{ float: "inline-end" }}
+      icon={<PlusOutlined />}
+      onClick={handleClick}
+    >
+      Nuevo producto o servicio
+    </Button>
+  );
 };
