@@ -16,6 +16,7 @@ import {
   Form,
   Input,
   Radio,
+  App,
 } from "antd";
 import {
   UserOutlined,
@@ -38,6 +39,7 @@ import {
   VENDOR_IS_HABEAS_DATA_LABELS,
   VENDOR_STATE_LABELS,
 } from "@/constants/labels";
+import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestInfoModal";
 
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -48,7 +50,8 @@ const Index = () => {
     F: "Mujer",
     O: "Otro",
   };
-  const form = Form.useFormInstance();
+  const [form] = Form.useForm();
+  const { message } = App.useApp();
   const authActions = useAuthAction();
   const user = authActions.userSession;
   const vendorActions = useVendorAction();
@@ -57,8 +60,27 @@ const Index = () => {
   );
   const userData = (data as unknown as Vendor) ?? ({} as Vendor);
   const [isEditing, setIsEditing] = useState(false);
+  const [showChangeRequestModal, closeChangeRequestModal] =
+    CreateChangeRequestInfoModal({
+      modalProps: {
+        onOk: () => {
+          console.log(form.getFieldsValue());
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(true);
+            }, 2000);
+          }).then(()=>{
+            message.success("Solicitud de cambio de información enviada");
+            setIsEditing(false);
+            form.resetFields();
+          },()=>{
+            message.error("Error al enviar la solicitud de cambio de información");
+          });
+        },
+      },
+    });
   const handleSubmit = (values: any) => {
-    console.log(values);
+    showChangeRequestModal();
   };
   const InfoCard = ({
     title,
