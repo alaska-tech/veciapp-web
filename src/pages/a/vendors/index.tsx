@@ -17,7 +17,7 @@ import {
   TableColumnsType,
   Tag,
 } from "antd";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 
 const VENDOR_STATUS_TAG_PROPS = {
   created: {
@@ -49,8 +49,16 @@ const getVendorStatusTagProps = (status: Vendor["state"]) => {
   );
 };
 const Users = () => {
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const vendorActions = useVendorAction();
-  const vendorQuery = vendorActions.getVendors();
+  const vendorQuery = vendorActions.getVendors({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+  });;
   const deleteVendor = vendorActions.deleteVendor();
   const columns: TableColumnsType<Vendor> = [
     {
@@ -145,6 +153,20 @@ const Users = () => {
         columns={columns}
         dataSource={vendorQuery.data?.data?.data}
         loading={vendorQuery.isLoading}
+        onChange={(pag, _filters, _sorter) => {
+          setPagination({
+            ...pagination,
+            current: pag.current || 1,
+            pageSize: pag.pageSize || 2,
+          });
+        }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: vendorQuery.data?.data.meta.total || 0,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+        }}
         style={{
           overflow: "auto",
           background: "#fff",

@@ -3,6 +3,7 @@ import {
   mutateEntity,
   queryEntity,
   queryEntityById,
+  queryEntityWithParameters,
   queryMultipleEntitiesById,
 } from "./action";
 import { BaseAttributes, PaginatedResult, Response, Vendor } from "@models";
@@ -57,20 +58,20 @@ export const useVendorAction = () => {
       },
     }
   );
-  const getVendors = queryEntity<
-    AxiosResponse<
-      Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
-    >["data"],
+  const getVendors = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_VENDOR + "s"] as QueryKey, async () => {
-    try {
-      const response = await apiClient.get<
-        Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
-      >("/vendors/list?limit=50&page=0");
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  >([QUERY_KEY_VENDOR] as QueryKey, ({ limit, page }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
+        >(`/vendors/list?limit=${limit}&page=${page}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
   const getVendorById = queryEntityById<
     Vendor,
