@@ -217,10 +217,7 @@ const Index = () => {
             </Button>
           ) : (
             <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-              >
+              <Button type="primary" htmlType="submit">
                 Guardar
               </Button>
               <Button
@@ -282,63 +279,51 @@ const Index = () => {
                   margin: "24px 0",
                 }}
               />
-
-              <div>
-                <Row gutter={16}>
-                  <Col span={6}>
-                    <div style={{ textAlign: "center" }}>
-                      <Title level={4} style={{ color: "white", margin: 0 }}>
-                        {VENDOR_STATE_LABELS[userData.state]}
-                      </Title>
-                      <Text style={{ color: "rgba(255,255,255,0.8)" }}>
-                        Status
-                      </Text>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div style={{ textAlign: "center" }}>
-                      <Title level={4} style={{ color: "white", margin: 0 }}>
-                        {
-                          VENDOR_IS_ACTIVE_LABELS[
-                            (userData.isActive || "false").toString()
-                          ]
-                        }
-                      </Title>
-                      <Text style={{ color: "rgba(255,255,255,0.8)" }}>
-                        Activación
-                      </Text>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div style={{ textAlign: "center" }}>
-                      <Title level={4} style={{ color: "white", margin: 0 }}>
-                        {
-                          VENDOR_IS_EMAIL_VERIFIED_LABELS[
-                            (userData.isEmailVerified || "false").toString()
-                          ]
-                        }
-                      </Title>
-                      <Text style={{ color: "rgba(255,255,255,0.8)" }}>
-                        Email
-                      </Text>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div style={{ textAlign: "center" }}>
-                      <Title level={4} style={{ color: "white", margin: 0 }}>
-                        {
-                          VENDOR_IS_HABEAS_DATA_LABELS[
-                            (userData.isHabeasDataConfirm || "false").toString()
-                          ]
-                        }
-                      </Title>
-                      <Text style={{ color: "rgba(255,255,255,0.8)" }}>
-                        Habeas Data
-                      </Text>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
+              <Space
+                wrap
+                style={{ width: "100%", justifyContent: "center", gap: 24 }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {VENDOR_STATE_LABELS[userData.state]}
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Status</Text>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {
+                      VENDOR_IS_ACTIVE_LABELS[
+                        (userData.isActive || "false").toString()
+                      ]
+                    }
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>
+                    Activación
+                  </Text>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {
+                      VENDOR_IS_EMAIL_VERIFIED_LABELS[
+                        (userData.isEmailVerified || "false").toString()
+                      ]
+                    }
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Email</Text>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {
+                      VENDOR_IS_HABEAS_DATA_LABELS[
+                        (userData.isHabeasDataConfirm || "false").toString()
+                      ]
+                    }
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>
+                    Habeas Data
+                  </Text>
+                </div>
+              </Space>
             </Card>
           </Col>
 
@@ -428,8 +413,6 @@ const Index = () => {
                   />
                 </Col>
               </Row>
-
-              <Divider style={{ margin: "24px 0" }} />
 
               <Row gutter={[16, 0]}>
                 <Col xs={24} md={12}>
