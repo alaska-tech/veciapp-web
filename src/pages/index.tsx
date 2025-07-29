@@ -53,16 +53,14 @@ export default function Home() {
         setUserInfo(user);
         setToken(token);
         setRefreshToken(user.refreshToken);
-        if (response.data.data.user.role === "admin") {
-          router.push("/a/home");
-        } else if (response.data.data.user.role === "vendor") {
-          router.push("/v/home");
-        } else {
+        if (user.role !== "admin" && user.role !== "vendor") {
           message.error(
             "Usted no cuenta con los permisos suficientes para acceder a esta sección",
             10
           );
+          return;
         }
+        window.location.reload();
       },
       () => {}
     );
