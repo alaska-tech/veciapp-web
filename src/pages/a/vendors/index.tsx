@@ -1,4 +1,4 @@
-import { QUERY_KEY_VENDOR, useVendorAction } from "@/actions/vendor.action";
+import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { Vendor } from "@/constants/models";
@@ -8,19 +8,16 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Divider,
   Dropdown,
-  Popconfirm,
   Space,
   Table,
   TableColumnsType,
   Tag,
 } from "antd";
-import Link from "next/link";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 
 const VENDOR_STATUS_TAG_PROPS = {
   created: {
@@ -54,22 +51,30 @@ const getVendorStatusTagProps = (status: Vendor["state"]) => {
 const Users = () => {
   const vendorActions = useVendorAction();
   const vendorQuery = vendorActions.getVendors();
-  const deleteVendor = vendorActions.deleteVendor()
+  const deleteVendor = vendorActions.deleteVendor();
   const columns: TableColumnsType<Vendor> = [
+    {
+      title: "Código",
+      dataIndex: "internalCode",
+      key: "internalCode",
+    },
     {
       title: "Nombre",
       dataIndex: "fullName",
       key: "fullName",
     },
     {
-      title: "Correo",
+      title: "Contacto",
       dataIndex: "email",
       key: "email",
-    },
-    {
-      title: "Teléfono",
-      dataIndex: "cellphone",
-      key: "cellphone",
+      render: (email, record) => {
+        return (
+          <Space direction="vertical">
+            <a href={`mailto:${email}`}>{email}</a>
+            <a href={`tel:${record.cellphone}`}>+{record.cellphone}</a>
+          </Space>
+        );
+      },
     },
     {
       title: "Estado",
@@ -92,7 +97,7 @@ const Users = () => {
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
           <a href={`/a/branches/byVendor/${record.id}?name=${record.fullName}`}>
-           Tiendas
+            Tiendas
           </a>
           <a href={`/a/vendors/${record.id}?name=${record.fullName}`}>
             Detalles

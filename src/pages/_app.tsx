@@ -7,11 +7,12 @@ import "@ant-design/v5-patch-for-react-19";
 import es_ES from "antd/locale/es_ES";
 import "leaflet/dist/leaflet.css";
 import { App as AntdAppProvider } from "antd";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { addJWTInterceptor } from "@/services/axios.interceptor";
 import { apiClient } from "@/services/clients";
 import { AnimatePresence, motion } from "framer-motion";
+import TanstackProvider from "@/components/providers/tanstackProvider";
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -23,13 +24,18 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const queryClient = new QueryClient();
   addJWTInterceptor(apiClient);
   return (
-    <QueryClientProvider client={queryClient}>
+    <TanstackProvider>
       <ConfigProvider theme={theme} locale={es_ES}>
         <AntdAppProvider>
           <ReactQueryDevtools initialIsOpen={false} />
           <AnimatePresence mode="wait">
             <motion.div
-              key={Component.displayName || Component.name || pageProps?.key || "page"}
+              key={
+                Component.displayName ||
+                Component.name ||
+                pageProps?.key ||
+                "page"
+              }
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
@@ -41,7 +47,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
           </AnimatePresence>
         </AntdAppProvider>
       </ConfigProvider>
-    </QueryClientProvider>
+    </TanstackProvider>
   );
 };
 
