@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
-import { JWT_KEY } from "@/constants/constants";
+import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
 import {
   setRefreshToken,
   setToken,
@@ -13,6 +13,7 @@ import {
   clearAllInfoFromLocalStorage,
 } from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type LogInForm = {
   email: string;
@@ -26,25 +27,26 @@ const styles = {
   },
 };
 
+let provToken: string | null = null;
 export default function Home() {
   const router = useRouter();
   const authActions = useAuthAction();
   const login = authActions.logIn();
+  const queryClient = useQueryClient();
   const { message } = App.useApp();
-
+  const userSession = authActions.userSession;
   useEffect(() => {
-    const jwt = localStorage.getItem(JWT_KEY);
-    if (jwt) {
-      const user = JSON.parse(atob(jwt.split(".")[1]));
-      if (user.role === "admin") {
+    const role = userSession.data?.role;
+    if (role) {
+      if (role === "admin") {
         router.push("/a/home");
-      } else if (user.role === "vendor") {
+      } else if (role === "vendor") {
         router.push("/v/home");
       } else {
         message.error("No tienes permisos para acceder a esta sección", 10);
       }
     }
-  }, []);
+  }, [userSession.data]);
 
   const onFinish: FormProps<LogInForm>["onFinish"] = (values) => {
     login.mutateAsync({ body: values }).then(
@@ -53,6 +55,7 @@ export default function Home() {
         setUserInfo(user);
         setToken(token);
         setRefreshToken(user.refreshToken);
+        queryClient.invalidateQueries({ queryKey: [LOGGED_USER_INFO_KEY] });
         if (user.role !== "admin" && user.role !== "vendor") {
           message.error(
             "Usted no cuenta con los permisos suficientes para acceder a esta sección",
@@ -60,7 +63,6 @@ export default function Home() {
           );
           return;
         }
-        window.location.reload();
       },
       () => {}
     );
