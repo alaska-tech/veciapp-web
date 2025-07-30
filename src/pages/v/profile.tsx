@@ -69,13 +69,18 @@ const Index = () => {
             setTimeout(() => {
               resolve(true);
             }, 2000);
-          }).then(()=>{
-            message.success("Solicitud de cambio de información enviada");
-            setIsEditing(false);
-            form.resetFields();
-          },()=>{
-            message.error("Error al enviar la solicitud de cambio de información");
-          });
+          }).then(
+            () => {
+              message.success("Solicitud de cambio de información enviada");
+              setIsEditing(false);
+              form.resetFields();
+            },
+            () => {
+              message.error(
+                "Error al enviar la solicitud de cambio de información"
+              );
+            }
+          );
         },
       },
     });
@@ -183,7 +188,7 @@ const Index = () => {
             {inputType === "text" ? (
               <Input size="small" />
             ) : inputType === "textarea" ? (
-              <Input.TextArea size="small" />
+              <Input.TextArea size="small" rows={3} />
             ) : (
               <Radio.Group
                 options={options}
@@ -384,6 +389,12 @@ const Index = () => {
                     editable={isEditing}
                   />
                   <InfoItem
+                    label="Estado"
+                    value={userData.isActive ? "Activo" : "Inactivo"}
+                    status={userData.isActive ? "success" : "error"}
+                    icon={<CheckCircleOutlined />}
+                  />
+                  <InfoItem
                     label="Habeas Data confirmado"
                     value={userData.isHabeasDataConfirm ? "Si" : "No"}
                     status={
@@ -397,6 +408,12 @@ const Index = () => {
                     ]}
                     icon={<SafetyCertificateOutlined />}
                   />
+                  <InfoItem
+                    label="Email verificado"
+                    value={userData.isEmailVerified ? "Si" : "No"}
+                    status={userData.isEmailVerified ? "success" : "warning"}
+                    icon={<CheckCircleOutlined />}
+                  />
                 </Col>
                 <Col xs={24} md={12}>
                   <InfoItem
@@ -404,6 +421,12 @@ const Index = () => {
                     value={userData.identification || "No disponible"}
                     formFieldName="identification"
                     inputType="text"
+                    icon={<IdcardOutlined />}
+                  />
+
+                  <InfoItem
+                    label="Código de identificación"
+                    value={userData.internalCode || "No disponible"}
                     icon={<IdcardOutlined />}
                   />
                   <InfoItem
@@ -423,34 +446,10 @@ const Index = () => {
                     value={userData.bio}
                     fallbackValue="No disponible"
                     formFieldName="bio"
-                    inputType="text"
+                    inputType="textarea"
                     icon={<GlobalOutlined />}
                     editable={isEditing}
                   />
-                  <InfoItem
-                    label="Estado"
-                    value={userData.isActive ? "Activo" : "Inactivo"}
-                    status={userData.isActive ? "success" : "error"}
-                    icon={<CheckCircleOutlined />}
-                  />
-                </Col>
-              </Row>
-
-              <Row gutter={[16, 0]}>
-                <Col xs={24} md={12}>
-                  <InfoItem
-                    label="Código de identificación"
-                    value={userData.internalCode || "No disponible"}
-                    icon={<IdcardOutlined />}
-                  />
-                  <InfoItem
-                    label="Email verificado"
-                    value={userData.isEmailVerified ? "Si" : "No"}
-                    status={userData.isEmailVerified ? "success" : "warning"}
-                    icon={<CheckCircleOutlined />}
-                  />
-                </Col>
-                <Col xs={24} md={12}>
                   <InfoItem
                     label="Dirección"
                     value={userData.address || "No disponible"}
@@ -517,7 +516,7 @@ const Index = () => {
                   <div style={{ padding: "0 24px 24px" }}>
                     <Paragraph style={{ color: "#666", marginBottom: 16 }}>
                       Esta información es sensible y se mantiene segura. Solo se
-                      muestra cuando es necesario para transacciones.
+                      muestra cuando es estrictamente necesario para transacciones.
                     </Paragraph>
                     <Row gutter={[16, 0]}>
                       <Col xs={24} md={12}>
