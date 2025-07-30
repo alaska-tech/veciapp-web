@@ -16,8 +16,8 @@ const CreateChangeRequestInfoModal = (props: {
           administración de la plataforma Veciapp, por lo que no se verán
           reflejados aqui inmediatamente.
           <br />
-          Podrás hacer seguimiento de la solicitud en la sección de "Solicitudes
-          de cambio" en el panel lateral izquierdo.
+          Podrás hacer seguimiento de la solicitud en la sección de{" "}
+          <b>Solicitudes de cambio</b> en el panel lateral izquierdo.
           <br />
           ¿Estás seguro de querer cambiar la información?
         </Typography.Paragraph>
