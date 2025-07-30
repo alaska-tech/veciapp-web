@@ -1,10 +1,11 @@
-import React from 'react';
+import Image from "next/image";
+import React from "react";
 
-  const CardFlower = ({ className = '', openAmount = 100, src = "" }) => {
+const CardFlower = ({ className = "", openAmount = 100, src = "" }) => {
   // Clamp the openAmount between 0 and 100
   const clampedAmount = Math.max(0, Math.min(100, openAmount));
   const factor = clampedAmount / 100;
- 
+
   return (
     <>
       <style>{`
@@ -108,12 +109,16 @@ import React from 'react';
 
         /* Animación al hacer hover */
         .card-fan-container:hover .card-fan-card:nth-child(1) {
-          transform: rotate(${-45 * factor}deg) translateY(${-8 * factor}px) translateX(${-25 * factor}px);
+          transform: rotate(${-45 * factor}deg) translateY(${
+        -8 * factor
+      }px) translateX(${-25 * factor}px);
           z-index: 5;
         }
 
         .card-fan-container:hover .card-fan-card:nth-child(2) {
-          transform: rotate(${-22 * factor}deg) translateY(${-4 * factor}px) translateX(${-12 * factor}px);
+          transform: rotate(${-22 * factor}deg) translateY(${
+        -4 * factor
+      }px) translateX(${-12 * factor}px);
           z-index: 4;
         }
 
@@ -123,12 +128,16 @@ import React from 'react';
         }
 
         .card-fan-container:hover .card-fan-card:nth-child(4) {
-          transform: rotate(${22 * factor}deg) translateY(${-4 * factor}px) translateX(${12 * factor}px);
+          transform: rotate(${22 * factor}deg) translateY(${
+        -4 * factor
+      }px) translateX(${12 * factor}px);
           z-index: 2;
         }
 
         .card-fan-container:hover .card-fan-card:nth-child(5) {
-          transform: rotate(${45 * factor}deg) translateY(${-8 * factor}px) translateX(${25 * factor}px);
+          transform: rotate(${45 * factor}deg) translateY(${
+        -8 * factor
+      }px) translateX(${25 * factor}px);
           z-index: 1;
         }
 
@@ -159,10 +168,12 @@ import React from 'react';
           pointer-events: none;
         }
       `}</style>
-      
+
       <div className={`card-fan-container ${className}`}>
-        <div className={`card-fan-card ${src ? 'has-image' : ''}`}>
-          {src && <img src={src} alt="Card image" className="card-fan-image" />}
+        <div className={`card-fan-card ${src ? "has-image" : ""}`}>
+          {src && (
+            <Image src={src} alt="Card image" className="card-fan-image" width={60} height={60} />
+          )}
         </div>
         <div className="card-fan-card"></div>
         <div className="card-fan-card"></div>

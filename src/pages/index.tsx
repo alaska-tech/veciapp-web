@@ -1,5 +1,5 @@
 import { App, Button, Form, FormProps, Input } from "antd";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useCallback } from "react";
 import LandingPageLayout from "@/components/layout/LandingPageLayout";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -27,7 +27,6 @@ const styles = {
   },
 };
 
-let provToken: string | null = null;
 export default function Home() {
   const router = useRouter();
   const authActions = useAuthAction();
@@ -35,18 +34,21 @@ export default function Home() {
   const queryClient = useQueryClient();
   const { message } = App.useApp();
   const userSession = authActions.userSession;
+  
+  const navigateToRole = useCallback((role: string) => {
+    if (role === "admin") {
+      router.push("/a/home");
+    } else if (role === "vendor") {
+      router.push("/v/home");
+    }
+  }, [router]);
+
   useEffect(() => {
     const role = userSession.data?.role;
     if (role) {
-      if (role === "admin") {
-        router.push("/a/home");
-      } else if (role === "vendor") {
-        router.push("/v/home");
-      } else {
-        message.error("No tienes permisos para acceder a esta sección", 10);
-      }
+      navigateToRole(role);
     }
-  }, [userSession.data]);
+  }, [userSession.data, navigateToRole]);
 
   const onFinish: FormProps<LogInForm>["onFinish"] = (values) => {
     login.mutateAsync({ body: values }).then(
@@ -59,7 +61,7 @@ export default function Home() {
         if (user.role !== "admin" && user.role !== "vendor") {
           message.error(
             "Usted no cuenta con los permisos suficientes para acceder a esta sección",
-            10
+            6
           );
           return;
         }
