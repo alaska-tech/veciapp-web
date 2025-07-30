@@ -4,13 +4,8 @@ import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
-import {
-  Branch,
-  Vendor,
-} from "@/constants/models";
-import {
-  MailOutlined,
-} from "@ant-design/icons";
+import { Branch, Vendor } from "@/constants/models";
+import { MailOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -19,8 +14,12 @@ import {
   Dropdown,
   Divider,
   Typography,
+  App,
+  Select,
+  Form,
 } from "antd";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 
 type DataType = Branch;
@@ -42,6 +41,11 @@ const Users = () => {
   const vendorQueries = vendorActions.getVendorsById(
     branchQuery.data?.data.data.map((branch) => branch.vendorId)
   );
+  const { data: vendorData } = vendorActions.getVendors({
+    limit: 0,
+    page: 0,
+  });
+  const totalVendors = vendorData?.data.meta.total || 0;
   const columns: TableColumnsType<DataType> = [
     {
       title: "Gerente",
@@ -124,7 +128,9 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}></Space>
+      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+        <NewBranchButton totalVendors={totalVendors} />
+      </Space>
       <Table<DataType>
         columns={columns}
         dataSource={branchQuery.data?.data.data}
@@ -156,4 +162,77 @@ export default Users;
 
 Users.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout> {page}</DashboardLayout>;
+};
+
+const NewBranchButton = ({ totalVendors }: { totalVendors: number }) => {
+  const { modal } = App.useApp();
+  const vendorActions = useVendorAction();
+  const query = vendorActions.getVendors({
+    limit: totalVendors,
+    page: 0,
+  });
+  const router = useRouter();
+  const form = Form.useFormInstance();
+  const handleClick = () => {
+    const modalRef = modal.info({
+      title: "Escoja un veciproveedor",
+      okButtonProps: {
+        style: {
+          display: "none",
+        },
+      },
+      closable: true,
+      content: (
+        <Form
+          form={form}
+          onFinish={(values) => {
+            const [vendorId, vendorName] = values.vendorId.split(" ");
+            router.push(
+              `/a/branches/byVendor/${vendorId}/newBranch?name=${vendorName}`
+            );
+            modalRef.destroy();
+          }}
+        >
+          <Form.Item
+            name="vendorId"
+            label="Proveedor"
+            rules={[{ required: true }]}
+          >
+            <Select
+              options={query.data?.data.data.map((vendor) => ({
+                label: `${vendor.internalCode} - ${vendor.fullName} (${vendor.email})`,
+                value: `${vendor.id} ${vendor.fullName}`,
+              }))}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              popupMatchSelectWidth={false}
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{
+              float: "inline-end",
+            }}
+          >
+            Escoger
+          </Button>
+        </Form>
+      ),
+    });
+  };
+  return (
+    <Button
+      type="default"
+      style={{ float: "inline-end" }}
+      icon={<PlusOutlined />}
+      onClick={handleClick}
+    >
+      Crear tienda
+    </Button>
+  );
 };

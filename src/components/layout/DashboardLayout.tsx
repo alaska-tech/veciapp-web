@@ -169,7 +169,6 @@ function DashboardLayout({
   const router = useRouter();
   const authActions = useAuthAction();
   const { userSession } = authActions;
-  const currentUser = authActions.userSession;
   const logout = authActions.logOut();
   const {
     token: { colorPrimary },
@@ -184,7 +183,7 @@ function DashboardLayout({
   }, []); */
   const dropdownMenu = {
     items: [
-      currentUser.data?.role === "vendor"
+      userSession.data?.role === "vendor"
         ? {
             key: "profile",
             label: "Perfil de usuario",
@@ -260,7 +259,7 @@ function DashboardLayout({
               ? SIDER_WIDTH["COLLAPSED"]
               : SIDER_WIDTH["EXPANDED"]
           }
-          user={currentUser.data || ({} as User)}
+          user={userSession.data || ({} as User)}
           dropdownProps={{
             menu: dropdownMenu,
           }}
@@ -368,7 +367,7 @@ function DashboardLayout({
         ></Image>
         <ProfileButton
           width={91}
-          user={currentUser.data || ({} as User)}
+          user={userSession.data || ({} as User)}
           buttonProps={{ style: {}, children: <></> }}
           dropdownProps={{
             menu: dropdownMenu,
