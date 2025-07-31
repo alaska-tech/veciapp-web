@@ -81,10 +81,10 @@ const Users = () => {
       dataIndex: "branchId",
       render: (branchId: string) => {
         const vendorQuery = branchesQuery.find((queryResult) => {
-          return queryResult.data?.data.data.id === branchId;
+          return queryResult.data?.data?.data?.id === branchId;
         });
         const { name = "", address = "" } =
-          vendorQuery?.data?.data.data || ({} as Branch);
+          vendorQuery?.data?.data?.data || ({} as Branch);
         return (
           <Typography.Link
             style={{ width: "100px" }}
