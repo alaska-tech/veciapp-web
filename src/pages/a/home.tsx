@@ -36,7 +36,7 @@ const Home = () => {
 
   const dashboardCards = [
     {
-      title: "Total Proveedores",
+      title: "Total Veci Proveedores",
       value: totalVendors,
       icon: <ShopOutlined style={{ fontSize: '24px', color: '#1890ff' }} />,
       color: '#1890ff',
