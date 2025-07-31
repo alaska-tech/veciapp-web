@@ -312,12 +312,6 @@ const Index = () => {
               >
                 <div style={{ textAlign: "center" }}>
                   <Title level={4} style={{ color: "white", margin: 0 }}>
-                    {VENDOR_STATE_LABELS[userData.state]}
-                  </Title>
-                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Status</Text>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <Title level={4} style={{ color: "white", margin: 0 }}>
                     {
                       VENDOR_IS_ACTIVE_LABELS[
                         (userData.isActive || "false").toString()
@@ -327,6 +321,12 @@ const Index = () => {
                   <Text style={{ color: "rgba(255,255,255,0.8)" }}>
                     Activación
                   </Text>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {VENDOR_STATE_LABELS[userData.state]}
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Estado</Text>
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <Title level={4} style={{ color: "white", margin: 0 }}>
@@ -389,30 +389,44 @@ const Index = () => {
                     editable={isEditing}
                   />
                   <InfoItem
-                    label="Estado"
-                    value={userData.isActive ? "Activo" : "Inactivo"}
+                    label="Activación"
+                    value={
+                      VENDOR_IS_ACTIVE_LABELS[
+                        (userData.isActive || "false").toString()
+                      ]
+                    }
                     status={userData.isActive ? "success" : "error"}
                     icon={<CheckCircleOutlined />}
                   />
                   <InfoItem
-                    label="Habeas Data confirmado"
-                    value={userData.isHabeasDataConfirm ? "Si" : "No"}
+                    label="Estado"
+                    value={VENDOR_STATE_LABELS[userData.state]}
                     status={
-                      userData.isHabeasDataConfirm ? "success" : "warning"
+                      userData.state !== "suspended" ? "success" : "error"
                     }
-                    formFieldName="isHabeasDataConfirm"
-                    inputType="radio"
-                    options={[
-                      { label: "Si", value: "true" },
-                      { label: "No", value: "false" },
-                    ]}
-                    icon={<SafetyCertificateOutlined />}
+                    icon={<CheckCircleOutlined />}
                   />
                   <InfoItem
                     label="Email verificado"
-                    value={userData.isEmailVerified ? "Si" : "No"}
+                    value={
+                      VENDOR_IS_EMAIL_VERIFIED_LABELS[
+                        (userData.isEmailVerified || "false").toString()
+                      ]
+                    }
                     status={userData.isEmailVerified ? "success" : "warning"}
                     icon={<CheckCircleOutlined />}
+                  />
+                  <InfoItem
+                    label="Habeas Data confirmado"
+                    value={
+                      VENDOR_IS_HABEAS_DATA_LABELS[
+                        (userData.isHabeasDataConfirm || "false").toString()
+                      ]
+                    }
+                    status={
+                      userData.isHabeasDataConfirm ? "success" : "warning"
+                    }
+                    icon={<SafetyCertificateOutlined />}
                   />
                 </Col>
                 <Col xs={24} md={12}>
@@ -516,7 +530,8 @@ const Index = () => {
                   <div style={{ padding: "0 24px 24px" }}>
                     <Paragraph style={{ color: "#666", marginBottom: 16 }}>
                       Esta información es sensible y se mantiene segura. Solo se
-                      muestra cuando es estrictamente necesario para transacciones.
+                      muestra cuando es estrictamente necesario para
+                      transacciones.
                     </Paragraph>
                     <Row gutter={[16, 0]}>
                       <Col xs={24} md={12}>
