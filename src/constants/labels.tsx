@@ -17,7 +17,15 @@ export const BRANCH_STATE_LABELS: Record<BranchStateType[number], string> = {
   verified: "Verificado",
   suspended: "Suspendido",
 };
-
+export const BRANCH_IS_ACTIVE_LABELS: Record<string, React.ReactNode> = {
+  true: "Activo",
+  false: (
+    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <ExclamationCircleOutlined style={{ color: "orange" }} />
+      Inactivo
+    </div>
+  ),
+};
 export const VENDOR_STATUS_TAG_PROPS = {
   created: {
     props: {},

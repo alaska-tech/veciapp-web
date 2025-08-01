@@ -3,8 +3,19 @@ import { getUserInfo } from "@/actions/localStorage.actions";
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
+import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
-import { Branch, Vendor } from "@/constants/models";
+import {
+  BRANCH_IS_ACTIVE_LABELS,
+  BRANCH_STATE_LABELS,
+  BRANCH_TYPE_LABELS,
+} from "@/constants/labels";
+import {
+  Branch,
+  BranchBusiness,
+  BranchState,
+  Vendor,
+} from "@/constants/models";
 import { MailOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Table,
@@ -17,12 +28,55 @@ import {
   App,
   Select,
   Form,
+  Input,
 } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 
 type DataType = Branch;
+
+const searchFields: SearchProps[] = [
+  {
+    label: "Nombre",
+    fieldName: "name",
+    type: "text",
+  },
+  /*   {
+    label: "Ciudad",
+    fieldName: "city",
+    type: "text",
+  },
+  {
+    label: "Estado",
+    fieldName: "state",
+    type: "options",
+    options: Object.entries(BranchState).map(([key, value]) => ({
+      label: BRANCH_STATE_LABELS[value],
+      value: value,
+    })),
+  }, */
+  {
+    label: "Tipo de negocio",
+    fieldName: "businessType",
+    type: "options",
+    options: Object.entries(BranchBusiness).map(([key, value]) => ({
+      label: BRANCH_TYPE_LABELS[value],
+      value: value,
+    })),
+  },
+  {
+    label: "Estado de activación",
+    fieldName: "isActive",
+    type: "options",
+    options: Object.entries(BRANCH_IS_ACTIVE_LABELS).map(([key, value]) => {
+      return {
+        label: value,
+        value: key,
+      };
+    }),
+  },
+];
 
 const Users = () => {
   const user = getUserInfo();
@@ -33,9 +87,16 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
+  const { SearchComponent, search } = SearchBar({ searchFields });
+
   const branchQuery = actions.getBranchesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
+    search: search.value
+      ? {
+          [search.fieldName]: search.value,
+        }
+      : {},
   });
   const vendorActions = useVendorAction();
   const vendorQueries = vendorActions.getVendorsById(
@@ -128,7 +189,8 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        {SearchComponent}
         <NewBranchButton totalVendors={totalVendors} />
       </Space>
       <Table<DataType>

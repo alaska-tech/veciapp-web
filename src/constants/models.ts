@@ -213,6 +213,7 @@ export interface Branch extends BaseAttributes {
   isDeliveryAvailable: boolean; //default false
   availablePaymentMethods: string[]; //default []
   description?: string;
+  isActive: boolean;
 }
 
 export const productServiceState = ["available", "unavailable"] as const;
