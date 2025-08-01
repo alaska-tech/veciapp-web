@@ -12,6 +12,7 @@ import {
   ReconciliationOutlined,
   SettingOutlined,
   ShopOutlined,
+  ShoppingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import Image from "next/image";
@@ -82,6 +83,12 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           key: `/a/users`,
           icon: React.createElement(TeamOutlined),
           label: <Link href="/a/users">Clientes</Link>,
+          children: undefined,
+        },
+        {
+          key: `/a/serviceOrders`,
+          icon: React.createElement(ShoppingOutlined),
+          label: <Link href="/a/serviceOrders">Pedidos</Link>,
           children: undefined,
         },
         {

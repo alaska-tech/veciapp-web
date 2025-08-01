@@ -34,15 +34,15 @@ export const queryEntity = <TData, TError>(
   };
 };
 
-export const queryEntityWithParameters = <TData, TError>(
+export const queryEntityWithParameters = <TData, TError, TParams = Record<string, any>>(
   queryKey: QueryKey,
-  getQueryFn: (params: Record<string, any>) => QueryFunction<TData, QueryKey>,
+  getQueryFn: (params: TParams) => QueryFunction<TData, QueryKey>,
   defaultConfig?: Omit<
     UseQueryOptions<TData, TError, TData, QueryKey>,
     "queryKey" | "queryFn"
   >
 ): ((
-  params: Record<string, any> | undefined,
+  params: TParams | undefined,
   config?: Omit<
     UseQueryOptions<TData, TError, TData, QueryKey>,
     "queryKey" | "queryFn"

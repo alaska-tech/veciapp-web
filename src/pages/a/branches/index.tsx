@@ -3,6 +3,7 @@ import { getUserInfo } from "@/actions/localStorage.actions";
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
+import RenderVendor from "@/components/pure/RenderVendor";
 import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
 import {
@@ -114,31 +115,13 @@ const Users = () => {
       dataIndex: "vendorId",
       render: (value) => {
         const vendorQuery = vendorQueries.find((queryResult) => {
-          return queryResult.data?.data.data.id === value;
+          return queryResult.data?.data?.data?.id === value;
         });
-        const { fullName = "", email = "" } =
-          vendorQuery?.data?.data.data || ({} as Vendor);
         return (
-          <>
-            <Typography.Link
-              style={{ width: "100px" }}
-              ellipsis
-              href={`/a/vendors/${value}?name=${fullName}`}
-            >
-              {fullName}
-            </Typography.Link>
-            <br />
-            <Typography.Link href={`mailto:${email}`}>
-              <MailOutlined style={{ marginRight: 4 }} />
-              <span
-                style={{
-                  wordBreak: "break-all",
-                }}
-              >
-                {email || "Desconocido"}
-              </span>
-            </Typography.Link>
-          </>
+          <RenderVendor
+            vendor={vendorQuery?.data?.data?.data || ({} as Vendor)}
+            href={`/a/vendors/${value}?name=${vendorQuery?.data?.data?.data?.fullName}`}
+          />
         );
       },
     },

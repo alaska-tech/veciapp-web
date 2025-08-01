@@ -1,29 +1,38 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { mutateEntity, queryEntity, queryEntityById } from "./action";
-import { BaseAttributes, PaginatedResult, Response, Customer } from "@models";
+import {
+  mutateEntity,
+  queryEntity,
+  queryEntityById,
+  queryEntityWithParameters,
+  queryMultipleEntitiesById,
+} from "./action";
+import { BaseAttributes, PaginatedResult, Response, Customer, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
+import { QUERY_KEY_VENDOR } from "./vendor.action";
 
 export const QUERY_KEY_CUSTOMER = "customer" as const;
 
 export const useCustomerAction = () => {
   const { notification, message } = App.useApp();
 
-  const getCustomers = queryEntity<
-    AxiosResponse<
-      Extract<Response<PaginatedResult<Customer>>, { status: "Success" }>
-    >["data"],
+  const getCustomers = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<Customer>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_CUSTOMER + "s"] as QueryKey, async () => {
-    try {
-      const response = await apiClient.get<
-        Extract<Response<PaginatedResult<Customer>>, { status: "Success" }>
-      >("/customers/list?limit=50&page=0");
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  >([QUERY_KEY_CUSTOMER] as QueryKey, ({ ...search }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<PaginatedResult<Customer>>, { status: "Success" }>
+        >("/customers/list", {
+          params: { ...search },
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
   const getCustomerById = queryEntityById<
     Customer,
@@ -171,7 +180,7 @@ export const useCustomerAction = () => {
   const validateAccount = mutateEntity<
     AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
-    { body: {hash:string} }
+    { body: { hash: string } }
   >(
     () => {
       return async function mutationFn({ body }) {
@@ -206,12 +215,28 @@ export const useCustomerAction = () => {
       },
     }
   );
+  const getCustomersById = queryMultipleEntitiesById<
+    AxiosResponse<Extract<Response<Customer>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_CUSTOMER] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<Customer>, { status: "Success" }>
+        >(`/customers/get-details/${id}`);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
   return {
     getCustomers,
     getCustomerById,
     deleteCustomer,
     createCustomer,
     updateCustomer,
-    validateAccount
+    validateAccount,
+    getCustomersById,
   };
 };

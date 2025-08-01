@@ -291,3 +291,33 @@ export interface Message extends BaseAttributes {
   content: string;
   sender: "vendor" | "customer" | "admin";
 }
+
+export const ServiceOrderDeliveryType = ["pickup", "delivery"] as const;
+export type ServiceOrderDeliveryTypeType = typeof ServiceOrderDeliveryType;
+export const ServiceOrderPaymentMethod = ["cash", "card", "transfer"] as const;
+export type ServiceOrderPaymentMethodType = typeof ServiceOrderPaymentMethod;
+export const ServiceOrderOrderStatus = ["pending", "confirmed", "in_progress", "completed", "cancelled"] as const;
+export type ServiceOrderOrderStatusType = typeof ServiceOrderOrderStatus;
+export const ServiceOrderPaymentStatus = ["pending", "paid", "failed", "refunded"] as const;
+export type ServiceOrderPaymentStatusType = typeof ServiceOrderPaymentStatus;
+export interface ServiceOrder extends BaseAttributes {
+  id: string;
+  orderNumber: string;
+  customerId: string;
+  vendorId: string;
+  branchId: string;
+  items: Array<{
+    productServiceId: string;
+    quantity: number;
+    price: number;
+  }>;
+  deliveryAddress?: string;
+  deliveryType: ServiceOrderDeliveryTypeType[number];
+  paymentMethod: ServiceOrderPaymentMethodType[number];
+  totalAmount: number;
+  notes?: string;
+  orderStatus: ServiceOrderOrderStatusType[number];
+  paymentStatus: ServiceOrderPaymentStatusType[number];
+  rating?: number;
+  comment?: string;
+}

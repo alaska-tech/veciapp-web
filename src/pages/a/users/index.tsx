@@ -4,40 +4,13 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import {
-  Table,
-  Tag,
-  Space,
-  Button,
-  TableColumnsType,
-  Divider,
-} from "antd";
-import React, { ReactElement } from "react";
+import { Table, Tag, Space, Button, TableColumnsType, Divider } from "antd";
+import React, { ReactElement, useState } from "react";
 import { Customer, Vendor } from "@models";
 import { useCustomerAction } from "@/actions/customer.action";
+import { VENDOR_STATUS_TAG_PROPS } from "@/constants/labels";
 
 type DataType = Customer;
-
-const VENDOR_STATUS_TAG_PROPS = {
-  created: {
-    props: {},
-    text: "Creado",
-  },
-  verified: {
-    props: {
-      icon: <CheckCircleOutlined />,
-      color: "success",
-    },
-    text: "Verificado",
-  },
-  suspended: {
-    props: {
-      icon: <ExclamationCircleOutlined />,
-      color: "warning",
-    },
-    text: "Suspendido",
-  },
-};
 
 const getVendorStatusTagProps = (status: Vendor["state"]) => {
   return (
@@ -48,8 +21,16 @@ const getVendorStatusTagProps = (status: Vendor["state"]) => {
   );
 };
 const Index = () => {
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const customerActions = useCustomerAction();
-  const customersQuery = customerActions.getCustomers();
+  const customersQuery = customerActions.getCustomers({
+    limit: pagination.pageSize,
+    page: pagination.current - 1,
+  });
   const deleteCustomer = customerActions.deleteCustomer();
   const columns: TableColumnsType<DataType> = [
     {
@@ -57,7 +38,7 @@ const Index = () => {
       dataIndex: "fullName",
       key: "fullName",
     },
-    
+
     {
       title: "Contacto",
       dataIndex: "email",
@@ -99,17 +80,37 @@ const Index = () => {
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/a/users/newUser" icon={<PlusOutlined />}>
-          Crear nuevo cliente
-        </Button>
+        <div
+          style={{
+            width: "100%",
+            justifyContent: "flex-end",
+            marginBottom: "24px",
+          }}
+        />
       </Space>
       <Table<DataType>
         columns={columns}
         rowKey={(record) => record.id}
         dataSource={customersQuery.data?.data.data || []}
         loading={customersQuery.isLoading}
-        /*       pagination={tableParams.pagination}
-      onChange={handleTableChange} */
+        onChange={(pag, _filters, _sorter) => {
+          setPagination({
+            ...pagination,
+            current: pag.current || 1,
+            pageSize: pag.pageSize || 2,
+          });
+        }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: customersQuery.data?.data.meta.total || 0,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+        }}
+        style={{
+          overflow: "auto",
+          background: "#fff",
+        }}
       />
     </div>
   );

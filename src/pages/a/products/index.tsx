@@ -37,6 +37,7 @@ import {
   PRODUCT_TYPE_TAG,
 } from "@/constants/labels";
 import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import RenderBranch from "@/components/pure/RenderBranch";
 
 type DataType = ProductService;
 const searchFields: SearchProps[] = [
@@ -90,16 +91,10 @@ const Users = () => {
         const { name = "", address = "" } =
           vendorQuery?.data?.data?.data || ({} as Branch);
         return (
-          <Typography.Link
-            style={{ width: "100px" }}
-            ellipsis
+          <RenderBranch
+            branch={vendorQuery?.data?.data?.data || ({} as Branch)}
             href={`/a/branches/${branchId}?name=${name}`}
-          >
-            {name}
-            {", "}
-            <br />
-            {address || "Desconocido"}
-          </Typography.Link>
+          />
         );
       },
     },
