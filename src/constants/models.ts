@@ -216,15 +216,21 @@ export interface Branch extends BaseAttributes {
   isActive: boolean;
 }
 
-export const productServiceState = ["available", "unavailable"] as const;
+export const productServiceState = ["available", "unavailable", "out_of_stock"] as const;
 export type productServiceStateType = typeof productServiceState;
+
+export const ProductServiceType = ["product", "service"] as const;
+export type ProductServiceTypeType = typeof ProductServiceType;
+
+export const ProductServiceCategory = ["Confecciones", "Belleza", "Gastronomía"] as const;
+export type ProductServiceCategoryType = typeof ProductServiceCategory;
 
 export interface ProductService extends BaseAttributes {
   id: string;
   vendorId: string;
   branchId: string;
-  categoryId: string;
-  type: string;
+  categoryId: ProductServiceCategoryType[number];
+  type: ProductServiceTypeType[number];
   name: string;
   description: string;
   shortDescription: string;

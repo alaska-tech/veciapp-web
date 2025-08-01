@@ -41,6 +41,7 @@ export const SearchBar = ({
           }}
           value={search.value}
           style={{ minWidth: 150 }}
+          allowClear
         />
       )}
       {search.type === "options" && (
@@ -54,6 +55,7 @@ export const SearchBar = ({
           showSearch
           popupMatchSelectWidth={false}
           style={{ minWidth: 150 }}
+          allowClear
         />
       )}
     </Space.Compact>

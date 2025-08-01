@@ -44,7 +44,7 @@ export const useProductServiceAction = () => {
     AxiosError<Extract<Response<null>, { status: "Error" }>>
   >(
     [QUERY_KEY_PRODUCTSERVICE] as QueryKey,
-    ({ limit, page, branchId, vendorId }) => {
+    ({ limit, page, branchId, vendorId, search }) => {
       return async function queryFn() {
         try {
           const branch = branchId ? `&branchId=${branchId}` : "";
@@ -56,7 +56,11 @@ export const useProductServiceAction = () => {
             >
           >(
             `/productservice/list?limit=${limit}&page=${page}${branch}${vendor}`
-          );
+          ,{
+            params: {
+              ...search,
+            },
+          });
           console.log(response);
           return response.data;
         } catch (error) {
@@ -68,7 +72,7 @@ export const useProductServiceAction = () => {
   const getProductServicesByBranchIdPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId }) => {
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId, search }) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
@@ -77,7 +81,12 @@ export const useProductServiceAction = () => {
             { status: "Success" }
           >
         >(
-          `/productservice/${branchId}/all-productservices?limit=${limit}&page=${page}`
+          `/productservice/${branchId}/all-productservices?limit=${limit}&page=${page}`,
+          {
+            params: {
+              ...search,
+            },
+          }
         );
         console.log(response);
         return response.data;

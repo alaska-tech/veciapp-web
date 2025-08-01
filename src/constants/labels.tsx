@@ -3,6 +3,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { BranchStateType } from "./models";
+import { Tag } from "antd";
 
 export const BRANCH_TYPE_LABELS = {
   individual: "Individual",
@@ -87,4 +88,40 @@ export const VENDOR_IS_HABEAS_DATA_LABELS: Record<string, React.ReactNode> = {
       Pendiente
     </div>
   ),
+};
+
+export const PRODUCT_TYPE_TAG: Record<string, any> = {
+  product: (
+    <Tag bordered={false} color="geekblue">
+      Producto
+    </Tag>
+  ),
+  service: (
+    <Tag bordered={false} color="magenta">
+      Servicio
+    </Tag>
+  ),
+};
+export const PRODUCT_STATE_TAG: Record<string, any> = {
+  available: (
+    <Tag bordered={false} color="blue">
+      Disponible
+    </Tag>
+  ),
+  unavailable: (
+    <Tag bordered={false} color="default">
+      No disponible
+    </Tag>
+  ),
+  out_of_stock: (
+    <Tag bordered={false} color="red">
+      Sin stock
+    </Tag>
+  ),
+};
+
+export const PRODUCT_CATEGORY_LABELS: Record<string, any> = {
+  Confecciones: "Confecciones",
+  Belleza: "Belleza",
+  Gastronomía: "Gastronomía",
 };

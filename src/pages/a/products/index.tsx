@@ -1,7 +1,12 @@
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Branch, ProductService, WEEKDAY_LABEL } from "@/constants/models";
+import {
+  Branch,
+  ProductService,
+  ProductServiceCategory,
+  WEEKDAY_LABEL,
+} from "@/constants/models";
 import {
   Table,
   Space,
@@ -26,32 +31,25 @@ import AsyncButton from "@/components/pure/AsyncButton";
 import { ImagePreviewCardFlower } from "@/components/pure/ImagePreviewCardFlower";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import {
+  PRODUCT_CATEGORY_LABELS,
+  PRODUCT_STATE_TAG,
+  PRODUCT_TYPE_TAG,
+} from "@/constants/labels";
+import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
 
 type DataType = ProductService;
-const PRODUCT_TYPE_TAG: Record<string, any> = {
-  product: (
-    <Tag bordered={false} color="geekblue">
-      Producto
-    </Tag>
-  ),
-  service: (
-    <Tag bordered={false} color="magenta">
-      Servicio
-    </Tag>
-  ),
-};
-const PRODUCT_STATE_TAG: Record<string, any> = {
-  available: (
-    <Tag bordered={false} color="blue">
-      Disponible
-    </Tag>
-  ),
-  unavailable: (
-    <Tag bordered={false} color="default">
-      No disponible
-    </Tag>
-  ),
-};
+const searchFields: SearchProps[] = [
+  {
+    label: "Categoría",
+    fieldName: "categoryId",
+    type: "options",
+    options: Object.entries(ProductServiceCategory).map(([key, value]) => ({
+      label: PRODUCT_CATEGORY_LABELS[value],
+      value: value,
+    })),
+  },
+];
 const Users = () => {
   const user = getUserInfo();
   const actions = useProductServiceAction();
@@ -61,9 +59,15 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
+  const { SearchComponent, search } = SearchBar({ searchFields });
   const productsQuery = actions.getProductServicesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
+    search: search.value
+      ? {
+          [search.fieldName]: search.value,
+        }
+      : {},
   });
   const branchActions = useBranchAction();
   const branchesQuery = branchActions.getBranchesById(
@@ -237,7 +241,8 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        {SearchComponent}
         <NewProductButton totalBranches={totalBranches} />
       </Space>
       <Table<DataType>
