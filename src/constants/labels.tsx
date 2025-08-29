@@ -2,7 +2,12 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { BranchStateType, ServiceOrderOrderStatusType, ServiceOrderPaymentStatusType } from "./models";
+import {
+  BranchStateType,
+  ServiceOrderOrderStatusType,
+  ServiceOrderPaymentStatusType,
+  VendorGendersType,
+} from "./models";
 import { Tag } from "antd";
 
 export const BRANCH_TYPE_LABELS = {
@@ -126,7 +131,10 @@ export const PRODUCT_CATEGORY_LABELS: Record<string, any> = {
   Gastronomía: "Gastronomía",
 };
 
-export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<ServiceOrderOrderStatusType[number], any> = {
+export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<
+  ServiceOrderOrderStatusType[number],
+  any
+> = {
   pending: <Tag>Pendiente</Tag>,
   confirmed: <Tag color="blue">Confirmado</Tag>,
   in_progress: <Tag color="blue">En progreso</Tag>,
@@ -134,9 +142,18 @@ export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<ServiceOrderOrderStatusTy
   cancelled: <Tag color="red">Cancelado</Tag>,
 };
 
-export const SERVICE_ORDER_PAYMENT_STATUS_LABELS: Record<ServiceOrderPaymentStatusType[number], any> = { 
+export const SERVICE_ORDER_PAYMENT_STATUS_LABELS: Record<
+  ServiceOrderPaymentStatusType[number],
+  any
+> = {
   pending: <Tag>Pendiente</Tag>,
   paid: <Tag color="green">Pagado</Tag>,
   failed: <Tag color="red">Fallido</Tag>,
   refunded: <Tag color="blue">Reembolsado</Tag>,
+};
+
+export const GENDER_LABELS: Record<VendorGendersType[number], string> = {
+  M: "Hombre",
+  F: "Mujer",
+  O: "Otro",
 };

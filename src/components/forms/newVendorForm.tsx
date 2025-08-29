@@ -1,8 +1,14 @@
 import { Divider, Form, Input, InputNumber, Radio, Row, Col } from "antd";
 import React from "react";
-import { Vendor, VendorGenders } from "@models";
+import {
+  Vendor,
+  VendorGenders,
+  IdentificationOptions,
+  EthnicityOptions,
+} from "@models";
 import FormWrapper from "./formWrapper";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
+import { GENDER_LABELS } from "@/constants/labels";
 
 const columnMinWidth = "220px";
 interface vendorWithAuxProps extends Vendor {
@@ -18,6 +24,7 @@ const nonEditableFields = [
   "internalCode",
   "fullName",
   "identification",
+  "typeOfIdentification",
   "commercialRegistry",
   "rut",
   "email",
@@ -82,7 +89,10 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   tooltip="Escriba el código interno de la fundación Maleua"
                   rules={[{ required: true }, { max: 100 }]}
                 >
-                  <Input placeholder="Ingrese el código interno" disabled={hasInitialValues} />
+                  <Input
+                    placeholder="Ingrese el código interno"
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -91,7 +101,29 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   label="Nombre completo"
                   rules={[{ required: true }, { max: 255 }]}
                 >
-                  <Input placeholder="Ingrese el nombre completo" disabled={hasInitialValues} />
+                  <Input
+                    placeholder="Ingrese el nombre completo"
+                    disabled={hasInitialValues}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  name="typeOfIdentification"
+                  label="Tipo de identificación"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Radio.Group
+                    options={IdentificationOptions.map((e) => ({
+                      value: e,
+                      label: e,
+                    }))}
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -102,7 +134,8 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   rules={[
                     {
                       pattern: /^[0-9]+$/,
-                      message: "El número de identidad solo puede contener números",
+                      message:
+                        "El número de identidad solo puede contener números",
                     },
                     {
                       required: true,
@@ -112,10 +145,14 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     },
                   ]}
                 >
-                  <Input placeholder="Ingrese el número de identidad" disabled={hasInitialValues} />
+                  <Input
+                    placeholder="Ingrese el número de identidad"
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
-              <Col xs={24} md={12}>
+
+              <Col xs={24} md={24}>
                 <Form.Item
                   name="email"
                   label="E-mail"
@@ -131,7 +168,10 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     },
                   ]}
                 >
-                  <Input placeholder="Ingrese el correo electrónico" disabled={hasInitialValues} />
+                  <Input
+                    placeholder="Ingrese el correo electrónico"
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -152,7 +192,11 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 >
                   <Input
                     addonBefore={
-                      <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
+                      <Form.Item
+                        name="prefix"
+                        rules={[{ required: true }]}
+                        noStyle
+                      >
                         <CustomSelectWithInput
                           selectProps={{
                             options: [
@@ -167,7 +211,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                           inputProps={{
                             placeholder: "Escriba...",
                             style: {
-                              width: 65,
+                              width: 150,
                             },
                           }}
                         />
@@ -201,7 +245,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                     },
                   ]}
                 >
-                  <InputNumber min={0} style={{ width: '100%' }} />
+                  <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -211,17 +255,31 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   rules={[{ type: "enum", enum: Object.values(VendorGenders) }]}
                 >
                   <Radio.Group
-                    options={[
-                      { value: "M", label: "Hombre" },
-                      { value: "F", label: "Mujer" },
-                      { value: "O", label: "Otro" },
-                    ]}
+                    options={VendorGenders.map((e) => {
+                      return GENDER_LABELS[e];
+                    })}
                   />
                 </Form.Item>
               </Col>
               <Col span={24}>
                 <Form.Item name={"bio"} label="Biografía" rules={[]}>
-                  <Input.TextArea placeholder="Escriba una breve biografía" rows={3} />
+                  <Input.TextArea
+                    placeholder="Escriba una breve biografía"
+                    rows={3}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  name={"ethnicity"}
+                  label="Pertenencia étnica"
+                  rules={[]}
+                >
+                  <Radio.Group
+                    options={EthnicityOptions.map((e) => {
+                      return e;
+                    })}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -237,16 +295,18 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                   label="Registro comercial"
                   rules={[{ max: 255 }]}
                 >
-                  <Input placeholder="Ingrese el registro comercial" disabled={hasInitialValues} />
+                  <Input
+                    placeholder="Ingrese el registro comercial"
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <Form.Item
-                  name={"rut"}
-                  label="RUT"
-                  rules={[{ max: 255 }]}
-                >
-                  <Input placeholder="Ingrese el RUT" disabled={hasInitialValues} />
+                <Form.Item name={"rut"} label="RUT" rules={[{ max: 255 }]}>
+                  <Input
+                    placeholder="Ingrese el RUT"
+                    disabled={hasInitialValues}
+                  />
                 </Form.Item>
               </Col>
               <Col span={24}>

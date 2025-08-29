@@ -16,7 +16,7 @@ import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import {
   BRANCH_IS_ACTIVE_LABELS,
   BRANCH_TYPE_LABELS,
@@ -24,7 +24,7 @@ import {
 
 type DataType = Branch;
 
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Nombre",
     fieldName: "name",

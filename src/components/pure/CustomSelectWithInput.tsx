@@ -21,6 +21,7 @@ const CustomSelectWithInput = ({
       className={`custom-input-${status}`}
       open={isDropdownOpen}
       onDropdownVisibleChange={setIsDropdownOpen}
+      popupMatchSelectWidth={false}
       dropdownRender={(menu) => {
         return (
           <>

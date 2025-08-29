@@ -1,7 +1,7 @@
 import { Space, Select, Input } from "antd";
 import React, { useState } from "react";
 
-export interface SearchProps {
+export interface SearchFieldProps {
   value?: string;
   fieldName: string;
   label: string;
@@ -11,9 +11,9 @@ export interface SearchProps {
 export const SearchBar = ({
   searchFields,
 }: {
-  searchFields: SearchProps[];
+  searchFields: SearchFieldProps[];
 }) => {
-  const [search, setSearch] = useState<SearchProps>({ ...searchFields[0] });
+  const [search, setSearch] = useState<SearchFieldProps>({ ...searchFields[0] });
   const SearchComponent = (
     <Space.Compact>
       <Select

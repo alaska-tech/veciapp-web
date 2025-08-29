@@ -29,7 +29,7 @@ import ChangeProductInventoryModal from "@/components/changeProductInventoryModa
 import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { ImagePreviewCardFlower } from "@/components/pure/ImagePreviewCardFlower";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import {
   PRODUCT_CATEGORY_LABELS,
   PRODUCT_STATE_TAG,
@@ -37,7 +37,7 @@ import {
 } from "@/constants/labels";
 
 type DataType = ProductService;
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Nombre o descripción",
     fieldName: "search",

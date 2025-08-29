@@ -4,7 +4,7 @@ import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
 import RenderVendor from "@/components/pure/RenderVendor";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
 import {
   BRANCH_IS_ACTIVE_LABELS,
@@ -37,7 +37,7 @@ import React, { ReactElement, useState } from "react";
 
 type DataType = Branch;
 
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Nombre",
     fieldName: "name",

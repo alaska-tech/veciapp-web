@@ -90,13 +90,28 @@ export const VendorStates = ["created", "verified", "suspended"] as const;
 export type VendorStatesType = typeof VendorStates;
 
 export const VendorGenders = ["M", "F", "O"] as const;
-export type VendorGendersType = typeof VendorStates;
+export type VendorGendersType = typeof VendorGenders;
+
+export const IdentificationOptions = ["C.C.", "P.P.T.", "C.E."] as const;
+export type IdentificationOptionsType = typeof IdentificationOptions;
+
+export const EthnicityOptions = [
+  "Afro",
+  "Negro",
+  "Raizal",
+  "Palenquero",
+  "Indígena",
+  "ROM",
+] as const;
+export type EthnicityOptionsType = typeof EthnicityOptions;
 
 export interface Vendor extends BaseAttributes {
   id: string;
   internalCode: string; // max length 100
   fullName: string; // max length 255
   identification: string; // max length 100
+  typeOfIdentification: IdentificationOptionsType[number];
+  ethnicity?: EthnicityOptionsType[number]; // max length 100
   email: string; //max length 150
   isEmailVerified: boolean;
   cellphone: string; // max length 20
@@ -216,13 +231,21 @@ export interface Branch extends BaseAttributes {
   isActive: boolean;
 }
 
-export const productServiceState = ["available", "unavailable", "out_of_stock"] as const;
+export const productServiceState = [
+  "available",
+  "unavailable",
+  "out_of_stock",
+] as const;
 export type productServiceStateType = typeof productServiceState;
 
 export const ProductServiceType = ["product", "service"] as const;
 export type ProductServiceTypeType = typeof ProductServiceType;
 
-export const ProductServiceCategory = ["Confecciones", "Belleza", "Gastronomía"] as const;
+export const ProductServiceCategory = [
+  "Confecciones",
+  "Belleza",
+  "Gastronomía",
+] as const;
 export type ProductServiceCategoryType = typeof ProductServiceCategory;
 
 export interface ProductService extends BaseAttributes {
@@ -296,9 +319,20 @@ export const ServiceOrderDeliveryType = ["pickup", "delivery"] as const;
 export type ServiceOrderDeliveryTypeType = typeof ServiceOrderDeliveryType;
 export const ServiceOrderPaymentMethod = ["cash", "card", "transfer"] as const;
 export type ServiceOrderPaymentMethodType = typeof ServiceOrderPaymentMethod;
-export const ServiceOrderOrderStatus = ["pending", "confirmed", "in_progress", "completed", "cancelled"] as const;
+export const ServiceOrderOrderStatus = [
+  "pending",
+  "confirmed",
+  "in_progress",
+  "completed",
+  "cancelled",
+] as const;
 export type ServiceOrderOrderStatusType = typeof ServiceOrderOrderStatus;
-export const ServiceOrderPaymentStatus = ["pending", "paid", "failed", "refunded"] as const;
+export const ServiceOrderPaymentStatus = [
+  "pending",
+  "paid",
+  "failed",
+  "refunded",
+] as const;
 export type ServiceOrderPaymentStatusType = typeof ServiceOrderPaymentStatus;
 export interface ServiceOrder extends BaseAttributes {
   id: string;

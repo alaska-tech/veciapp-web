@@ -36,11 +36,11 @@ import {
   PRODUCT_STATE_TAG,
   PRODUCT_TYPE_TAG,
 } from "@/constants/labels";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import RenderBranch from "@/components/pure/RenderBranch";
 
 type DataType = ProductService;
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Categoría",
     fieldName: "categoryId",

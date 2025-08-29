@@ -5,12 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
-import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
+import { LOGGED_USER_INFO_KEY } from "@/constants/constants";
 import {
   setRefreshToken,
   setToken,
   setUserInfo,
-  clearAllInfoFromLocalStorage,
 } from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
@@ -96,6 +95,10 @@ export default function Home() {
           gap: 12,
           width: "100%",
           maxWidth: 400,
+        }}
+        initialValues={{
+          email: "julianangulop@gmail.com",
+          password: "123456",
         }}
       >
         <Form.Item<LogInForm>

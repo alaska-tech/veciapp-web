@@ -15,7 +15,7 @@ import {
   SERVICE_ORDER_PAYMENT_STATUS_LABELS,
 } from "@/constants/labels";
 import { useServiceOrderAction } from "@/actions/serviceOrder.action";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import RenderVendor from "@/components/pure/RenderVendor";
 import { useVendorAction } from "@/actions/vendor.action";
 import { useCustomerAction } from "@/actions/customer.action";
@@ -25,7 +25,7 @@ import { useBranchAction } from "@/actions/branch.action";
 
 type DataType = ServiceOrder;
 
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Estado",
     fieldName: "status",

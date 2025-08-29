@@ -30,7 +30,7 @@ import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos"
 import { ImagePreviewCardFlower } from "@/components/pure/ImagePreviewCardFlower";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import SearchBar, { SearchProps } from "@/components/pure/SearchBar";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import {
   PRODUCT_CATEGORY_LABELS,
   PRODUCT_STATE_TAG,
@@ -38,7 +38,7 @@ import {
 } from "@/constants/labels";
 
 type DataType = ProductService;
-const searchFields: SearchProps[] = [
+const searchFields: SearchFieldProps[] = [
   {
     label: "Categoría",
     fieldName: "categoryId",
