@@ -22,7 +22,9 @@ import { useCustomerAction } from "@/actions/customer.action";
 import RenderCustomer from "@/components/pure/RenderCustomer";
 import RenderBranch from "@/components/pure/RenderBranch";
 import { useBranchAction } from "@/actions/branch.action";
-
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+dayjs.locale("es");
 type DataType = ServiceOrder;
 
 const searchFields: SearchFieldProps[] = [
@@ -47,7 +49,7 @@ const Index = () => {
   const actions = useServiceOrderAction();
   const query = actions.getServiceOrders({
     limit: pagination.pageSize,
-    page: pagination.current - 1,
+    page: pagination.current,
     status: search.value as ServiceOrderOrderStatusType[number],
   });
   const vendorQueries = useVendorAction();
@@ -63,6 +65,14 @@ const Index = () => {
     query.data?.data.data.map((order) => order.branchId) || []
   );
   const columns: TableColumnsType<DataType> = [
+    {
+      title: "Fecha",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value) => {
+        return dayjs(value).format("DD/MMMM/YYYY HH:mm");
+      }
+    },
     {
       title: "Número de pedido",
       dataIndex: "orderNumber",
@@ -133,7 +143,7 @@ const Index = () => {
       key: "actions",
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/users/${record.id}?name=${record.orderNumber}`}>
+          <a href={`/a/serviceOrders/${record.id}`}>
             Detalles
           </a>
         </Space>

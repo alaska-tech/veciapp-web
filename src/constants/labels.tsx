@@ -135,10 +135,10 @@ export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<
   ServiceOrderOrderStatusType[number],
   any
 > = {
-  pending: <Tag>Pendiente</Tag>,
-  confirmed: <Tag color="blue">Confirmado</Tag>,
-  in_progress: <Tag color="blue">En progreso</Tag>,
-  completed: <Tag color="green">Completado</Tag>,
+  received: <Tag color='yellow'>Recibido</Tag>,
+  preparing: <Tag color="orange">En preparación</Tag>,
+  shipped: <Tag color="green">En ruta</Tag>,
+  delivered: <Tag color="gray">Entregado</Tag>,
   cancelled: <Tag color="red">Cancelado</Tag>,
 };
 
