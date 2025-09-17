@@ -1,0 +1,228 @@
+### statistics.http ###
+#
+# Este archivo contiene una colección de solicitudes HTTP para probar los endpoints de estadísticas de la API de VeciApp.
+# Para ejecutar las solicitudes, asegúrate de tener una extensión como "REST Client" en tu editor.
+#
+# ---
+#
+# Variables:
+#   - baseUrl: La URL base de la API (ej. http://localhost:3000/api/v1)
+#   - token: Token de autenticación JWT (Bearer Token) para las rutas protegidas.
+#   - adminToken: Token de autenticación para las rutas que requieren permisos de administrador.
+#   - vendorId: El ID de un vendedor para pruebas específicas.
+
+@baseUrl = http://localhost:3000/api/v1
+@token = Bearer TU_TOKEN_DE_AUTENTICACION
+@adminToken = Bearer TU_TOKEN_DE_ADMINISTRADOR
+@vendorId = 08f6ec09-0db8-4e7a-a0f3-209f16f4ee20
+
+###
+# ------------------------------------------------------------------------------
+# 1. Estadísticas de Clientes
+# Obtiene estadísticas generales sobre los clientes.
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/customers/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# { 
+#    "data": {
+#        "total_customers": 150,
+#        "new_customers_period": 25,
+#        "active_customers": 140,
+#        "inactive_customers": 10
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 2. Estadísticas de Vendedores
+# Proporciona estadísticas relacionadas con los vendedores.
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/vendors/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "total_vendors": 50,
+#        "new_vendors_period": 5,
+#        "approved_vendors": 45,
+#        "pending_vendors": 5
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 3. Estadísticas de Sucursales
+# Devuelve estadísticas de las sucursales.
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/branches/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "total_branches": 120,
+#        "new_branches_period": 15,
+#        "active_branches": 110,
+#        "inactive_branches": 10
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 4. Estadísticas de Pedidos
+# Recopila estadísticas sobre los pedidos.
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/orders/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "total_orders": 500,
+#        "completed_orders": 450,
+#        "pending_orders": 20,
+#        "cancelled_orders": 30,
+#        "total_revenue": "15000.00"
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 5. Estadísticas de Entregas (Delivery)
+# Ofrece estadísticas sobre las entregas.
+# **Requiere permisos de Administrador.**
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/delivery/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{adminToken}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "total_deliveries": 300,
+#        "completed_deliveries": 280,
+#        "in_progress_deliveries": 10,
+#        "average_delivery_time_minutes": 25,
+#        "total_delivery_cost": "3000.00"
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 6. Estadísticas del Panel de Vendedor
+# Obtiene estadísticas clave para el panel de un vendedor específico.
+#
+# Parámetros de Ruta:
+#   - vendorId: El ID del vendedor.
+GET {{baseUrl}}/payment/dashboard/vendor/{{vendorId}}
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#   "data": {
+#     "summary": {
+#       "totalSales": 378000,
+#       "totalTransactions": 12,
+#       "salesToday": 31500,
+#       "salesLast7Days": 252000
+#     },
+#     "recentTransactions": [
+#       {
+#         "id": "c526114d-b235-4eb7-abee-e35e39b735ce",
+#         "orderId": "83c9198c-d200-498e-b327-2fe1ecbbc38a",
+#         "customerId": "4586145e-e7a3-45e5-95f2-7a0c49f974fa",
+#         "vendorId": "08f6ec09-0db8-4e7a-a0f3-209f16f4ee20",
+#         "paymentReference": "ORDER_83c9198c-d200-498e-b327-2fe1ecbbc38a_1756860965895_9",
+#         "provider": "wompi",
+#         "state": "completed",
+#         "amount": "31500.00",
+#         "currency": "COP",
+#         "type": "credit_card",
+#         "transactionId": "1681812-1756861004-29195",
+#         "gatewayResponse": { "...truncated..." },
+#         "receiptUrl": "dqOSdQBGys",
+#         "failureReason": null,
+#         "paymentDate": null,
+#         "metadata": {
+#           "commission": 150000,
+#           "orderAmount": 3000000,
+#           "customerEmail": "contact.alaskatech@gmail.com"
+#         },
+#         "service_fee_details": null,
+#         "createdAt": "2025-09-03T01:25:12.279Z",
+#         "updatedAt": "2025-09-03T01:25:12.279Z"
+#       }
+#     ]
+#   },
+#   "error": null,
+#   "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 7. Estadísticas de Historial de Notificaciones
+# Estadísticas sobre el historial de notificaciones enviadas.
+#
+# Parámetros de Consulta (Opcionales):
+#   - startDate: YYYY-MM-DD
+#   - endDate: YYYY-MM-DD
+GET {{baseUrl}}/notification-history/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: {{token}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "total_notifications": 1000,
+#        "sent_notifications": 950,
+#        "failed_notifications": 50,
+#        "delivered_notifications": 900
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
+
+###
+# ------------------------------------------------------------------------------
+# 8. Estadísticas del Servicio de Notificaciones Push
+# Estadísticas generales del servicio de notificaciones push.
+# **Requiere permisos de Administrador.**
+GET {{baseUrl}}/push-notifications/admin/stats
+Authorization: {{adminToken}}
+
+### Respuesta Ejemplo (200 OK)
+# {
+#    "data": {
+#        "notificationsSent": 950,
+#        "notificationsFailed": 50,
+#        "successRate": 95
+#    },
+#    "error": null,
+#    "status": "Success"
+# }
