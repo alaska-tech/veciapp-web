@@ -10,11 +10,19 @@ import {
   MenuOutlined,
   PullRequestOutlined,
   ReconciliationOutlined,
+  ShoppingCartOutlined,
   SettingOutlined,
   ShopOutlined,
   ShoppingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import {
+  Home,
+  PackageOpen, 
+  ShoppingCart,
+  Store,
+
+} from "lucide-react";
 import Image from "next/image";
 import type { MenuProps } from "antd";
 import Link from "next/link";
@@ -123,7 +131,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   v: [
     {
       key: `/v/home`,
-      icon: React.createElement(HomeOutlined),
+      icon: React.createElement(Home),
       label: <Link href="/v/home">Inicio</Link>,
       children: undefined,
     },
@@ -133,24 +141,24 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/v/branches`,
-          icon: React.createElement(AppstoreOutlined),
-          label: <Link href="/v/branches">Tiendas</Link>,
+          key: `/v/orders`,
+          icon: React.createElement(ShoppingCart),
+          label: <Link href="/v/orders">Pedidos</Link>,
           children: undefined,
-        },
+        },   
         {
           key: `/v/products`,
-          icon: React.createElement(AppleOutlined),
+          icon: React.createElement(PackageOpen),
+          
           label: <Link href="/v/products">Productos y servicios</Link>,
           children: undefined,
         },
         {
-          key: `/v/change-requests`,
-          disabled: true,
-          icon: React.createElement(PullRequestOutlined),
-          label: <Link href="/v/change-requests">Solicitudes de cambio</Link>,
+          key: `/v/branches`,
+          icon: React.createElement(Store),
+          label: <Link href="/v/branches">Tiendas</Link>,
           children: undefined,
-        },   
+        },
       ],
     },
   ],
@@ -342,6 +350,7 @@ function DashboardLayout({
         >
           {roleLabels[primaryUrlSegment]}
         </Typography.Title>
+       
         <AutoMenu
           items={lateralMenuItems[router.pathname.split("/")[1]]}
           style={{ width: "240px" }}

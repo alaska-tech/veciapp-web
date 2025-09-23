@@ -1,67 +1,64 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Row, Col, Card, Space, Typography, Statistic, Button, Alert } from 'antd';
-import React, { ReactElement } from 'react'
-import { motion } from "framer-motion";
+import { Row, Col, Card, Divider, Typography, Statistic, Button, Alert, Badge } from 'antd';
+import React, { ReactElement, useState, useEffect } from 'react'
+import { color, motion } from "framer-motion";
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
-import {
-  RocketOutlined,
-  ShoppingOutlined,
-  AppstoreOutlined,
-  DollarOutlined,
-  ExclamationCircleOutlined,
-  PlusOutlined,
-  UserOutlined,
-  ShopOutlined
-} from "@ant-design/icons";
+import { Rocket, ShoppingCart, Store, DollarSign } from "lucide-react";
 import { useRouter } from 'next/router';
-import { useStatisticAction } from '@/actions/statistics.action';
 
 const { Title, Paragraph } = Typography;
 
+interface Transaction {
+  id: string;
+  amount: number;
+  state: string;
+  provider: string;
+  type: string;
+  createdAt: string;
+}
 
-const data = {
-          "summary": {
-            "totalSales": 378000,
-            "totalTransactions": 12,
-            "salesToday": 31500,
-            "salesLast7Days": 252000
-          },
-          "recentTransactions": [
-            {
-              "id": "c526114d-b235-4eb7-abee-e35e39b735ce",
-              "orderId": "83c9198c-d200-498e-b327-2fe1ecbbc38a",
-              "customerId": "4586145e-e7a3-45e5-95f2-7a0c49f974fa",
-              "vendorId": "08f6ec09-0db8-4e7a-a0f3-209f16f4ee20",
-              "paymentReference": "ORDER_83c9198c-d200-498e-b327-2fe1ecbbc38a_1756860965895_9",
-              "provider": "wompi",
-              "state": "completed",
-              "amount": "31500.00",
-              "currency": "COP",
-              "type": "credit_card",
-              "transactionId": "1681812-1756861004-29195",
-              "receiptUrl": "dqOSdQBGys",
-              "failureReason": null,
-              "paymentDate": null,
-              "metadata": {
-                "commission": 150000,
-                "orderAmount": 3000000,
-                "customerEmail": "contact.alaskatech@gmail.com"
-              },
-              "service_fee_details": null,
-              "createdAt": "2025-09-03T01:25:12.279Z",
-              "updatedAt": "2025-09-03T01:25:12.279Z"
-            }
-          ]
-      }
+interface VendorSummary {
+  totalSales: number;
+  salesToday: number;
+  salesLast7Days: number;
+}
+
+interface VendorStatisticResponse {
+  summary: VendorSummary;
+  recentTransactions?: Transaction[];
+}
+
 const Home = () => {
   const router = useRouter();
   const user = getUserInfo();
   const productServiceActions = useProductServiceAction();
   const branchActions = useBranchAction();
-  const statisticActions = useStatisticAction();
-  const statisticQuery = statisticActions.getVendorStatistic({vendorId: user?.id || ""});
+  const [summary, setSummary] = useState<VendorSummary | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('http://localhost:3001/api/v1/payments/dashboard/vendor/08f6ec09-0db8-4e7a-a0f3-209f16f4ee20', {
+      headers: {
+        Authorization: 'Bearer TU_TOKEN_AQUI'
+      }
+    })
+      .then(res => res.json())
+      .then((data: VendorStatisticResponse) => {
+        setSummary(data.summary);
+        setTransactions(data.recentTransactions || []);
+      })
+      .catch(() => {
+        setSummary(null);
+        setTransactions([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   // Obtener datos de productos del vendor actual
   const productsQuery = productServiceActions.getProductServicesPaginated({
@@ -79,236 +76,227 @@ const Home = () => {
   });
   const totalBranches = branchesQuery.data?.data.meta.total || 0;
 
-  // Datos quemados para métricas no implementadas
-  const totalOrders = 120; // TODO: Implementar cuando esté disponible
-  const monthlySales = 5000000; // 5M COP - TODO: Implementar cuando esté disponible
-  const lowStockProducts = 3; // TODO: Implementar filtro de productos con stock < 5
-
-  const dashboardCards = [
-    {
-      title: "Productos y Servicios",
-      value: totalProducts,
-      icon: <ShoppingOutlined style={{ fontSize: '24px', color: '#52c41a' }} />,
-      color: '#52c41a',
-      loading: productsQuery.isLoading
-    },
-    {
-      title: "Tiendas Activas",
-      value: totalBranches,
-      icon: <ShopOutlined style={{ fontSize: '24px', color: '#722ed1' }} />,
-      color: '#722ed1',
-      loading: branchesQuery.isLoading
-    },
-    {
-      title: "Pedidos Recibidos",
-      value: totalOrders,
-      icon: <AppstoreOutlined style={{ fontSize: '24px', color: '#1890ff' }} />,
-      color: '#1890ff',
-      loading: false
-    },
-    {
-      title: "Ventas este mes",
-      value: monthlySales,
-      icon: <DollarOutlined style={{ fontSize: '24px', color: '#52c41a' }} />,
-      color: '#52c41a',
-      loading: false,
-      suffix: " COP"
-    },
-    {
-      title: "Productos en Stock Bajo",
-      value: lowStockProducts,
-      icon: <ExclamationCircleOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />,
-      color: '#ff4d4f',
-      loading: false
-    },
-    {
-      title: "Prueba Estática",
-      value: 12345,
-      icon: <DollarOutlined style={{ fontSize: '24px', color: '#ff9900' }} />,
-      color: '#ff9900',
-      loading: false,
-      suffix: " COP"
-    }
-  ];
-
   return (
     <div style={{
+      display: 'flex',
+      flexDirection: 'column',
       padding: '24px',
       maxWidth: '100%',
+      gap: '24px',
       margin: '0 auto'
     }}>
       {/* Banner Informativo */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
-        style={{ marginBottom: '32px' }}
+        transition={{ duration: 0.4, ease: "easeInOut" }} 
       >
         <Alert
-          message={
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <RocketOutlined style={{ fontSize: '20px', color: '#1890ff' }} />
-              <div>
-                <Title level={4} style={{ margin: 0, color: '#1890ff' }}>
-                  ¡Centro de gestión de tu operación!
-                </Title>
-                <Paragraph style={{ margin: '4px 0 0 0', color: '#1890ff' }}>
-                  Accede a todas las herramientas para administrar tus tiendas, productos y operaciones diarias.
-                </Paragraph>
-              </div>
-            </div>
-          }
-          style={{
-            backgroundColor: '#e6f7ff',
-            border: '1px solid #91d5ff',
-            borderRadius: '12px'
-          }}
-          showIcon={false}
-        />
+          message={(
+            <Row align="middle" gutter={[16, 8]}>
+              {/* Columna icono */}
+              <Col xs={4} sm={3} md={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Rocket size={64} color="#175FBE" />
+              </Col>
 
-        {/* Botones de acción */}
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          marginTop: '16px',
-          flexWrap: 'wrap'
-        }}>
-          <Button
-            type="default"
-            icon={<PlusOutlined />}
-            onClick={() => router.push('/v/products')}
-            style={{
-              border: '1px solid #d9d9d9',
-              borderRadius: '8px',
-              height: '40px'
-            }}
-          >
-            Agregar Productos
-          </Button>
-          <Button
-            type="default"
-            icon={<UserOutlined />}
-            onClick={() => router.push('/v/profile')}
-            style={{
-              border: '1px solid #d9d9d9',
-              borderRadius: '8px',
-              height: '40px'
-            }}
-          >
-            Completar Perfil
-          </Button>
-          <Button
-            type="default"
-            icon={<ShopOutlined />}
-            onClick={() => router.push('/v/branches')}
-            style={{
-              border: '1px solid #d9d9d9',
-              borderRadius: '8px',
-              height: '40px'
-            }}
-          >
-            Crear Sucursal
-          </Button>
-        </div>
+              {/* Columna contenido */}
+              <Col xs={20} sm={21} md={22}>
+                <div>
+                  <Title level={4} style={{ margin: 0, color: '#175FBE' }}>
+                    ¡Completa tu perfil para empezar a vender!
+                  </Title>
+                  <Paragraph style={{ margin: '6px 0 0 0', color: '#175FBE' }}>
+                    Accede a todas las herramientas para administrar tus tiendas, productos y operaciones diarias.
+                  </Paragraph>
+
+                  {/* Botones dentro del banner */}
+                  <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    <Button
+                      type="default"
+                      shape="round"
+                      onClick={() => router.push('/v/products')}
+                      aria-label="Agregar productos"
+                    >
+                      Agregar Productos
+                    </Button>
+
+                    <Button
+                      type="default"
+                      shape="round"
+                      onClick={() => router.push('/v/profile')}
+                      aria-label="Completar perfil"
+                    >
+                      Completar Perfil
+                    </Button>
+
+                    <Button
+                      type="default"
+                      shape="round"
+                      onClick={() => router.push('/v/branches')}
+                      aria-label="Crear sucursal"
+                    >
+                      Crear Sucursal
+                    </Button>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          )}
+          type="info"
+          showIcon={false}
+          style={{
+            backgroundColor: '#3385f01a',
+            border: '1px solid #175FBE',
+            borderRadius: '12px',
+            padding: 16
+          }}
+        />
       </motion.div>
 
-      {/* Cards Container - Responsive layout */}
+      {/* Cards Container - con animacion hover - TODO: crear componente cardAnimada  */}
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Productos Activos"
-              value={45}
-              prefix={<ShoppingOutlined />}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Tiendas Activas"
-              value={4}
-              prefix={<ShopOutlined />}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Ventas este mes"
-              value={5000000}
-              suffix="COP"
-              prefix={<DollarOutlined />}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic title="Pedidos Recibidos" value={120} />
-          </Card>
-        </Col>
-      </Row>
-
-      <div style={{
-        display: 'flex',
-        marginTop: '2rem',
-        justifyContent: 'center',
-        width: '100%'
-      }}>
-        <Space
-          size={[16, 24]}
-          wrap
-          style={{
-            justifyContent: 'center',
-            width: '100%'
-          }}
-        >
-          {dashboardCards.map((card, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1, ease: "easeInOut" }}
-              whileHover={{ scale: 1.03, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
-              whileTap={{ scale: 0.98 }}
-              style={{ width: 'clamp(280px, calc(100vw - 48px), 320px)', minWidth: '280px' }}
-            >
-              <Card
-                loading={card.loading}
-                style={{
-                  width: '100%',
-                  border: `1px solid ${card.color}20`,
-                  borderRadius: '12px'
+          <motion.div
+            whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ borderRadius: "12px", overflow: "hidden" }}
+          >
+            <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
+              <Statistic
+                title={<span style={{ color: "#000" }}>Ventas Totales</span>}
+                value={totalProducts}
+                prefix={<ShoppingCart />}
+                valueStyle={{
+                  color: "#35B675",
+                  fontSize: "32px",
+                  fontWeight: "700"
                 }}
-                bodyStyle={{ padding: '24px' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                  {card.icon}
-                  <Title level={4} style={{ margin: '0 0 0 12px', color: card.color }}>
-                    {card.title}
-                  </Title>
-                </div>
-                <Statistic
-                  value={card.value}
-                  valueStyle={{
-                    fontSize: '32px',
-                    fontWeight: 'bold',
-                    color: card.color
-                  }}
-                  suffix={card.suffix || ""}
-                />
-                <Paragraph style={{ margin: '8px 0 0 0', color: '#666' }}>
-                  {card.loading ? "Cargando..." : "Actualizado recientemente"}
-                </Paragraph>
-              </Card>
-            </motion.div>
-          ))}
-        </Space>
-      </div>
+              />
+            </Card>
+          </motion.div>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <motion.div
+            whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ borderRadius: "12px", overflow: "hidden" }}
+          >
+            <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
+              <Statistic
+                title={<span style={{ color: "#000" }}>Transacciones</span>}
+                value={totalBranches}
+                prefix={<Store />}
+                valueStyle={{
+                  color: "#35B675",
+                  fontSize: "32px",
+                  fontWeight: "700"
+                }}
+              />
+            </Card>
+          </motion.div>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <motion.div
+            whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ borderRadius: "12px", overflow: "hidden" }}
+          >
+            <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
+              <Statistic
+                title={<span style={{ color: "#000" }}>Ventas hoy</span>}
+                value={summary?.salesToday || 0}
+                suffix="COP"
+                prefix={<DollarSign />}
+                valueStyle={{
+                  color: "#35B675",
+                  fontSize: "32px",
+                  fontWeight: "700"
+                }}
+              />
+            </Card>
+          </motion.div>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <motion.div
+            whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ borderRadius: "12px", overflow: "hidden" }}
+          >
+            <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
+              <Statistic
+                title={<span style={{ color: "#000" }}>Últimos 7 días</span>}
+                value={summary?.salesLast7Days || 0}
+                valueStyle={{
+                  color: "#35B675",
+                  fontSize: "32px",
+                  fontWeight: "700"
+                }}
+              />
+            </Card>
+          </motion.div>
+        </Col>
+      </Row> 
+
+      <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
+        <Title level={4} style={{ marginBottom: 16, color: '#175FBE' }}>
+          Transacciones Recientes
+        </Title>
+        {loading && <p>Cargando transacciones...</p>}
+        {!loading && transactions.length === 0 && <p>No hay transacciones recientes</p>}
+        {!loading && transactions.length > 0 && (
+          <Row gutter={[16, 16]}>
+            {transactions.map(tx => (
+              <Col xs={24} sm={12} md={8} key={tx.id}>
+                <Card size="small" bordered={true} style={{ borderRadius: '8px' }}>
+                  <Row justify="space-between" align="middle" style={{ marginBottom: 8 }}>
+                    <Col>
+                      <Statistic
+                        value={tx.amount}
+                        prefix={<DollarSign />}
+                        valueStyle={{ color: '#35B675', fontWeight: '700' }}
+                        suffix="COP"
+                      />
+                    </Col>
+                    <Col>
+                      <Badge
+                        status={tx.state === 'completed' ? 'success' : tx.state === 'pending' ? 'warning' : 'default'}
+                        text={tx.state.charAt(0).toUpperCase() + tx.state.slice(1)}
+                      />
+                    </Col>
+                  </Row>
+                  <Divider style={{ margin: '8px 0' }} />
+                  <Paragraph style={{ margin: 0 }}>
+                    <strong>Proveedor:</strong> {tx.provider}
+                  </Paragraph>
+                  <Paragraph style={{ margin: 0 }}>
+                    <strong>Tipo:</strong> {tx.type}
+                  </Paragraph>
+                  <Paragraph style={{ margin: 0, fontSize: 12, color: '#888' }}>
+                    {new Date(tx.createdAt).toLocaleString()}
+                  </Paragraph>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </Card>
+
     </div>
   )
 }

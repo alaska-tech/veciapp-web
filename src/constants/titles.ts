@@ -20,6 +20,8 @@ export const titles: Record<string, string> = {
   "products/[id]": "Detalles de ${name}",
   "products/byBranch/[id]": "Servicios y productos de la tienda '${name}'",
   "products/byBranch/[id]/newProduct": "Crear un nuevo producto o servicio para la tienda '${name}'",
+
+  "orders" : "Gestión de pedidos",
 };
 export const subtitles: Record<string, string> = {
   "home": "Resumen general",
@@ -37,4 +39,5 @@ export const subtitles: Record<string, string> = {
   "payments": "Esta es la pagina de pagos",
   "products": "Esta es la pagina de servicios y productos",
   "products/byBranch/[id]/newProduct": "Esta es la pagina para crear un nuevo producto o servicio",
+  "orders": "Administra y monitorea todos los pedidos de tu tienda",
 };

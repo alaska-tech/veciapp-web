@@ -11,11 +11,22 @@
 #   - adminToken: Token de autenticación para las rutas que requieren permisos de administrador.
 #   - vendorId: El ID de un vendedor para pruebas específicas.
 
-@baseUrl = http://localhost:3000/api/v1
-@token = Bearer TU_TOKEN_DE_AUTENTICACION
-@adminToken = Bearer TU_TOKEN_DE_ADMINISTRADOR
-@vendorId = 08f6ec09-0db8-4e7a-a0f3-209f16f4ee20
+@baseUrl = https://veciapp-backend.onrender.com/api/v1
+@vendorId = 08f6ec09-0db8-4e7a-a0f3-209f16f4ee20 
 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb3JlaWduUGVyc29uSWQiOiI0NTg2MTQ1ZS1lN2EzLTQ1ZTUtOTVmMi03YTBjNDlmOTc0ZmEiLCJmdWxsTmFtZSI6ImFsYXNrYXRlY2giLCJlbWFpbCI6ImNvbnRhY3QuYWxhc2thdGVjaEBnbWFpbC5jb20iLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NTg0Mzc0NDUsImV4cCI6MTc1ODQzODM0NX0.tohkRux1MoIRBTcbNMTUgFF1J-_8RG5XqKsE5NDIY2s
+
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "contact.alaskatech@gmail.com",
+  "password": "Miclave.1"
+}
+
+  // { 
+  //  client.global.set("token", response.body.data.token);
+  // }
 ###
 # ------------------------------------------------------------------------------
 # 1. Estadísticas de Clientes
@@ -119,7 +130,7 @@ Authorization: {{token}}
 #   - startDate: YYYY-MM-DD
 #   - endDate: YYYY-MM-DD
 GET {{baseUrl}}/delivery/stats?startDate=2024-01-01&endDate=2024-12-31
-Authorization: {{adminToken}}
+Authorization: {{token}}
 
 ### Respuesta Ejemplo (200 OK)
 # {
@@ -141,7 +152,7 @@ Authorization: {{adminToken}}
 #
 # Parámetros de Ruta:
 #   - vendorId: El ID del vendedor.
-GET {{baseUrl}}/payment/dashboard/vendor/{{vendorId}}
+GET {{baseUrl}}/payments/dashboard/vendor/{{vendorId}}
 Authorization: {{token}}
 
 ### Respuesta Ejemplo (200 OK)
@@ -214,7 +225,7 @@ Authorization: {{token}}
 # Estadísticas generales del servicio de notificaciones push.
 # **Requiere permisos de Administrador.**
 GET {{baseUrl}}/push-notifications/admin/stats
-Authorization: {{adminToken}}
+Authorization: {{token}}
 
 ### Respuesta Ejemplo (200 OK)
 # {
