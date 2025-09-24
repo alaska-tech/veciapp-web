@@ -132,8 +132,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
     {
       key: `/v/home`,
       icon: React.createElement(Home),
-      label: <Link href="/v/home">Inicio</Link>,
-      children: undefined,
+      label: <Link href="/v/home">Inicio</Link>
     },
     {
       key: `sub-management`,
@@ -143,22 +142,18 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/v/orders`,
           icon: React.createElement(ShoppingCart),
-          label: <Link href="/v/orders">Pedidos</Link>,
-          children: undefined,
-        },   
+          label: <Link href="/v/orders">Pedidos</Link>
+        },
         {
           key: `/v/products`,
           icon: React.createElement(PackageOpen),
-          
-          label: <Link href="/v/products">Productos y servicios</Link>,
-          children: undefined,
+          label: <Link href="/v/products">Productos y servicios</Link>
         },
         {
           key: `/v/branches`,
           icon: React.createElement(Store),
-          label: <Link href="/v/branches">Tiendas</Link>,
-          children: undefined,
-        },
+          label: <Link href="/v/branches">Tiendas</Link>
+        }
       ],
     },
   ],
@@ -232,32 +227,46 @@ function DashboardLayout({
   const desktopLayout = (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
-        collapsible
-        onCollapse={(collapsed) => setSideMenuCollapsed(collapsed)}
+        collapsed={sideMenuCollapsed}
         theme="light"
         width={SIDER_WIDTH["EXPANDED"]}
         style={{
-          overflow: "auto",
-          height: "calc(100vh - 50px)",
+          overflowY: "auto",
+          overflowX: "hidden",
+          height: "100vh",
           position: "fixed",
           top: 0,
           left: 0,
+          minWidth: 120,
           zIndex: 1000,
         }}
       >
         <div>
-          <Image
-            src={"/images/logo.png"}
-            alt={"veciapp-logo"}
-            width={100}
-            height={60}
-            style={{
-              width: "auto",
-              objectFit: "cover",
-              display: "flex",
-              margin: "16px auto",
-            }}
-          ></Image>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            padding: '16px',
+            gap: '8px'
+          }}>
+            <Image
+              src={"/images/logo.png"}
+              alt={"veciapp-logo"}
+              width={100}
+              height={60}
+              style={{
+                width: "auto",
+                objectFit: "cover",
+                height: "40px"
+              }}
+            />
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={() => setSideMenuCollapsed(prev => !prev)}
+              style={{ padding: 0 }}
+            />
+          </div>
           {!sideMenuCollapsed && (
             <Typography.Title
               level={3}
@@ -268,17 +277,27 @@ function DashboardLayout({
           )}
           <AutoMenu items={lateralMenuItems[router.pathname.split("/")[1]]} />
         </div>
-        <ProfileButton
-          width={
-            sideMenuCollapsed
-              ? SIDER_WIDTH["COLLAPSED"]
-              : SIDER_WIDTH["EXPANDED"]
-          }
-          user={userSession.data || ({} as User)}
-          dropdownProps={{
-            menu: dropdownMenu,
-          }}
-        />
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0,
+          width: '100%', 
+          padding: '16px',
+          background: 'white',
+          borderTop: '1px solid #f0f0f0'
+        }}>
+          <ProfileButton
+            width={
+              sideMenuCollapsed
+                ? SIDER_WIDTH["COLLAPSED"]
+                : SIDER_WIDTH["EXPANDED"]
+            }
+            user={userSession.data || ({} as User)}
+            dropdownProps={{
+              menu: dropdownMenu,
+            }}
+          />
+        </div>
       </Sider>
       <Layout
         style={{

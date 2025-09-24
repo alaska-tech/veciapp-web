@@ -1,0 +1,15 @@
+.profile-button:hover {
+  background-color: #f0f7ff !important;
+}
+
+.profile-button:active {
+  background-color: #e6f4ff !important;
+}
+
+.profile-button {
+  cursor: pointer;
+}
+
+.profile-button:hover .user-name {
+  color: #175FBE;
+}

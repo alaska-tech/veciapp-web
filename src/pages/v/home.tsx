@@ -1,10 +1,11 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Row, Col, Card, Divider, Typography, Statistic, Button, Alert, Badge } from 'antd';
+import { Row, Col, Card, Divider, Typography, Statistic, Button, Alert, Badge, Table, Tag } from 'antd';
 import React, { ReactElement, useState, useEffect } from 'react'
 import { color, motion } from "framer-motion";
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { useBranchAction } from "@/actions/branch.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
+import { useStatisticAction } from "@/actions/statistics.action";
 import { Rocket, ShoppingCart, Store, DollarSign } from "lucide-react";
 import { useRouter } from 'next/router';
 
@@ -37,28 +38,21 @@ const Home = () => {
   const branchActions = useBranchAction();
   const [summary, setSummary] = useState<VendorSummary | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+
+
+
+  // Obtener estadísticas del dashboard
+  const { getVendorStatistic } = useStatisticAction();
+  const dashboardQuery = getVendorStatistic({ 
+    vendorId: user?.foreignPersonId 
+  });
 
   useEffect(() => {
-    setLoading(true);
-    fetch('http://localhost:3001/api/v1/payments/dashboard/vendor/08f6ec09-0db8-4e7a-a0f3-209f16f4ee20', {
-      headers: {
-        Authorization: 'Bearer TU_TOKEN_AQUI'
-      }
-    })
-      .then(res => res.json())
-      .then((data: VendorStatisticResponse) => {
-        setSummary(data.summary);
-        setTransactions(data.recentTransactions || []);
-      })
-      .catch(() => {
-        setSummary(null);
-        setTransactions([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+    if (dashboardQuery.data?.data) {
+      setSummary(dashboardQuery.data.data.summary);
+      setTransactions(dashboardQuery.data.data.recentTransactions || []);
+    }
+  }, [dashboardQuery.data]);
 
   // Obtener datos de productos del vendor actual
   const productsQuery = productServiceActions.getProductServicesPaginated({
@@ -252,48 +246,79 @@ const Home = () => {
           </motion.div>
         </Col>
       </Row> 
+          <Title level={4} style={{ marginBottom: 16, color: '#175FBE' }}>
+            Transacciones Recientes
+          </Title>
 
-      <Card style={{ borderRadius: "12px", overflow: "hidden" }}>
-        <Title level={4} style={{ marginBottom: 16, color: '#175FBE' }}>
-          Transacciones Recientes
-        </Title>
-        {loading && <p>Cargando transacciones...</p>}
-        {!loading && transactions.length === 0 && <p>No hay transacciones recientes</p>}
-        {!loading && transactions.length > 0 && (
-          <Row gutter={[16, 16]}>
-            {transactions.map(tx => (
-              <Col xs={24} sm={12} md={8} key={tx.id}>
-                <Card size="small" bordered={true} style={{ borderRadius: '8px' }}>
-                  <Row justify="space-between" align="middle" style={{ marginBottom: 8 }}>
-                    <Col>
-                      <Statistic
-                        value={tx.amount}
-                        prefix={<DollarSign />}
-                        valueStyle={{ color: '#35B675', fontWeight: '700' }}
-                        suffix="COP"
-                      />
-                    </Col>
-                    <Col>
-                      <Badge
-                        status={tx.state === 'completed' ? 'success' : tx.state === 'pending' ? 'warning' : 'default'}
-                        text={tx.state.charAt(0).toUpperCase() + tx.state.slice(1)}
-                      />
-                    </Col>
-                  </Row>
-                  <Divider style={{ margin: '8px 0' }} />
-                  <Paragraph style={{ margin: 0 }}>
-                    <strong>Proveedor:</strong> {tx.provider}
-                  </Paragraph>
-                  <Paragraph style={{ margin: 0 }}>
-                    <strong>Tipo:</strong> {tx.type}
-                  </Paragraph>
-                  <Paragraph style={{ margin: 0, fontSize: 12, color: '#888' }}>
-                    {new Date(tx.createdAt).toLocaleString()}
-                  </Paragraph>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+      <Card 
+        style={{
+          
+          borderRadius: "12px",
+          overflow: "hidden" 
+        }}
+        bodyStyle={{ padding: 0 }}
+      >
+        {dashboardQuery.isLoading && <p>Cargando transacciones...</p>}
+        {!dashboardQuery.isLoading && transactions.length === 0 && <p>No hay transacciones recientes</p>}
+        {!dashboardQuery.isLoading && transactions.length > 0 && (
+          <Table
+            dataSource={transactions.map(tx => ({
+              key: tx.id,
+              id: tx.id,
+              customer: tx.provider,
+              status: tx.state.charAt(0).toUpperCase() + tx.state.slice(1),
+              amount: `$${tx.amount.toLocaleString('es-CO')}`,
+              date: new Date(tx.createdAt).toLocaleDateString('es-CO'),
+              type: tx.type
+            }))}
+            columns={[
+              { 
+                title: 'ID Transacción', 
+                dataIndex: 'id', 
+                key: 'id',
+                width: 140 
+              },
+              { 
+                title: 'Tienda/Sucursal', 
+                dataIndex: 'customer', 
+                key: 'customer' 
+              },
+              { 
+                title: 'Tipo', 
+                dataIndex: 'type', 
+                key: 'type' 
+              },
+              { 
+                title: 'Estado', 
+                dataIndex: 'status', 
+                key: 'status',
+                render: (status: string) => (
+                  <Tag 
+                    color={
+                      status === 'Completed' ? 'success' : 
+                      status === 'Pending' ? 'warning' : 'error'
+                    }
+                  >
+                    {status}
+                  </Tag>
+                )
+              },
+              { 
+                title: 'Monto', 
+                dataIndex: 'amount', 
+                key: 'amount',
+                align: 'right' as const
+              },
+              { 
+                title: 'Fecha', 
+                dataIndex: 'date', 
+                key: 'date',
+                width: 120
+              }
+            ]}
+            pagination={{ pageSize: 5 }}
+            rowKey="id"
+          />
         )}
       </Card>
 
