@@ -21,6 +21,7 @@ import {
   PackageOpen, 
   ShoppingCart,
   Store,
+  GitCompareArrows,
 
 } from "lucide-react";
 import Image from "next/image";
@@ -53,18 +54,18 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   a: [
     {
       key: `/a/home`,
-      icon: React.createElement(HomeOutlined),
+      icon: React.createElement(Home),
       label: <Link href="/a/home">Inicio</Link>,
       children: undefined,
     },
     {
       key: `sub-users`,
-      label: "Veciproveedores",
+      label: "Usuarios",
       type: "group",
       children: [
         {
           key: `/a/vendors`,
-          icon: React.createElement(ShopOutlined),
+          icon: React.createElement(Store),
           label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
@@ -107,9 +108,9 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         },
         {
           key: `/a/change-requests`,
-          disabled: true,
-          icon: React.createElement(PullRequestOutlined),
-          label: <Link href="/a/change-requests">Solicitudes de cambio</Link>,
+          
+          icon: React.createElement(GitCompareArrows),
+          label: <Link href="/a/change-requests">Solicitudes</Link>,
           children: undefined,
         },    
       ],
