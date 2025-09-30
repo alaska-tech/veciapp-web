@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Row, Col, Card, Divider, Typography, Statistic, Button, Alert, Badge, Table, Tag } from 'antd';
+import { Row, Col, Card, Typography, Statistic, Button, Alert, Table, Tag } from 'antd';
 import React, { ReactElement, useState, useEffect } from 'react'
 import { color, motion } from "framer-motion";
 import { useProductServiceAction } from "@/actions/productservice.action";
@@ -139,9 +139,10 @@ const Home = () => {
           type="info"
           showIcon={false}
           style={{
-            backgroundColor: '#3385f01a',
-            border: '1px solid #175FBE',
+            backgroundColor: '#fef9f3',
+            border: '1px solid #ffd6a5',
             borderRadius: '12px',
+            overflow: 'hidden',
             padding: 16
           }}
         />

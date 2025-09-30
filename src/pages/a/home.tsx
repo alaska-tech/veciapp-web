@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Card, Space, Typography, Statistic, Row, Col } from "antd";
+import { Card, Typography, Statistic, Row, Col ,Button} from "antd";
 import React, { ReactElement } from "react";
 import { motion } from "framer-motion";
 import { useVendorAction } from "@/actions/vendor.action";
@@ -11,10 +11,13 @@ import {
   AppstoreOutlined, 
   DollarOutlined 
 } from "@ant-design/icons";
+import { Heading , Bell} from "lucide-react";
+import {useRouter} from "next/router";
 
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
+  const router = useRouter()
   const vendorActions = useVendorAction();
   const customerActions = useCustomerAction();
   const branchActions = useBranchAction();
@@ -32,6 +35,17 @@ const Home = () => {
   const totalBranches = branchesQuery.data?.data.meta.total || 0;
 
   // Datos de pagos (placeholder por ahora)
+    // Estado para cambios pendientes
+  const [pendingChangesCount, setPendingChangesCount] = React.useState(0);
+
+  // TODO: Aquí deberías hacer una llamada al API para obtener los cambios pendientes
+  // Ejemplo:
+  // const changesQuery = useChangeRequestAction().getPendingChanges();
+  // useEffect(() => {
+  //   if (changesQuery.data?.data) {
+  //     setPendingChangesCount(changesQuery.data.data.length);
+  //   }
+  // }, [changesQuery.data]);
   const totalPayments = 0; // TODO: Implementar cuando esté disponible
 
   const dashboardCards = [
@@ -71,63 +85,100 @@ const Home = () => {
       maxWidth: '100%',
       margin: '0 auto'
     }}>
-      {/* Cards Container - Responsive layout */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%'
-      }}>
-        <Space 
-          size={[16, 24]} 
-          wrap 
+{/* Banner de Cambios Pendientes */}
+{/* Banner de Cambios Pendientes */}
+<motion.div
+  initial={{ opacity: 0, y: 24 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeInOut" }}
+  style={{ marginBottom: '24px' }}
+>
+  <Card
+    style={{
+      backgroundColor: '#fef9f3',
+      border: '1px solid #ffd6a5',
+      borderRadius: '12px',
+      overflow: 'hidden'
+    }}
+  >
+    <Row align="middle" gutter={[16, 16]}>
+      {/* Columna del icono */}
+      <Col xs={24} sm={2} style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{
+          backgroundColor: '#ffe4c4',
+          borderRadius: '50%',
+          width: '48px',
+          height: '48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Bell size={24} color="#ff8c42" />
+        </div>
+      </Col>
+
+      {/* Columna del contenido */}
+      <Col xs={24} sm={22}>
+        <Title level={4} style={{ margin: 0, color: '#333' }}>
+          {pendingChangesCount} {pendingChangesCount === 1 ? 'cambio pendiente' : 'cambios pendientes'} para revisar
+        </Title>
+        <Paragraph style={{ margin: '8px 0 16px 0', color: '#666' }}>
+          Haz clic aquí para revisar y aprobar los cambios enviados por los proveedores.
+        </Paragraph>
+        <Button 
+          type="primary" 
           style={{
-            justifyContent: 'center',
-            width: '100%',
-            maxWidth: '1200px'
+            backgroundColor: '#ff8c42',
+            color: '#fff',
+            border: 'none',
+            fontWeight: '600'
           }}
+          onClick={() => router.push('/a/change-requests')}
         >
-          {dashboardCards.map((card, index) => (
+          Revisar Cambios
+        </Button>
+      </Col>
+    </Row>
+  </Card>
+</motion.div>
+      <Title level={4} style={{ marginBottom: '24px' }}>Resumen General</Title>
+      {/* banner de nuecvos cambios */}
+      <Row gutter={[16, 16]}>
+        {dashboardCards.map((card, index) => (
+          <Col xs={24} sm={12} md={6} key={index}>
             <motion.div
-              key={index}
+              whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+              whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1, ease: "easeInOut" }}
-              whileHover={{ scale: 1.03, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
-              whileTap={{ scale: 0.98 }}
-              style={{ width: 'clamp(280px, calc(100vw - 48px), 320px)', minWidth: '280px' }}
+              transition={{ duration: 0.3, delay: index * 0.1, ease: "easeInOut" }}
+              style={{ borderRadius: "12px", overflow: "hidden" }}
             >
               <Card
                 loading={card.loading}
                 style={{ 
-                  width: '100%',
+                  borderRadius: "12px", 
+                  overflow: "hidden",
                   border: `1px solid ${card.color}20`,
-                  borderRadius: '12px'
+                  height: '100%'
                 }}
-                bodyStyle={{ padding: '24px' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                  {card.icon}
-                  <Title level={4} style={{ margin: '0 0 0 12px', color: card.color }}>
-                    {card.title}
-                  </Title>
-                </div>
                 <Statistic
+                  title={<span style={{ color: "#000" }}>{card.title}</span>}
                   value={card.value}
-                  valueStyle={{ 
-                    fontSize: '32px', 
-                    fontWeight: 'bold',
-                    color: card.color 
+                  prefix={card.icon}
+                  valueStyle={{
+                    color: card.color,
+                    fontSize: "32px",
+                    fontWeight: "700"
                   }}
                   suffix={card.title === "Pagos Procesados" ? " COP" : ""}
                 />
-                <Paragraph style={{ margin: '8px 0 0 0', color: '#666' }}>
-                  {card.loading ? "Cargando..." : "Actualizado recientemente"}
-                </Paragraph>
               </Card>
             </motion.div>
-          ))}
-        </Space>
-      </div>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 };

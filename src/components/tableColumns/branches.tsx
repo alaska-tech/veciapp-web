@@ -46,7 +46,11 @@ export const branchesTableColumns: TableColumnsType<Branch> = [
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
-            href={`https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`}
+            href={
+          !record.location?.coordinates?.at(1) && !record.location?.coordinates?.at(0)
+            ? ""
+            : `https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`
+        }
             target="_blank"
             rel="noopener noreferrer"
           >

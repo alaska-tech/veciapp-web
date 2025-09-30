@@ -22,6 +22,11 @@ import {
   ShoppingCart,
   Store,
   GitCompareArrows,
+  Users,
+  Building2,
+  DollarSign,
+  Settings,
+  Settings2,
 
 } from "lucide-react";
 import Image from "next/image";
@@ -71,13 +76,13 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         },
         {
           key: `/a/branches`,
-          icon: React.createElement(AppstoreOutlined),
+          icon: React.createElement(Building2),
           label: <Link href="/a/branches">Tiendas</Link>,
           children: undefined,
         },
         {
           key: `/a/products`,
-          icon: React.createElement(AppleOutlined),
+          icon: React.createElement(PackageOpen),
           label: <Link href="/a/products">Productos y servicios</Link>,
           children: undefined,
         },
@@ -90,19 +95,19 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       children: [
         {
           key: `/a/users`,
-          icon: React.createElement(TeamOutlined),
+          icon: React.createElement(Users),
           label: <Link href="/a/users">Clientes</Link>,
           children: undefined,
         },
         {
           key: `/a/serviceOrders`,
-          icon: React.createElement(ShoppingOutlined),
+          icon: React.createElement(ShoppingCart),
           label: <Link href="/a/serviceOrders">Pedidos</Link>,
           children: undefined,
         },
         {
           key: `/a/payments`,
-          icon: React.createElement(DollarOutlined),
+          icon: React.createElement(DollarSign),
           label: <Link href="/a/payments">Pagos</Link>,
           children: undefined,
         },
@@ -122,7 +127,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       children: [
         {
           key: `/a/configuration`,
-          icon: React.createElement(SettingOutlined),
+          icon: React.createElement(Settings),
           label: <Link href="/a/configuration">Parámetros</Link>,
           children: undefined,
         },
@@ -246,21 +251,23 @@ function DashboardLayout({
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: 'space-between',
+            justifyContent: sideMenuCollapsed ? 'center' : 'space-between',
             padding: '16px',
             gap: '8px'
           }}>
-            <Image
-              src={"/images/logo.png"}
-              alt={"veciapp-logo"}
-              width={100}
-              height={60}
-              style={{
-                width: "auto",
-                objectFit: "cover",
-                height: "40px"
-              }}
-            />
+            {!sideMenuCollapsed && (
+              <Image
+                src={"/images/logo.png"}
+                alt={"veciapp-logo"}
+                width={100}
+                height={60}
+                style={{
+                  width: "auto",
+                  objectFit: "cover",
+                  height: "40px"
+                }}
+              />
+              )}
             <Button
               type="text"
               icon={<MenuOutlined />}
