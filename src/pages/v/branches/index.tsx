@@ -14,6 +14,7 @@ import {
   TableColumnsType,
   Dropdown,
   Divider,
+  Tooltip
 } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
@@ -41,9 +42,6 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />} wrap>
-          <Link href={`/v/products/byBranch/${record.id}?name=${record.name}`}>
-            Inventario
-          </Link>
           <Link href={`/v/branches/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
@@ -52,7 +50,23 @@ const Users = () => {
             menu={{
               items: [
                 {
+                  key: "1",
+                  label: (
+                    <Link href={`/v/products/byBranch/${record.id}?name=${record.name}`}>
+                      Inventario
+                    </Link>
+                  ),
+                },
+                {
                   key: "2",
+                  label: (
+                    <Link href={`/v/branches/edit/${record.id}?name=${record.name}`}>
+                      Editar
+                    </Link>
+                  ),
+                },
+                {
+                  key: "3",
                   label: (
                     <AsyncButton
                       onClick={() => {
@@ -81,12 +95,16 @@ const Users = () => {
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
       <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button
-          href={`/v/branches/newBranch?name=${user?.fullName}`}
-          icon={<AppstoreAddOutlined />}
-        >
-          Nueva tienda
-        </Button>
+        {/* Limit to create only one branch per vendor */}
+        <Tooltip title={(branchQuery.data?.data.meta.total || 0) >= 1 ? "No puedes crear más tiendas" : ""}>
+          <Button
+            href={`/v/branches/newBranch?name=${user?.fullName}`}
+            icon={<AppstoreAddOutlined />}
+            disabled={(branchQuery.data?.data.meta.total || 0) >= 1}
+          >
+            Nueva tienda
+          </Button>
+        </Tooltip>
       </Space>
       <Table<DataType>
         columns={columns}

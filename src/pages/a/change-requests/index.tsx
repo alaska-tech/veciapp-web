@@ -1,58 +1,65 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Row, Col, Card, Typography, Table, Button, Tag, Space, message, Input } from 'antd';
 import { useRouter } from 'next/router';
 import { SearchOutlined } from "@ant-design/icons"; // 👈 mejor usar de antd en lugar de lucide aquí
 
+import { mockChangesApi } from "@/services/mockChangesApi";
+
 const { Title } = Typography;
 
 type ChangeRequest = {
-  id: string;
+  id: number;
   vendorName: string;
   type: string;
   status: 'pendiente' | 'aprobado' | 'rechazado';
   createdAt: string;
 };
 
-const mockRequests: ChangeRequest[] = [
-  {
-    id: '1',
-    vendorName: 'Tienda Don Pepe',
-    type: 'Creación de tienda',
-    status: 'pendiente',
-    createdAt: '2025-09-25',
-  },
-  {
-    id: '2',
-    vendorName: 'Servicios Juanita',
-    type: 'Edición de producto',
-    status: 'aprobado',
-    createdAt: '2025-09-20',
-  },
-  {
-    id: '3',
-    vendorName: 'Boutique Ana',
-    type: 'Cambio en sucursal',
-    status: 'rechazado',
-    createdAt: '2025-09-18',
-  },
-];
 
 const ChangeRequestsPage = () => {
   const router = useRouter();
+  const [requests, setRequests] = useState<ChangeRequest[]>([]);
 
-  const handleApprove = (id: string) => {
+  useEffect(() => {
+    mockChangesApi.getChanges().then((data: any[]) => {
+      // Map mock fields to ChangeRequest shape
+      const statusMap: Record<string, ChangeRequest['status']> = {
+        pending: 'pendiente',
+        approved: 'aprobado',
+        rejected: 'rechazado',
+      };
+      const typeMap: Record<string, string> = {
+        address: 'Dirección',
+        phone: 'Teléfono',
+        name: 'Nombre',
+        // add more entityType mappings as needed
+      };
+      const mapped = data.map(item => ({
+        id: item.id,
+        vendorName: item.vendorId, // Map vendorId to vendorName
+        type: typeMap[item.entityType] || item.entityType,
+        status: statusMap[item.status] || item.status,
+        createdAt: item.createdAt,
+      }));
+      setRequests(mapped);
+    });
+  }, []);
+
+  const handleApprove = (id: number) => {
     message.loading({ content: 'Aprobando...', key: `approve-${id}` });
-    setTimeout(() => {
+    mockChangesApi.updateChangeStatus(id, "approved").then(() => {
+      setRequests(prev => prev.filter(req => req.id !== id));
       message.success({ content: 'Solicitud aprobada', key: `approve-${id}`, duration: 2 });
-    }, 800);
+    });
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = (id: number) => {
     message.loading({ content: 'Rechazando...', key: `reject-${id}` });
-    setTimeout(() => {
+    mockChangesApi.updateChangeStatus(id, "rejected").then(() => {
+      setRequests(prev => prev.filter(req => req.id !== id));
       message.error({ content: 'Solicitud rechazada', key: `reject-${id}`, duration: 2 });
-    }, 800);
+    });
   };
 
   const columns = [
@@ -127,7 +134,7 @@ const ChangeRequestsPage = () => {
             {/* 📋 Tabla */}
             <Table
               rowKey="id"
-              dataSource={mockRequests}
+              dataSource={requests}
               columns={columns}
               pagination={{ pageSize: 10 }}
             /> 

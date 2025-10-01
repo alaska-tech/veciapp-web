@@ -5,6 +5,8 @@ import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
 
+import { mockChangesApi } from "@/services/mockChangesApi"; // Import the mockChangesApi for demonstration
+
 const NewFormDynamic = dynamic(
   () =>
     import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
@@ -22,9 +24,15 @@ const Index = () => {
     <Space direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
-          await create.mutateAsync({ body: values, vendorId: vendorId });
+          await mockChangesApi.createChange({
+            vendorId,
+            entityType: "store",
+            action: "create",
+            payload: values,
+          });
+          alert("Tu solicitud fue enviada para revisión ✅");
         }}
-        loading={create.isPending}
+        loading={false}
         vendorId={vendorId}
       />
     </Space>
