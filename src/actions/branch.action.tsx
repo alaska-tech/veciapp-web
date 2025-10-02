@@ -80,12 +80,16 @@ export const useBranchAction = () => {
   const getBranchesPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page }) => {
+  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, search }) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/all?limit=${limit}&page=${page}`);
+        >(`/branches/all?limit=${limit}&page=${page}`,{
+          params:{
+            ...search
+          }
+        });
         console.log(response);
         return response.data;
       } catch (error) {
@@ -96,12 +100,18 @@ export const useBranchAction = () => {
   const getBranchesByVendorIdPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, vendorId }) => {
+  >([QUERY_KEY_BRANCH] as QueryKey, ({ limit, page, vendorId, search }) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`);
+        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`,
+          {
+            params: {
+              ...search,
+            },
+          }
+        );
         console.log(response);
         return response.data;
       } catch (error) {

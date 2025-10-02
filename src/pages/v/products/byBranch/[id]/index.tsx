@@ -1,7 +1,13 @@
 import { useProductServiceAction } from "@/actions/productservice.action";
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ProductService, WEEKDAY_LABEL } from "@/constants/models";
+import {
+  ProductService,
+  ProductServiceCategory,
+  productServiceState,
+  ProductServiceType,
+  WEEKDAY_LABEL,
+} from "@/constants/models";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Table,
@@ -22,32 +28,48 @@ import ChangeProductStateModal from "@/components/changeProductStateModal";
 import ChangeProductInventoryModal from "@/components/changeProductInventoryModal";
 import { PhotoUploadModal } from "@/components/forms/updateProductServicePhotos";
 import { ImagePreviewCardFlower } from "@/components/pure/ImagePreviewCardFlower";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
+import {
+  PRODUCT_CATEGORY_LABELS,
+  PRODUCT_STATE_TAG,
+  PRODUCT_TYPE_TAG,
+} from "@/constants/labels";
 
 type DataType = ProductService;
-const PRODUCT_TYPE_TAG: Record<string, any> = {
-  product: (
-    <Tag bordered={false} color="geekblue">
-      Producto
-    </Tag>
-  ),
-  service: (
-    <Tag bordered={false} color="magenta">
-      Servicio
-    </Tag>
-  ),
-};
-const PRODUCT_STATE_TAG: Record<string, any> = {
-  available: (
-    <Tag bordered={false} color="blue">
-      Disponible
-    </Tag>
-  ),
-  unavailable: (
-    <Tag bordered={false} color="default">
-      No disponible
-    </Tag>
-  ),
-};
+const searchFields: SearchFieldProps[] = [
+  {
+    label: "Nombre o descripción",
+    fieldName: "search",
+    type: "text",
+  },
+  {
+    label: "Estado",
+    fieldName: "state",
+    type: "options",
+    options: Object.entries(productServiceState).map(([key, value]) => ({
+      label: PRODUCT_STATE_TAG[value],
+      value: value,
+    })),
+  },
+  {
+    label: "Tipo",
+    fieldName: "type",
+    type: "options",
+    options: Object.entries(ProductServiceType).map(([key, value]) => ({
+      label: PRODUCT_TYPE_TAG[value],
+      value: value,
+    })),
+  },
+  {
+    label: "Categoría",
+    fieldName: "categoryId",
+    type: "options",
+    options: Object.entries(ProductServiceCategory).map(([key, value]) => ({
+      label: PRODUCT_CATEGORY_LABELS[value],
+      value: value,
+    })),
+  },
+];
 const Users = () => {
   const user = getUserInfo();
   const router = useRouter();
@@ -59,10 +81,16 @@ const Users = () => {
     total: 0,
   });
   const branchActions = useBranchAction();
+  const { SearchComponent, search } = SearchBar({ searchFields });
   const productsQuery = actions.getProductServicesByBranchIdPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
     branchId: id as string,
+    search: search.value
+      ? {
+          [search.fieldName]: search.value,
+        }
+      : {},
   });
   const branchQuery = branchActions.getBranchById(id as string);
   const columns: TableColumnsType<DataType> = [
@@ -193,7 +221,8 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        {SearchComponent}
         <Button
           href={`/v/products/byBranch/${id}/newProduct?name=${branchQuery.data?.name}`}
           icon={<PlusOutlined />}

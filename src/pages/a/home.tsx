@@ -24,7 +24,7 @@ const Home = () => {
   const totalVendors = vendorsQuery.data?.data.meta.total || 0;
 
   // Obtener datos de clientes
-  const customersQuery = customerActions.getCustomers();
+  const customersQuery = customerActions.getCustomers({});
   const totalCustomers = customersQuery.data?.data.meta.total || 0;
 
   // Obtener datos de tiendas
@@ -36,7 +36,7 @@ const Home = () => {
 
   const dashboardCards = [
     {
-      title: "Total Proveedores",
+      title: "Total Veci Proveedores",
       value: totalVendors,
       icon: <ShopOutlined style={{ fontSize: '24px', color: '#1890ff' }} />,
       color: '#1890ff',

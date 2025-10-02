@@ -69,13 +69,18 @@ const Index = () => {
             setTimeout(() => {
               resolve(true);
             }, 2000);
-          }).then(()=>{
-            message.success("Solicitud de cambio de información enviada");
-            setIsEditing(false);
-            form.resetFields();
-          },()=>{
-            message.error("Error al enviar la solicitud de cambio de información");
-          });
+          }).then(
+            () => {
+              message.success("Solicitud de cambio de información enviada");
+              setIsEditing(false);
+              form.resetFields();
+            },
+            () => {
+              message.error(
+                "Error al enviar la solicitud de cambio de información"
+              );
+            }
+          );
         },
       },
     });
@@ -183,7 +188,7 @@ const Index = () => {
             {inputType === "text" ? (
               <Input size="small" />
             ) : inputType === "textarea" ? (
-              <Input.TextArea size="small" />
+              <Input.TextArea size="small" rows={3} />
             ) : (
               <Radio.Group
                 options={options}
@@ -307,12 +312,6 @@ const Index = () => {
               >
                 <div style={{ textAlign: "center" }}>
                   <Title level={4} style={{ color: "white", margin: 0 }}>
-                    {VENDOR_STATE_LABELS[userData.state]}
-                  </Title>
-                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Status</Text>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <Title level={4} style={{ color: "white", margin: 0 }}>
                     {
                       VENDOR_IS_ACTIVE_LABELS[
                         (userData.isActive || "false").toString()
@@ -322,6 +321,12 @@ const Index = () => {
                   <Text style={{ color: "rgba(255,255,255,0.8)" }}>
                     Activación
                   </Text>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <Title level={4} style={{ color: "white", margin: 0 }}>
+                    {VENDOR_STATE_LABELS[userData.state]}
+                  </Title>
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>Estado</Text>
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <Title level={4} style={{ color: "white", margin: 0 }}>
@@ -384,17 +389,43 @@ const Index = () => {
                     editable={isEditing}
                   />
                   <InfoItem
+                    label="Activación"
+                    value={
+                      VENDOR_IS_ACTIVE_LABELS[
+                        (userData.isActive || "false").toString()
+                      ]
+                    }
+                    status={userData.isActive ? "success" : "error"}
+                    icon={<CheckCircleOutlined />}
+                  />
+                  <InfoItem
+                    label="Estado"
+                    value={VENDOR_STATE_LABELS[userData.state]}
+                    status={
+                      userData.state !== "suspended" ? "success" : "error"
+                    }
+                    icon={<CheckCircleOutlined />}
+                  />
+                  <InfoItem
+                    label="Email verificado"
+                    value={
+                      VENDOR_IS_EMAIL_VERIFIED_LABELS[
+                        (userData.isEmailVerified || "false").toString()
+                      ]
+                    }
+                    status={userData.isEmailVerified ? "success" : "warning"}
+                    icon={<CheckCircleOutlined />}
+                  />
+                  <InfoItem
                     label="Habeas Data confirmado"
-                    value={userData.isHabeasDataConfirm ? "Si" : "No"}
+                    value={
+                      VENDOR_IS_HABEAS_DATA_LABELS[
+                        (userData.isHabeasDataConfirm || "false").toString()
+                      ]
+                    }
                     status={
                       userData.isHabeasDataConfirm ? "success" : "warning"
                     }
-                    formFieldName="isHabeasDataConfirm"
-                    inputType="radio"
-                    options={[
-                      { label: "Si", value: "true" },
-                      { label: "No", value: "false" },
-                    ]}
                     icon={<SafetyCertificateOutlined />}
                   />
                 </Col>
@@ -404,6 +435,12 @@ const Index = () => {
                     value={userData.identification || "No disponible"}
                     formFieldName="identification"
                     inputType="text"
+                    icon={<IdcardOutlined />}
+                  />
+
+                  <InfoItem
+                    label="Código de identificación"
+                    value={userData.internalCode || "No disponible"}
                     icon={<IdcardOutlined />}
                   />
                   <InfoItem
@@ -423,34 +460,10 @@ const Index = () => {
                     value={userData.bio}
                     fallbackValue="No disponible"
                     formFieldName="bio"
-                    inputType="text"
+                    inputType="textarea"
                     icon={<GlobalOutlined />}
                     editable={isEditing}
                   />
-                  <InfoItem
-                    label="Estado"
-                    value={userData.isActive ? "Activo" : "Inactivo"}
-                    status={userData.isActive ? "success" : "error"}
-                    icon={<CheckCircleOutlined />}
-                  />
-                </Col>
-              </Row>
-
-              <Row gutter={[16, 0]}>
-                <Col xs={24} md={12}>
-                  <InfoItem
-                    label="Código de identificación"
-                    value={userData.internalCode || "No disponible"}
-                    icon={<IdcardOutlined />}
-                  />
-                  <InfoItem
-                    label="Email verificado"
-                    value={userData.isEmailVerified ? "Si" : "No"}
-                    status={userData.isEmailVerified ? "success" : "warning"}
-                    icon={<CheckCircleOutlined />}
-                  />
-                </Col>
-                <Col xs={24} md={12}>
                   <InfoItem
                     label="Dirección"
                     value={userData.address || "No disponible"}
@@ -517,7 +530,8 @@ const Index = () => {
                   <div style={{ padding: "0 24px 24px" }}>
                     <Paragraph style={{ color: "#666", marginBottom: 16 }}>
                       Esta información es sensible y se mantiene segura. Solo se
-                      muestra cuando es necesario para transacciones.
+                      muestra cuando es estrictamente necesario para
+                      transacciones.
                     </Paragraph>
                     <Row gutter={[16, 0]}>
                       <Col xs={24} md={12}>

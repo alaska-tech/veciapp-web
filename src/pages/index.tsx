@@ -5,15 +5,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { LoginOutlined } from "@ant-design/icons";
 import useAuthAction from "@/actions/auth.action";
-import { JWT_KEY, LOGGED_USER_INFO_KEY } from "@/constants/constants";
+import { LOGGED_USER_INFO_KEY } from "@/constants/constants";
 import {
   setRefreshToken,
   setToken,
   setUserInfo,
-  clearAllInfoFromLocalStorage,
 } from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
+import { decodeJWT } from "../../utils/decodeJwt";
+import { User } from "@/constants/models";
 
 export type LogInForm = {
   email: string;
@@ -34,16 +35,33 @@ export default function Home() {
   const queryClient = useQueryClient();
   const { message } = App.useApp();
   const userSession = authActions.userSession;
-  
-  const navigateToRole = useCallback((role: string) => {
-    if (role === "admin") {
-      router.push("/a/home");
-    } else if (role === "vendor") {
-      router.push("/v/home");
-    }
-  }, [router]);
+  const { token, refreshToken } = router.query;
+  const navigateToRole = useCallback(
+    (role: string) => {
+      if (role === "admin") {
+        router.push("/a/home");
+      } else if (role === "vendor") {
+        router.push("/v/home");
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
+    if (!!token && !!refreshToken) {
+      const res = decodeJWT(token as string);
+      const id = res?.payload?.foreignPersonId;
+      if (!id) {
+        router.replace("/");
+        return;
+      }
+      setUserInfo({ foreignPersonId: id } as User);
+      setToken(token as string);
+      setRefreshToken(refreshToken as string);
+      router.replace("/");
+      navigateToRole("vendor");
+      return;
+    }
     const role = userSession.data?.role;
     if (role) {
       navigateToRole(role);
@@ -96,6 +114,10 @@ export default function Home() {
           gap: 12,
           width: "100%",
           maxWidth: 400,
+        }}
+        initialValues={{
+          email: "julianangulop@gmail.com",
+          password: "123456",
         }}
       >
         <Form.Item<LogInForm>

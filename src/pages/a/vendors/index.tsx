@@ -1,6 +1,7 @@
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AsyncButton from "@/components/pure/AsyncButton";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import { VENDOR_STATUS_TAG_PROPS } from "@/constants/labels";
 import { Vendor } from "@/constants/models";
 import {
@@ -17,8 +18,23 @@ import {
   Table,
   TableColumnsType,
   Tag,
+  Typography,
 } from "antd";
 import React, { ReactElement, useState } from "react";
+
+const searchFields: SearchFieldProps[] = [
+  { label: "Código", fieldName: "internalCode", type: "text" },
+  {
+    label: "Nombre",
+    fieldName: "name",
+    type: "text",
+  },
+  {
+    label: "Documento de identidad",
+    fieldName: "identification",
+    type: "text",
+  },
+];
 
 const getVendorStatusTagProps = (status: Vendor["state"]) => {
   return (
@@ -35,10 +51,17 @@ const Users = () => {
     total: 0,
   });
   const vendorActions = useVendorAction();
+  const { SearchComponent, search } = SearchBar({ searchFields });
+
   const vendorQuery = vendorActions.getVendors({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-  });;
+    search: search.value
+      ? {
+          [search.fieldName]: search.value,
+        }
+      : {},
+  });
   const deleteVendor = vendorActions.deleteVendor();
   const columns: TableColumnsType<Vendor> = [
     {
@@ -50,6 +73,14 @@ const Users = () => {
       title: "Nombre",
       dataIndex: "fullName",
       key: "fullName",
+      render: (fullName, record) => {
+        return (
+          <Space direction="vertical">
+            <Typography.Text>{fullName}</Typography.Text>
+            <Typography.Text type="secondary">{record.identification}</Typography.Text>
+          </Space>
+        );
+      },
     },
     {
       title: "Contacto",
@@ -124,7 +155,8 @@ const Users = () => {
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        {SearchComponent}
         <Button href="/a/vendors/newVendor" icon={<PlusOutlined />}>
           Crear nuevo proveedor
         </Button>

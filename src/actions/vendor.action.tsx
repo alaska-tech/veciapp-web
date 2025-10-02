@@ -61,12 +61,16 @@ export const useVendorAction = () => {
   const getVendors = queryEntityWithParameters<
     Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_VENDOR] as QueryKey, ({ limit, page }) => {
+  >([QUERY_KEY_VENDOR] as QueryKey, ({ limit, page, search }) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Vendor>>, { status: "Success" }>
-        >(`/vendors/list?limit=${limit}&page=${page}`);
+        >(`/vendors/list?limit=${limit}&page=${page}`, {
+          params: {
+            ...search,
+          },
+        });
         return response.data;
       } catch (error) {
         throw error;

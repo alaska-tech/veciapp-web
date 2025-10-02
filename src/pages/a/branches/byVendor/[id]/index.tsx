@@ -1,8 +1,6 @@
 import { getUserInfo } from "@/actions/localStorage.actions";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  Branch,
-} from "@/constants/models";
+import { Branch, BranchBusiness } from "@/constants/models";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Table,
@@ -18,8 +16,56 @@ import { useRouter } from "next/router";
 import { useBranchAction } from "@/actions/branch.action";
 import AsyncButton from "@/components/pure/AsyncButton";
 import { branchesTableColumns } from "@/components/tableColumns/branches";
+import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
+import {
+  BRANCH_IS_ACTIVE_LABELS,
+  BRANCH_TYPE_LABELS,
+} from "@/constants/labels";
 
 type DataType = Branch;
+
+const searchFields: SearchFieldProps[] = [
+  {
+    label: "Nombre",
+    fieldName: "name",
+    type: "text",
+  },
+  /*   {
+    label: "Ciudad",
+    fieldName: "city",
+    type: "text",
+  },
+  {
+    label: "Estado",
+    fieldName: "state",
+    type: "options",
+    options: Object.entries(BranchState).map(([key, value]) => ({
+      label: BRANCH_STATE_LABELS[value],
+      value: value,
+    })),
+  }, */
+  {
+    label: "Tipo de negocio",
+    fieldName: "businessType",
+    type: "options",
+    options: Object.entries(BranchBusiness).map(([key, value]) => ({
+      label: BRANCH_TYPE_LABELS[value],
+      value: value,
+    })),
+  },
+  {
+    label: "Estado de activación",
+    fieldName: "isActive",
+    type: "options",
+    options: Object.entries(BRANCH_IS_ACTIVE_LABELS).map(([key, value]) => {
+      return {
+        label: value,
+        value: key,
+      };
+    }),
+  },
+];
+
 const Users = () => {
   const user = getUserInfo();
   const router = useRouter();
@@ -31,10 +77,19 @@ const Users = () => {
     pageSize: 10,
     total: 0,
   });
-  const productsQuery = actions.getBranchesByVendorIdPaginated({
+  const { SearchComponent, search } = SearchBar({ searchFields });
+
+  const productsQuery = actions.getBranchesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: vendorId as string,
+    search: search.value
+      ? {
+          vendorId: vendorId as string,
+          [search.fieldName]: search.value,
+        }
+      : {
+          vendorId: vendorId as string,
+        },
   });
   const columns: TableColumnsType<DataType> = [
     ...branchesTableColumns,
@@ -84,7 +139,8 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        {SearchComponent}
         <Button
           type="default"
           href={`/a/branches/byVendor/${vendorId}/newBranch?name=${vendorName}`}

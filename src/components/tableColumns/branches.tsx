@@ -1,4 +1,9 @@
-import { BRANCH_STATE_LABELS } from "@/constants/labels";
+import {
+  BRANCH_IS_ACTIVE_LABELS,
+  BRANCH_STATE_LABELS,
+  BRANCH_TYPE_LABELS,
+  VENDOR_IS_ACTIVE_LABELS,
+} from "@/constants/labels";
 import {
   Branch,
   weekDay,
@@ -23,7 +28,7 @@ import { ImagePreviewCardFlower } from "../pure/ImagePreviewCardFlower";
 
 export const branchesTableColumns: TableColumnsType<Branch> = [
   {
-    title: "Sucursal",
+    title: "Nombre",
     key: "name",
     dataIndex: "name",
     render: (name, record) => {
@@ -41,7 +46,13 @@ export const branchesTableColumns: TableColumnsType<Branch> = [
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
-            href={`https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`}
+            href={
+              record.location?.coordinates &&
+              record.location?.coordinates?.at(0) &&
+              record.location?.coordinates?.at(1)
+                ? `https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`
+                : undefined
+            }
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -78,7 +89,10 @@ export const branchesTableColumns: TableColumnsType<Branch> = [
           layout="vertical"
         >
           <Descriptions.Item label="Tipo de negocio">
-            {record.businessType}
+            {BRANCH_TYPE_LABELS[record.businessType]}
+          </Descriptions.Item>
+          <Descriptions.Item label="Estado de activación">
+            {BRANCH_IS_ACTIVE_LABELS[record.isActive.toString()]}
           </Descriptions.Item>
           <Descriptions.Item label="Recogida en tienda">
             {record.isPickupAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
