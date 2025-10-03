@@ -99,8 +99,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
       }
       requiredMark={false}
       loading={props.loading}
-      preserveDataInCache={!hasInitialValues}
-      highligthOnChange={hasInitialValues}
+      preserveDataInCache={!hasInitialValues} 
     >
       {(formInstance, setAsTouched) => (
         <Row gutter={[24, 16]}>
