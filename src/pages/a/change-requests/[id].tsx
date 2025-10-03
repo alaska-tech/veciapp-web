@@ -1,73 +1,197 @@
 import { useRouter } from "next/router";
-import { Card, Typography, Descriptions, Button, Space, message } from "antd";
+import {
+  Card,
+  Typography,
+  Descriptions,
+  Button,
+  Space,
+  message,
+  Modal,
+  Input,
+} from "antd";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
+import { useChangeRequestAction } from "@/actions/changeRequest.action";
+import { ChangeRequest } from "@/constants/models";
 
 const { Title } = Typography;
+const { TextArea } = Input;
 
 const ChangeRequestDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const actions = useChangeRequestAction();
+  const rejectMutation = actions.rejectChangeRequest();
+  const approveMutation = actions.approveChangeRequest();
+  const requestQuery = actions.getChangeRequstById(id as string);
+  const request: ChangeRequest | undefined = requestQuery.data;
 
-  // 🔹 Datos quemados por ahora (ejemplo)
-  const request = {
-    id,
-    vendorName: "Tienda Ejemplo",
-    type: "Creación de Tienda",
-    status: "Pendiente",
-    submittedAt: "2025-09-20",
-    details: {
-      nombre: "Super Tienda VeciApp",
-      dirección: "Calle 123 #45-67",
-      teléfono: "3001234567",
-      email: "tienda@ejemplo.com",
-    },
+  // Estados para los modales
+  const [approveModalVisible, setApproveModalVisible] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [reason, setReason] = useState("");
+
+  const handleApprove = async () => {
+    await approveMutation.mutateAsync({
+      id: id as string,
+      body: { reason },
+    });
+    setApproveModalVisible(false);
+    setReason("");
   };
 
-  const handleApprove = () => {
-    message.success("Solicitud aprobada ✅");
+  const handleReject = async () => {
+    await rejectMutation.mutateAsync({
+      id: id as string,
+      body: { reason },
+    });
+    setRejectModalVisible(false);
+    setReason("");
   };
 
-  const handleReject = () => {
-    message.error("Solicitud rechazada ❌");
+  const showApproveModal = () => {
+    setReason("");
+    setApproveModalVisible(true);
   };
 
+  const showRejectModal = () => {
+    setReason("");
+    setRejectModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setApproveModalVisible(false);
+    setRejectModalVisible(false);
+    setReason("");
+  };
+
+  if (!request) {
+    return <div>Cargando...</div>;
+  }
+  if (!request) {
+    return <div>Solicitud no encontrada</div>;
+  }
   return (
-    <Card style={{ background: "#fff" }}>
-      <Title level={3}>Detalle de Solicitud</Title>
+    <>
+      <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
+        <Card>
+          <Title level={4}>Detalles de la Solicitud de Cambio</Title>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="ID">{request.id}</Descriptions.Item>
+            <Descriptions.Item label="Estado">
+              <span style={{ 
+                color: request.status === 'APPROVED' ? 'green' : 
+                       request.status === 'REJECTED' ? 'red' : 'orange',
+                fontWeight: 'bold'
+              }}>
+                {request.status === 'APPROVED' ? 'Aprobado' : 
+                 request.status === 'REJECTED' ? 'Rechazado' : 'Pendiente'}
+              </span>
+            </Descriptions.Item>
+            <Descriptions.Item label="Solicitante">{request.createdBy}</Descriptions.Item>
+            <Descriptions.Item label="Fecha de Solicitud">
+              {new Date(request.createdAt).toLocaleString()}
+            </Descriptions.Item>
+            <Descriptions.Item label="Tipo de Entidad" span={2}>
+              {request.entityType === 'STORE' ? 'Tienda' : 
+               request.entityType === 'VENDOR_PROFILE' ? 'Perfil de Vendedor' : 
+               'Producto o Servicio'}
+            </Descriptions.Item>
+            <Descriptions.Item label="ID de Entidad">{request.entityId}</Descriptions.Item>
+            <Descriptions.Item label="ID de Vendedor">{request.vendorId}</Descriptions.Item>
+            {request.adminId && (
+              <Descriptions.Item label="Administrador que procesó">{request.adminId}</Descriptions.Item>
+            )}
+            {request.reason && (
+              <Descriptions.Item label="Razón" span={2}>{request.reason}</Descriptions.Item>
+            )}
+          </Descriptions>
+        </Card>
 
-      <Descriptions bordered column={1} style={{ marginTop: 16 }}>
-        <Descriptions.Item label="ID">{request.id}</Descriptions.Item>
-        <Descriptions.Item label="Vendedor">
-          {request.vendorName}
-        </Descriptions.Item>
-        <Descriptions.Item label="Tipo">{request.type}</Descriptions.Item>
-        <Descriptions.Item label="Estado">{request.status}</Descriptions.Item>
-        <Descriptions.Item label="Fecha">{request.submittedAt}</Descriptions.Item>
-        <Descriptions.Item label="Nombre Tienda">
-          {request.details.nombre}
-        </Descriptions.Item>
-        <Descriptions.Item label="Dirección">
-          {request.details.dirección}
-        </Descriptions.Item>
-        <Descriptions.Item label="Teléfono">
-          {request.details.teléfono}
-        </Descriptions.Item>
-        <Descriptions.Item label="Email">
-          {request.details.email}
-        </Descriptions.Item>
-      </Descriptions>
+        <Card title="Cambios Solicitados">
+          <div style={{ marginBottom: '20px' }}>
+            <Title level={5}>Comparación de Valores</Title>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px', border: '1px solid #f0f0f0', backgroundColor: '#fafafa', width: '20%' }}>Campo</th>
+                  <th style={{ padding: '8px', border: '1px solid #f0f0f0', backgroundColor: '#fafafa', width: '40%' }}>Valor Anterior</th>
+                  <th style={{ padding: '8px', border: '1px solid #f0f0f0', backgroundColor: '#fafafa', width: '40%' }}>Valor Nuevo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(request.requestedChanges.newValues).map((key) => (
+                  <tr key={key}>
+                    <td style={{ padding: '8px', border: '1px solid #f0f0f0', fontWeight: 'bold' }}>{key}</td>
+                    <td style={{ padding: '8px', border: '1px solid #f0f0f0' }}>
+                      {typeof request.requestedChanges.oldValues[key] === 'object' 
+                        ? JSON.stringify(request.requestedChanges.oldValues[key], null, 2) 
+                        : String(request.requestedChanges.oldValues[key] || '-')}
+                    </td>
+                    <td style={{ padding: '8px', border: '1px solid #f0f0f0' }}>
+                      {typeof request.requestedChanges.newValues[key] === 'object' 
+                        ? JSON.stringify(request.requestedChanges.newValues[key], null, 2) 
+                        : String(request.requestedChanges.newValues[key] || '-')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <Space style={{ marginTop: 24 }}>
-        <Button type="primary" onClick={handleApprove}>
-          Aprobar
-        </Button>
-        <Button danger onClick={handleReject}>
-          Rechazar
-        </Button>
-        <Button onClick={() => router.back()}>Volver</Button>
-      </Space>
-    </Card>
+          {request.status === 'PENDING' && (
+            <Space>
+              <Button type="primary" onClick={showApproveModal}>
+                Aprobar
+              </Button>
+              <Button danger onClick={showRejectModal}>
+                Rechazar
+              </Button>
+            </Space>
+          )}
+        </Card>
+      </div>
+      {/* Modal para aprobar solicitud */}
+      <Modal
+        title="Aprobar Solicitud"
+        open={approveModalVisible}
+        onOk={handleApprove}
+        confirmLoading={approveMutation.isPending}
+        onCancel={handleCancel}
+        okText="Confirmar"
+        cancelText="Cancelar"
+      >
+        <p>¿Estás seguro que deseas aprobar esta solicitud?</p>
+        <TextArea
+          rows={4}
+          placeholder="Escribe la razón de aprobación (opcional)"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          style={{ marginTop: 16 }}
+        />
+      </Modal>
+
+      {/* Modal para rechazar solicitud */}
+      <Modal
+        title="Rechazar Solicitud"
+        open={rejectModalVisible}
+        onOk={handleReject}
+        confirmLoading={rejectMutation.isPending}
+        onCancel={handleCancel}
+        okText="Confirmar"
+        cancelText="Cancelar"
+      >
+        <p>¿Estás seguro que deseas rechazar esta solicitud?</p>
+        <TextArea
+          rows={4}
+          placeholder="Escribe la razón de rechazo"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          style={{ marginTop: 16 }}
+          required
+        />
+      </Modal>
+    </>
   );
 };
 

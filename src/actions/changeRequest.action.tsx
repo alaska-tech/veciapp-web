@@ -2,33 +2,25 @@ import { QueryKey, useQueryClient } from "@tanstack/react-query";
 import {
   mutateEntity,
   queryEntity,
+  queryEntityById,
   queryEntityWithParameters,
 } from "./action";
 import { AxiosError, AxiosResponse } from "axios";
-import { BaseAttributes, PaginatedResult, Response } from "@models";
+import {
+  BaseAttributes,
+  ChangeRequest,
+  PaginatedResult,
+  Response,
+} from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
+import { ChangeEvent } from "react";
 
-export interface ChangeRequest {
-  id: string;
-  vendorId: string;
-  requestedChanges: {
-    newValues: Record<string, any>;
-    oldValues: Record<string, any>;
-  };
-  entityType: "STORE" | "VENDOR_PROFILE" | "PRODUCT_AND_SERVICE";
-  entityId: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  adminId: string | null;
-  reason: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+const CHANGE_REQUEST_QUERY_KEY = "change-requests";
 export const QUERY_KEY_CHANGE_REQUEST = "changeRequests" as const;
 export const useChangeRequestAction = () => {
   const queryClient = useQueryClient();
   const { notification, message } = App.useApp();
-
 
   const getChangeRequests = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ChangeRequest>>, { status: "Success" }>,
@@ -37,7 +29,10 @@ export const useChangeRequestAction = () => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
-          Extract<Response<PaginatedResult<ChangeRequest>>, { status: "Success" }>
+          Extract<
+            Response<PaginatedResult<ChangeRequest>>,
+            { status: "Success" }
+          >
         >("/change-requests", {
           params: { ...search },
         });
@@ -59,7 +54,7 @@ export const useChangeRequestAction = () => {
           if (!body || !id) {
             throw new Error("No body or id provided");
           }
-          const response = await apiClient.put<
+          const response = await apiClient.post<
             Extract<Response<ChangeRequest>, { status: "Success" }>
           >(`/change-requests/${id}/approve`, body);
           return response;
@@ -100,7 +95,7 @@ export const useChangeRequestAction = () => {
           if (!body || !id) {
             throw new Error("No body or id provided");
           }
-          const response = await apiClient.put<
+          const response = await apiClient.post<
             Extract<Response<ChangeRequest>, { status: "Success" }>
           >(`/change-requests/${id}/reject`, body);
           return response;
@@ -130,5 +125,48 @@ export const useChangeRequestAction = () => {
     }
   );
 
-  return { getChangeRequests, approveChangeRequest, rejectChangeRequest }
-}
+  const getChangeRequstById = queryEntityById<
+    ChangeRequest,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([CHANGE_REQUEST_QUERY_KEY] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<ChangeRequest>, { status: "Success" }>
+        >(`/change-requests/${id}`);
+        return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+
+  const getChangeRequstByVendorId = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<ChangeRequest>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_CHANGE_REQUEST] as QueryKey, ({ ...search }) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<
+            Response<PaginatedResult<ChangeRequest>>,
+            { status: "Success" }
+          >
+        >("/change-requests", {
+          params: { ...search },
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
+
+  return {
+    getChangeRequests,
+    approveChangeRequest,
+    rejectChangeRequest,
+    getChangeRequstById,
+    getChangeRequstByVendorId,
+  };
+};
