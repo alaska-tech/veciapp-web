@@ -18,6 +18,11 @@ export const API_CONFIG = {
         VENDORS_STATS: '/vendors/stats',
         BRANCHES_STATS: '/branches/stats',
         DELIVERY_STATS: '/delivery/stats',
+
+        // Changes requests
+        CHANGE_REQUEST_LIST: '/change-requests?status=PENDING',
+        CHANGE_REQUEST_APPROVED: (id: string) => `/change-requests/${id}/approve`,
+        CHANGE_REQUEST_REJECTED: (id: string) => `/change-requests/${id}/reject`,
     },
     DEFAULT_HEADERS: {
         'Content-Type': 'application/json',

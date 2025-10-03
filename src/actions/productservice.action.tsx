@@ -305,13 +305,13 @@ export const useProductServiceAction = () => {
         });
       },
       onSuccess: async (data, variables, context) => {
-        const productService = data.data.data;
+        /* const productService = data.data.data;
         message.success({
           content: `Producto o servicio ${
             productService.name || ""
           } se actualizó correctamente`,
           duration: 4,
-        });
+        }); */
       },
     }
   );

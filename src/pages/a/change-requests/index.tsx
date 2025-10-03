@@ -1,84 +1,66 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Row, Col, Card, Typography, Table, Button, Tag, Space, message, Input } from 'antd';
+import { Row, Col, Card, Typography, Table, Button, Tag, Space, message, Input, Divider } from 'antd';
 import { useRouter } from 'next/router';
-import { SearchOutlined } from "@ant-design/icons"; // 👈 mejor usar de antd en lugar de lucide aquí
+import { SearchOutlined } from "@ant-design/icons";
 
 import { mockChangesApi } from "@/services/mockChangesApi";
+import { ChangeRequest, useChangeRequestAction } from "@/actions/changeRequest.action";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
-type ChangeRequest = {
-  id: number;
-  vendorName: string;
-  type: string;
-  status: 'pendiente' | 'aprobado' | 'rechazado';
-  createdAt: string;
-};
 
 
 const ChangeRequestsPage = () => {
   const router = useRouter();
-  const [requests, setRequests] = useState<ChangeRequest[]>([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const actions = useChangeRequestAction()
+  const query = actions.getChangeRequests({
+    limit: pagination.pageSize,
+    page: pagination.current, status: "PENDING"
+  });
+  const rejectMutation = actions.rejectChangeRequest()
+  const approveMutation = actions.approveChangeRequest()
 
-  useEffect(() => {
-    mockChangesApi.getChanges().then((data: any[]) => {
-      // Map mock fields to ChangeRequest shape
-      const statusMap: Record<string, ChangeRequest['status']> = {
-        pending: 'pendiente',
-        approved: 'aprobado',
-        rejected: 'rechazado',
-      };
-      const typeMap: Record<string, string> = {
-        address: 'Dirección',
-        phone: 'Teléfono',
-        name: 'Nombre',
-        // add more entityType mappings as needed
-      };
-      const mapped = data.map(item => ({
-        id: item.id,
-        vendorName: item.vendorId, // Map vendorId to vendorName
-        type: typeMap[item.entityType] || item.entityType,
-        status: statusMap[item.status] || item.status,
-        createdAt: item.createdAt,
-      }));
-      setRequests(mapped);
-    });
-  }, []);
 
-  const handleApprove = (id: number) => {
-    message.loading({ content: 'Aprobando...', key: `approve-${id}` });
-    mockChangesApi.updateChangeStatus(id, "approved").then(() => {
-      setRequests(prev => prev.filter(req => req.id !== id));
-      message.success({ content: 'Solicitud aprobada', key: `approve-${id}`, duration: 2 });
-    });
-  };
 
-  const handleReject = (id: number) => {
-    message.loading({ content: 'Rechazando...', key: `reject-${id}` });
-    mockChangesApi.updateChangeStatus(id, "rejected").then(() => {
-      setRequests(prev => prev.filter(req => req.id !== id));
-      message.error({ content: 'Solicitud rechazada', key: `reject-${id}`, duration: 2 });
-    });
-  };
 
   const columns = [
     {
-      title: 'Vendedor',
-      dataIndex: 'vendorName',
-      key: 'vendorName',
+      title: 'Elemento',
+      key: 'elementName',
+      render: (_: any, record: any) => {
+        // obtener nomrb desde newValues o oldValues
+        const newValues = record.requestedChanges?.newValues || {};
+        const oldValues = record.requestedChanges?.oldValues || {};
+        const name = newValues.name || oldValues.name || 'No disponible';
+        return name;
+      }
     },
     {
       title: 'Tipo de cambio',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'entityType',
+      key: 'entityType',
+      render: (entityType: string) => {
+        const typeMap: any = {
+          'PRODUCT_AND_SERVICE': 'Producto/Servicio',
+          'STORE': 'Tienda',
+          'VENDOR_PROFILE': 'Perfil de Vendedor'
+        };
+        return typeMap[entityType] || entityType;
+        }
     },
     {
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
       render: (status: ChangeRequest['status']) => {
-        const color = status === 'pendiente' ? 'orange' : status === 'aprobado' ? 'green' : 'red';
+        const color = status === 'PENDING' ? 'orange' : status === 'APPROVED' ? 'green' : 'red';
         return <Tag color={color}>{status.toUpperCase()}</Tag>;
       },
     },
@@ -86,7 +68,18 @@ const ChangeRequestsPage = () => {
       title: 'Fecha',
       dataIndex: 'createdAt',
       key: 'createdAt',
-    },
+      render: (date: string) => {
+        return dayjs(date).format("D MMMM YYYY hh:mm A")
+      }
+    }, {
+      title: "Acciones",
+      key: "actions",
+      render: (_: any, record: ChangeRequest) => (
+        <Space split={<Divider type="vertical" />}>
+          <a href={`/a/change-requests/${record.id}`}>Detalles</a>
+        </Space>
+      ),
+    },/* 
     {
       title: 'Acciones',
       key: 'actions',
@@ -95,53 +88,57 @@ const ChangeRequestsPage = () => {
           <Button onClick={() => router.push(`/a/change-requests/${record.id}`)}>
             Ver detalle
           </Button>
-          {record.status === 'pendiente' && (
+          {record.status === 'PENDING' && (
             <>
-              <Button type="primary" onClick={() => handleApprove(record.id)}>
+              <Button loading={approveMutation.isPending} type="primary" onClick={
+                async () => await approveMutation.mutateAsync({ id: record.id, body: { reason: "" } })}>
                 Aprobar
               </Button>
-              <Button danger onClick={() => handleReject(record.id)}>
+              <Button loading={rejectMutation.isPending} danger onClick={
+                async () => await rejectMutation.mutateAsync({ id: record.id, body: { reason: "" } })}>
                 Rechazar
               </Button>
             </>
           )}
         </Space>
       ),
-    },
+    }, */
   ];
-
-  return (
-    <div style={{ display: "block"}}>
-      <Row gutter={[16, 16]}>
-        <Col span={24}>
-          
-            <Space
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                margin: "16px 0",
-                width: "100%",
-              }}
-            >
-              <Input
-                placeholder="Buscar..."
-                prefix={<SearchOutlined />}
-                style={{ width: 300 }}
-              />
-              <Button>Filtrar por variante</Button>
-            </Space>
-
-            {/* 📋 Tabla */}
-            <Table
-              rowKey="id"
-              dataSource={requests}
-              columns={columns}
-              pagination={{ pageSize: 10 }}
-            /> 
-        </Col>
-      </Row>
-    </div>
-  );
+  return (<div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
+    <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <div
+        style={{
+          width: "100%",
+          justifyContent: "flex-end",
+          marginBottom: "24px",
+        }}
+      />
+    </Space>
+    <Table<ChangeRequest>
+      columns={columns}
+      rowKey={(record) => record.id}
+      dataSource={query.data?.data.data || []}
+      loading={query.isLoading}
+      onChange={(pag, _filters, _sorter) => {
+        setPagination({
+          ...pagination,
+          current: pag.current || 1,
+          pageSize: pag.pageSize || 2,
+        });
+      }}
+      pagination={{
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        total: query.data?.data.meta.total || 0,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 20, 50],
+      }}
+      style={{
+        overflow: "auto",
+        background: "#fff",
+      }}
+    />
+  </div>)
 };
 
 export default ChangeRequestsPage;
