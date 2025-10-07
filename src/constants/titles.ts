@@ -8,6 +8,7 @@ export const titles: Record<string, string> = {
   "profile": "Perfil de usuario",
   "users": "Clientes",
   "users/newUser": "Nuevo usuario",
+  "serviceOrders": "Historial de Pedidos",
   "branches": "Tiendas",
   "branches/byVendor/[id]/newBranch": "Crear nueva tienda para ${name}",
   "configuration": "Parámetros",
@@ -42,4 +43,5 @@ export const subtitles: Record<string, string> = {
   "products": "Esta es la pagina de servicios y productos",
   "products/byBranch/[id]/newProduct": "Esta es la pagina para crear un nuevo producto o servicio",
   "orders": "Administra y monitorea todos los pedidos de tu tienda",
+  "change-requests": "Solicitudes de cambio pendientes de revisión",
 };
