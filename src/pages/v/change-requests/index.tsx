@@ -31,7 +31,7 @@ const ChangeRequestsPage = () => {
   });
   const actions = useChangeRequestAction();
   const { SearchComponent, search } = SearchBar({ searchFields });
-  const query = actions.getChangeRequests({
+  const query = actions.getChangeRequstByVendorId({
     limit: pagination.pageSize,
     page: pagination.current,
     status: search.value,
@@ -73,7 +73,7 @@ const ChangeRequestsPage = () => {
             : status === "APPROVED"
             ? "green"
             : "red";
-        return <Tag color={color}>{CHANGE_REQUEST_STATUS_LABEL[status]}</Tag>;
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
       },
     },
     {

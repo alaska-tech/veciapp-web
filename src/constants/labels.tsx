@@ -4,6 +4,7 @@ import {
 } from "@ant-design/icons";
 import {
   BranchStateType,
+  ChangeRequestStatusOptionsType,
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentStatusType,
   VendorGendersType,
@@ -156,4 +157,13 @@ export const GENDER_LABELS: Record<VendorGendersType[number], string> = {
   M: "Hombre",
   F: "Mujer",
   O: "Otro",
+};
+
+export const CHANGE_REQUEST_STATUS_LABEL: Record<
+  ChangeRequestStatusOptionsType[number],
+  string
+> = {
+  PENDING: "Pendiente",
+  APPROVED: "Aprobado",
+  REJECTED: "Rechazado",
 };
