@@ -1324,7 +1324,7 @@ const PenalizeDrawer = ({
               }}
             >
               <Radio value="customer">Cliente: {customer.fullName}</Radio>
-              <Radio value="vendor">Veciproveedor: {vendor.fullName}</Radio>
+              <Radio value="vendor">Veci: {vendor.fullName}</Radio>
             </Radio.Group>
           </div>
 

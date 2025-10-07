@@ -30,7 +30,7 @@ export const subtitles: Record<string, string> = {
   "home": "Resumen general",
   "vendors": "Esta es la pagina de vendedores",
   "vendors/newVendor": "Esta es la pagina de creación de vendedores",
-  "vendors/[id]": "Estos son los detalles del veciproveedor",
+  "vendors/[id]": "Estos son los detalles del Veci",
   "branches/byVendor/[id]": "Listado de tiendas",
   "profile": "Esta es la pagina de perfil de usuario",
   "users": "Esta es la pagina de Clientes",

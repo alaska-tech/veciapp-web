@@ -171,7 +171,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
 
 const roleLabels: Record<string, string> = {
   a: "Administrador",
-  v: "Veciproveedor",
+  v: "Veci",
 };
 
 interface DashboardLayoutProps {
