@@ -47,10 +47,12 @@ export const branchesTableColumns: TableColumnsType<Branch> = [
               textOverflow: "ellipsis",
             }}
             href={
-          !record.location?.coordinates?.at(1) && !record.location?.coordinates?.at(0)
-            ? ""
-            : `https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`
-        }
+              record.location?.coordinates &&
+              record.location?.coordinates?.at(0) &&
+              record.location?.coordinates?.at(1)
+                ? `https://www.google.com/maps?q=${record.location.coordinates[1]},${record.location.coordinates[0]}`
+                : undefined
+            }
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -13,6 +13,8 @@ import {
 } from "@/actions/localStorage.actions";
 import { motion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
+import { decodeJWT } from "../../utils/decodeJwt";
+import { User } from "@/constants/models";
 
 export type LogInForm = {
   email: string;
@@ -33,16 +35,33 @@ export default function Home() {
   const queryClient = useQueryClient();
   const { message } = App.useApp();
   const userSession = authActions.userSession;
-  
-  const navigateToRole = useCallback((role: string) => {
-    if (role === "admin") {
-      router.push("/a/home");
-    } else if (role === "vendor") {
-      router.push("/v/home");
-    }
-  }, [router]);
+  const { token, refreshToken } = router.query;
+  const navigateToRole = useCallback(
+    (role: string) => {
+      if (role === "admin") {
+        router.push("/a/home");
+      } else if (role === "vendor") {
+        router.push("/v/home");
+      }
+    },
+    [router]
+  );
 
   useEffect(() => {
+    if (!!token && !!refreshToken) {
+      const res = decodeJWT(token as string);
+      const id = res?.payload?.foreignPersonId;
+      if (!id) {
+        router.replace("/");
+        return;
+      }
+      setUserInfo({ foreignPersonId: id } as User);
+      setToken(token as string);
+      setRefreshToken(refreshToken as string);
+      router.replace("/");
+      navigateToRole("vendor");
+      return;
+    }
     const role = userSession.data?.role;
     if (role) {
       navigateToRole(role);
