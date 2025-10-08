@@ -75,7 +75,9 @@ const ChangeRequestsPage = () => {
       dataIndex: "entityType",
       key: "entityType",
       render: (entityType: entityTypeOptionsType[number]) => {
-        return CHANGE_REQUEST_TYPE_LABEL[entityType] || entityType;
+        return (
+          <Space>{CHANGE_REQUEST_TYPE_LABEL[entityType] || entityType}</Space>
+        );
       },
     },
     {

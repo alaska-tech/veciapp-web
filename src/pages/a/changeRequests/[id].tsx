@@ -47,7 +47,6 @@ const ChangeRequestDetailPage = () => {
         id: id as string,
         body: { reason: "Aprobado por el administrador" },
       });
-      message.success("✅ Solicitud aprobada exitosamente");
       setApproveModalVisible(false);
       setReason("");
       setTimeout(() => router.push("/a/changeRequests"), 1000);
@@ -67,7 +66,6 @@ const ChangeRequestDetailPage = () => {
         id: id as string,
         body: { reason: reason.trim() },
       });
-      message.success("❌ Solicitud rechazada");
       setRejectModalVisible(false);
       setReason("");
       setTimeout(() => router.push("/a/changeRequests"), 1000);

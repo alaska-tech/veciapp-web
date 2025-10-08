@@ -1,6 +1,10 @@
 import {
+  AppleOutlined,
+  AppstoreOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  ShopOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
   BranchStateType,
@@ -169,9 +173,23 @@ export const CHANGE_REQUEST_STATUS_LABEL: Record<
   REJECTED: "Rechazado",
 };
 
-export const CHANGE_REQUEST_TYPE_LABEL: Record<entityTypeOptionsType[number], string> =
-  {
-    PRODUCT_AND_SERVICE: "Producto/Servicio",
-    STORE: "Tienda",
-    VENDOR_PROFILE: "Perfil de Vendedor",
-  };
+export const CHANGE_REQUEST_TYPE_LABEL: Record<
+  entityTypeOptionsType[number],
+  any
+> = {
+  PRODUCT_AND_SERVICE: (
+    <Tag icon={<AppleOutlined />} color="geekblue">
+      Producto/Servicio
+    </Tag>
+  ),
+  STORE: (
+    <Tag icon={<AppstoreOutlined />} color="geekblue">
+      Tienda
+    </Tag>
+  ),
+  VENDOR_PROFILE: (
+    <Tag icon={<UserOutlined />} color="geekblue">
+      Perfil de Vendedor
+    </Tag>
+  ),
+};

@@ -4,9 +4,16 @@ import { Table, Button, Tag, Space, Divider, Typography } from "antd";
 import { useRouter } from "next/router";
 import { useChangeRequestAction } from "@/actions/changeRequest.action";
 import dayjs from "dayjs";
-import { ChangeRequest, ChangeRequestStatusOptions } from "@/constants/models";
+import {
+  ChangeRequest,
+  ChangeRequestStatusOptions,
+  entityTypeOptionsType,
+} from "@/constants/models";
 import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
-import { CHANGE_REQUEST_STATUS_LABEL } from "@/constants/labels";
+import {
+  CHANGE_REQUEST_STATUS_LABEL,
+  CHANGE_REQUEST_TYPE_LABEL,
+} from "@/constants/labels";
 import { useVendorAction } from "@/actions/vendor.action";
 
 const searchFields: SearchFieldProps[] = [
@@ -67,13 +74,8 @@ const ChangeRequestsPage = () => {
       title: "Tipo de cambio",
       dataIndex: "entityType",
       key: "entityType",
-      render: (entityType: string) => {
-        const typeMap: any = {
-          PRODUCT_AND_SERVICE: "Producto/Servicio",
-          STORE: "Tienda",
-          VENDOR_PROFILE: "Perfil de Vendedor",
-        };
-        return typeMap[entityType] || entityType;
+      render: (entityType: entityTypeOptionsType[number]) => {
+        return CHANGE_REQUEST_TYPE_LABEL[entityType] || entityType;
       },
     },
     {
@@ -87,7 +89,7 @@ const ChangeRequestsPage = () => {
             : status === "APPROVED"
             ? "green"
             : "red";
-        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+        return <Tag color={color}>{CHANGE_REQUEST_STATUS_LABEL[status]}</Tag>;
       },
     },
     {
@@ -103,7 +105,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/v/changeRequests/${record.id}`}>Detalles</a>
+          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },

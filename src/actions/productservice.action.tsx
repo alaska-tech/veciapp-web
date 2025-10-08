@@ -270,14 +270,6 @@ export const useProductServiceAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
-        modal.success({
-          title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios para "${
-            productService.name || ""
-          }" se han registrado y están pendientes de aprobación por el administrador.`,
-          okText: "Entendido",
-          centered: true,
-        });
       },
     }
   );
@@ -314,9 +306,7 @@ export const useProductServiceAction = () => {
         const productService = data.data.data;
         modal.success({
           title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios para "${
-            productService.name || ""
-          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          content: `Los cambios para se han registrado y están pendientes de aprobación por el administrador.`,
           okText: "Entendido",
           centered: true,
         });

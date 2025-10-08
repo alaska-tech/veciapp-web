@@ -61,7 +61,7 @@ const Users = () => {
   const productsQuery = actions.getProductServicesPaginated({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    vendorId: user?.id,
+    vendorId: user?.foreignPersonId,
     search: search.value
       ? {
           [search.fieldName]: search.value,

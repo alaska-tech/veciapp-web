@@ -199,9 +199,7 @@ export const useBranchAction = () => {
         const branch = data.data.data;
         modal.success({
           title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios en la tienda "${
-            branch.name || ""
-          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          content: `Los cambios se han registrado y están pendientes de aprobación por el administrador.`,
           okText: "Entendido",
           centered: true,
         });
@@ -243,9 +241,7 @@ export const useBranchAction = () => {
         // Usar notification en lugar de message
         modal.success({
           title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios en la tienda "${
-            branch.name || ""
-          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          content: `Los cambios se han registrado y están pendientes de aprobación por el administrador.`,
           okText: "Entendido",
           centered: true,
         });

@@ -2,7 +2,7 @@ import useAuthAction from "@/actions/auth.action";
 import { useProductServiceAction } from "@/actions/productservice.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import GoBackButton from "@/components/pure/goBackButton";
-import { Space } from "antd";
+import { App, Space } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -17,9 +17,17 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   const actions = useProductServiceAction();
-  const create = actions.createProductService();
+  const { message } = App.useApp();
+  const create = actions.createProductService({
+    onSuccess: (data, variables, context) => {
+      message.success("Solicitud de cambios registrada exitosamente");
+    },
+  });
   const router = useRouter();
   const { id, vendorId } = router.query;
+  if (!id || !vendorId) {
+    return null;
+  }
   return (
     <Space direction="vertical">
       <NewFormDynamic
