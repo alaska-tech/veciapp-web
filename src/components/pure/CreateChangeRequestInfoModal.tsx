@@ -1,12 +1,13 @@
 import { App, ModalFuncProps, ModalProps, Typography } from "antd";
 import React, { useState, useRef } from "react";
 
-const CreateChangeRequestInfoModal = (props: {
-  modalProps?: ModalFuncProps;
-}): [() => void, () => void] => {
+const CreateChangeRequestInfoModal = (): [
+  (modalProps?: ModalFuncProps) => void,
+  () => void
+] => {
   const { modal } = App.useApp();
   let ref: any = useRef(null);
-  function showModal() {
+  function showModal(modalProps?: ModalFuncProps) {
     ref = modal.confirm({
       title: "Solicitar cambio de información",
       content: (
@@ -22,7 +23,7 @@ const CreateChangeRequestInfoModal = (props: {
           ¿Estás seguro de querer cambiar la información?
         </Typography.Paragraph>
       ),
-      ...props.modalProps,
+      ...modalProps,
     });
   }
   function closeModal() {

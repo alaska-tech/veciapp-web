@@ -199,10 +199,6 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-        message.success({
-          content: `Branch ${branch.name || ""} was created successfully`,
-          duration: 4,
-        });
       },
     }
   );

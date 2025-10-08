@@ -71,19 +71,17 @@ const Index = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [showChangeRequestModal, closeChangeRequestModal] =
-    CreateChangeRequestInfoModal({
-      modalProps: {
-        onOk: () => {
-          const values = form.getFieldsValue();
-          return updateVendorMutation.mutate({
-            id: userData.id,
-            body: values,
-          });
-        },
+    CreateChangeRequestInfoModal();
+  const handleSubmit = (values: any) => {
+    showChangeRequestModal({
+      onOk: () => {
+        const values = form.getFieldsValue();
+        return updateVendorMutation.mutate({
+          id: userData.id,
+          body: values,
+        });
       },
     });
-  const handleSubmit = (values: any) => {
-    showChangeRequestModal();
   };
   const InfoCard = ({
     title,

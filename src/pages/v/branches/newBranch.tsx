@@ -1,11 +1,10 @@
 import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestInfoModal";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
-
-import { mockChangesApi } from "@/services/mockChangesApi"; // Import the mockChangesApi for demonstration
 
 const NewFormDynamic = dynamic(
   () =>
@@ -19,20 +18,19 @@ const Index = () => {
   const auth = useAuthAction();
   const user = auth.userSession;
   const vendorId = user.data?.foreignPersonId || "";
-
+   const [showChangeRequestModal, closeChangeRequestModal] =
+    CreateChangeRequestInfoModal();
   return (
     <Space direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
-          await mockChangesApi.createChange({
-            vendorId,
-            entityType: "store",
-            action: "create",
-            payload: values,
-          });
-          alert("Tu solicitud fue enviada para revisión ✅");
+          showChangeRequestModal({
+            onOk: async () => {
+              await create.mutateAsync({ body: values, vendorId: vendorId });
+            },
+          })
         }}
-        loading={false}
+        loading={create.isPending}
         vendorId={vendorId}
       />
     </Space>
