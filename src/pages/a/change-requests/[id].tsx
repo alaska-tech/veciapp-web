@@ -32,24 +32,16 @@ const ChangeRequestDetailPage = () => {
   
   const request: ChangeRequest | undefined = requestQuery.data?.data.data?.find((r: any) => r.id === id);
 
-  const [approveModalVisible, setApproveModalVisible] = useState(false);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [reason, setReason] = useState("");
 
   const handleApprove = async () => {
-    if (!reason.trim()) {
-      message.warning("Por favor escribe una razón para la aprobación");
-      return;
-    }
-    
     try {
       await approveMutation.mutateAsync({
         id: id as string,
-        body: { reason: reason.trim() },
+        body: { reason: "Aprobado por el administrador" },
       });
       message.success("✅ Solicitud aprobada exitosamente");
-      setApproveModalVisible(false);
-      setReason("");
       setTimeout(() => router.push('/a/change-requests'), 1000);
     } catch (error) {
       message.error("Error al aprobar la solicitud");
@@ -76,18 +68,12 @@ const ChangeRequestDetailPage = () => {
     }
   };
 
-  const showApproveModal = () => {
-    setReason("");
-    setApproveModalVisible(true);
-  };
-
   const showRejectModal = () => {
     setReason("");
     setRejectModalVisible(true);
   };
 
   const handleCancel = () => {
-    setApproveModalVisible(false);
     setRejectModalVisible(false);
     setReason("");
   };
@@ -278,7 +264,8 @@ const ChangeRequestDetailPage = () => {
                 <Button 
                   type="primary" 
                   icon={<CheckCircleOutlined />}
-                  onClick={showApproveModal}
+                  onClick={handleApprove}
+                  loading={approveMutation.isPending}
                   size="large"
                 >
                   Aprobar
@@ -288,36 +275,6 @@ const ChangeRequestDetailPage = () => {
           </Row>
         </Card>
       )}
-
-      {/* Modal Aprobar */}
-      <Modal
-        title={
-          <Space>
-            <CheckCircleOutlined style={{ color: '#52c41a', fontSize: 24 }} />
-            <span>Aprobar Solicitud</span>
-          </Space>
-        }
-        open={approveModalVisible}
-        onOk={handleApprove}
-        confirmLoading={approveMutation.isPending}
-        onCancel={handleCancel}
-        okText="Confirmar Aprobación"
-        cancelText="Cancelar"
-        okButtonProps={{ size: 'large' }}
-        cancelButtonProps={{ size: 'large' }}
-      >
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Text>Al aprobar esta solicitud, los cambios se aplicarán inmediatamente.</Text>
-          <TextArea
-            rows={4}
-            placeholder="Escribe una razón o comentario (requerido)"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            maxLength={500}
-            showCount
-          />
-        </Space>
-      </Modal>
 
       {/* Modal Rechazar */}
       <Modal
