@@ -29,7 +29,7 @@ const Home = () => {
   const productsQuery = productServiceActions.getProductServicesPaginated({ 
     limit: 1, 
     page: 0,
-    vendorId: user?.id
+    vendorId: user?.foreignPersonId
   });
   const totalProducts = productsQuery.data?.data.meta.total || 0;
 
