@@ -4,9 +4,19 @@ import { Table, Button, Tag, Space, Divider } from "antd";
 import { useRouter } from "next/router";
 import { useChangeRequestAction } from "@/actions/changeRequest.action";
 import dayjs from "dayjs";
-import { ChangeRequest, ChangeRequestStatusOptions } from "@/constants/models";
+import {
+  ChangeRequest,
+  ChangeRequestStatusOptions,
+  entityTypeOptionsType,
+} from "@/constants/models";
 import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
-import { CHANGE_REQUEST_STATUS_LABEL } from "@/constants/labels";
+import {
+  CHANGE_REQUEST_STATUS_LABEL,
+  CHANGE_REQUEST_TYPE_LABEL,
+} from "@/constants/labels";
+import { data } from "framer-motion/client";
+import { useBranchAction } from "@/actions/branch.action";
+import { useVendorAction } from "@/actions/vendor.action";
 
 const searchFields: SearchFieldProps[] = [
   {
@@ -36,30 +46,28 @@ const ChangeRequestsPage = () => {
     page: pagination.current,
     status: search.value,
   });
+  const vendorActions = useVendorAction()
+  const vendorQueries = vendorActions.getVendorsById(query.data?.data.data.map((cr) => cr.vendorId) || [])
 
   const columns = [
     {
-      title: "Elemento",
-      key: "elementName",
-      render: (_: any, record: any) => {
-        // obtener nomrb desde newValues o oldValues
-        const newValues = record.requestedChanges?.newValues || {};
-        const oldValues = record.requestedChanges?.oldValues || {};
-        const name = newValues.name || oldValues.name || "No disponible";
-        return name;
+      title: "Remitente",
+      dataIndex: "vendorId",
+      key: "vendorId",
+      render: (id: string, record: ChangeRequest) => {
+        const vendor = vendorQueries.find((v) => v.data?.data.data.id === id)?.data?.data.data
+        if(vendor){
+          return `${vendor.fullName} ${vendor.internalCode} (${vendor.email})`
+        }
+        return id;
       },
     },
     {
       title: "Tipo de cambio",
       dataIndex: "entityType",
       key: "entityType",
-      render: (entityType: string) => {
-        const typeMap: any = {
-          PRODUCT_AND_SERVICE: "Producto/Servicio",
-          STORE: "Tienda",
-          VENDOR_PROFILE: "Perfil de Vendedor",
-        };
-        return typeMap[entityType] || entityType;
+      render: (entityType: entityTypeOptionsType[number]) => {
+        return CHANGE_REQUEST_TYPE_LABEL[entityType] || entityType;
       },
     },
     {
@@ -89,21 +97,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/change-requests/${record.id}`}>Detalles</a>
-        </Space>
-      ),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (_: any, record: ChangeRequest) => (
-        <Space>
-          <Button
-            onClick={() => router.push(`/a/change-requests/${record.id}`)}
-          >
-            Ver detalle
-          </Button>
-          {record.status === "PENDING" && <></>}
+          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },

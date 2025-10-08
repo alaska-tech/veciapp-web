@@ -112,9 +112,9 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           children: undefined,
         },
         {
-          key: `/a/change-requests`,
+          key: `/a/changeRequests`,
           icon: React.createElement(GitCompareArrows),
-          label: <Link href="/a/change-requests">Solicitudes</Link>,
+          label: <Link href="/a/changeRequests">Solicitudes</Link>,
           children: undefined,
         },    
       ],

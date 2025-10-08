@@ -89,7 +89,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/change-requests/${record.id}`}>Detalles</a>
+          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },
@@ -99,7 +99,7 @@ const ChangeRequestsPage = () => {
       render: (_: any, record: ChangeRequest) => (
         <Space>
           <Button
-            onClick={() => router.push(`/a/change-requests/${record.id}`)}
+            onClick={() => router.push(`/a/changeRequests/${record.id}`)}
           >
             Ver detalle
           </Button>

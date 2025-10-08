@@ -5,6 +5,7 @@ import {
 import {
   BranchStateType,
   ChangeRequestStatusOptionsType,
+  entityTypeOptionsType,
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentStatusType,
   VendorGendersType,
@@ -136,7 +137,7 @@ export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<
   ServiceOrderOrderStatusType[number],
   any
 > = {
-  received: <Tag color='yellow'>Recibido</Tag>,
+  received: <Tag color="yellow">Recibido</Tag>,
   preparing: <Tag color="orange">En preparación</Tag>,
   shipped: <Tag color="green">En ruta</Tag>,
   delivered: <Tag color="gray">Entregado</Tag>,
@@ -167,3 +168,10 @@ export const CHANGE_REQUEST_STATUS_LABEL: Record<
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };
+
+export const CHANGE_REQUEST_TYPE_LABEL: Record<entityTypeOptionsType[number], string> =
+  {
+    PRODUCT_AND_SERVICE: "Producto/Servicio",
+    STORE: "Tienda",
+    VENDOR_PROFILE: "Perfil de Vendedor",
+  };

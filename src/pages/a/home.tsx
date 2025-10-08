@@ -141,7 +141,7 @@ const Home = () => {
                     border: 'none',
                     fontWeight: '600'
                   }}
-                  onClick={() => router.push('/a/change-requests')}
+                  onClick={() => router.push('/a/changeRequests')}
                 >
                   Revisar Cambios
                 </Button>
