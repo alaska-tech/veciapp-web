@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Table, Button, Tag, Space, Divider } from "antd";
+import { Table, Tag, Space, Divider, Typography } from "antd";
 import { useRouter } from "next/router";
 import { useChangeRequestAction } from "@/actions/changeRequest.action";
 import dayjs from "dayjs";
@@ -14,8 +14,6 @@ import {
   CHANGE_REQUEST_STATUS_LABEL,
   CHANGE_REQUEST_TYPE_LABEL,
 } from "@/constants/labels";
-import { data } from "framer-motion/client";
-import { useBranchAction } from "@/actions/branch.action";
 import { useVendorAction } from "@/actions/vendor.action";
 
 const searchFields: SearchFieldProps[] = [
@@ -46,8 +44,10 @@ const ChangeRequestsPage = () => {
     page: pagination.current,
     status: search.value,
   });
-  const vendorActions = useVendorAction()
-  const vendorQueries = vendorActions.getVendorsById(query.data?.data.data.map((cr) => cr.vendorId) || [])
+  const vendorActions = useVendorAction();
+  const vendorQueries = vendorActions.getVendorsById(
+    query.data?.data.data.map((cr) => cr.vendorId) || []
+  );
 
   const columns = [
     {
@@ -55,9 +55,17 @@ const ChangeRequestsPage = () => {
       dataIndex: "vendorId",
       key: "vendorId",
       render: (id: string, record: ChangeRequest) => {
-        const vendor = vendorQueries.find((v) => v.data?.data.data.id === id)?.data?.data.data
-        if(vendor){
-          return `${vendor.fullName} ${vendor.internalCode} (${vendor.email})`
+        const vendor = vendorQueries.find((v) => v.data?.data.data.id === id)
+          ?.data?.data.data;
+        if (vendor) {
+          return (
+            <Space direction="vertical">
+              <Typography.Text strong>{vendor.fullName}</Typography.Text>
+              <Typography.Text type="secondary">
+                {vendor.email} - {vendor.internalCode}
+              </Typography.Text>
+            </Space>
+          );
         }
         return id;
       },

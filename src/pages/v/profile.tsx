@@ -59,28 +59,26 @@ const Index = () => {
     user.data?.foreignPersonId as string
   );
   const userData = (data as unknown as Vendor) ?? ({} as Vendor);
+  const updateVendorMutation = vendorActions.updateVendor({
+    onSuccess: () => {
+      message.success("Solicitud de cambio de información enviada");
+      setIsEditing(false);
+      form.resetFields();
+    },
+    onError: () => {
+      message.error("Error al enviar la solicitud de cambio de información");
+    },
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [showChangeRequestModal, closeChangeRequestModal] =
     CreateChangeRequestInfoModal({
       modalProps: {
         onOk: () => {
-          console.log(form.getFieldsValue());
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(true);
-            }, 2000);
-          }).then(
-            () => {
-              message.success("Solicitud de cambio de información enviada");
-              setIsEditing(false);
-              form.resetFields();
-            },
-            () => {
-              message.error(
-                "Error al enviar la solicitud de cambio de información"
-              );
-            }
-          );
+          const values = form.getFieldsValue();
+          return updateVendorMutation.mutate({
+            id: userData.id,
+            body: values,
+          });
         },
       },
     });

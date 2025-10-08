@@ -10,7 +10,7 @@ import {
   ShopOutlined,
   TeamOutlined,
   AppstoreOutlined,
-  DollarOutlined
+  DollarOutlined,
 } from "@ant-design/icons";
 import { Heading, Bell } from "lucide-react";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
-  const router = useRouter()
+  const router = useRouter();
   const vendorActions = useVendorAction();
   const customerActions = useCustomerAction();
   const branchActions = useBranchAction();
@@ -33,115 +33,123 @@ const Home = () => {
   const totalCustomers = customersQuery.data?.data.meta.total || 0;
 
   // Obtener datos de tiendas
-  const branchesQuery = branchActions.getBranchesPaginated({ limit: 1, page: 0 });
+  const branchesQuery = branchActions.getBranchesPaginated({
+    limit: 1,
+    page: 0,
+  });
   const totalBranches = branchesQuery.data?.data.meta.total || 0;
   // Obtener cambios pendientes
   const changeRequestsQuery = changeRequestActions.getChangeRequests({
     status: "PENDING",
     limit: 10,
-    page: 1
+    page: 1,
   });
 
   // Contar los cambios pendientes
   const pendingChangesCount = changeRequestsQuery.data?.data.meta.total || 0;
 
-  // TODO: Aquí deberías hacer una llamada al API para obtener los cambios pendientes
-  // Ejemplo:
-  // const changesQuery = useChangeRequestAction().getPendingChanges();
-  // useEffect(() => {
-  //   if (changesQuery.data?.data) {
-  //     setPendingChangesCount(changesQuery.data.data.length);
-  //   }
-  // }, [changesQuery.data]);
   const totalPayments = 0; // TODO: Implementar cuando esté disponible
 
   const dashboardCards = [
     {
       title: "Total Veci Proveedores",
       value: totalVendors,
-      icon: <ShopOutlined style={{ fontSize: '24px', color: '#1890ff' }} />,
-      color: '#1890ff',
-      loading: vendorsQuery.isLoading
+      icon: <ShopOutlined style={{ fontSize: "24px", color: "#1890ff" }} />,
+      color: "#1890ff",
+      loading: vendorsQuery.isLoading,
     },
     {
       title: "Total Clientes",
       value: totalCustomers,
-      icon: <TeamOutlined style={{ fontSize: '24px', color: '#52c41a' }} />,
-      color: '#52c41a',
-      loading: customersQuery.isLoading
+      icon: <TeamOutlined style={{ fontSize: "24px", color: "#52c41a" }} />,
+      color: "#52c41a",
+      loading: customersQuery.isLoading,
     },
     {
       title: "Tiendas Activas",
       value: totalBranches,
-      icon: <AppstoreOutlined style={{ fontSize: '24px', color: '#722ed1' }} />,
-      color: '#722ed1',
-      loading: branchesQuery.isLoading
+      icon: <AppstoreOutlined style={{ fontSize: "24px", color: "#722ed1" }} />,
+      color: "#722ed1",
+      loading: branchesQuery.isLoading,
     },
     {
       title: "Pagos Procesados",
       value: totalPayments,
-      icon: <DollarOutlined style={{ fontSize: '24px', color: '#fa8c16' }} />,
-      color: '#fa8c16',
-      loading: false
-    }
+      icon: <DollarOutlined style={{ fontSize: "24px", color: "#fa8c16" }} />,
+      color: "#fa8c16",
+      loading: false,
+    },
   ];
 
   return (
-    <div style={{
-      padding: '24px',
-      maxWidth: '100%',
-      margin: '0 auto'
-    }}>
+    <div
+      style={{
+        padding: "24px",
+        maxWidth: "100%",
+        margin: "0 auto",
+      }}
+    >
       {/* Banner de Cambios Pendientes Solo se muestra si hay cambios pendientes  */}
       {pendingChangesCount > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          style={{ marginBottom: '24px' }}
+          style={{ marginBottom: "24px" }}
         >
-          <Card 
-          loading={changeRequestsQuery.isLoading}
+          <Card
+            loading={changeRequestsQuery.isLoading}
             style={{
-              backgroundColor: '#fef9f3',
-              border: '1px solid #ffd6a5',
-              borderRadius: '12px',
-              overflow: 'hidden'
+              backgroundColor: "#fef9f3",
+              border: "1px solid #ffd6a5",
+              borderRadius: "12px",
+              overflow: "hidden",
             }}
           >
             <Row align="middle" gutter={[16, 16]}>
               {/* Columna del icono */}
-              <Col xs={24} sm={2} style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{
-                  backgroundColor: '#ffe4c4',
-                  borderRadius: '50%',
-                  width: '48px',
-                  height: '48px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+              <Col
+                xs={24}
+                sm={2}
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "#ffe4c4",
+                    borderRadius: "50%",
+                    width: "48px",
+                    height: "48px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Bell size={24} color="#ff8c42" />
                 </div>
               </Col>
 
               {/* Columna del contenido */}
               <Col xs={24} sm={22}>
-                <Title level={4} style={{ margin: 0, color: '#333' }}>
-                  {pendingChangesCount} {pendingChangesCount === 1 ? 'cambio pendiente' : 'cambios pendientes'} para revisar
+                <Title level={4} style={{ margin: 0, color: "#333" }}>
+                  {pendingChangesCount}{" "}
+                  {pendingChangesCount === 1
+                    ? "cambio pendiente"
+                    : "cambios pendientes"}{" "}
+                  para revisar
                 </Title>
-                <Paragraph style={{ margin: '8px 0 16px 0', color: '#666' }}>
-                  Haz clic aquí para revisar y aprobar los cambios enviados por los proveedores.
+                <Paragraph style={{ margin: "8px 0 16px 0", color: "#666" }}>
+                  Haz clic aquí para revisar y aprobar los cambios enviados por
+                  los proveedores.
                 </Paragraph>
                 <Button
                   type="primary"
                   style={{
-                    backgroundColor: '#ff8c42',
-                    color: '#fff',
-                    border: 'none',
-                    fontWeight: '600'
+                    backgroundColor: "#ff8c42",
+                    color: "#fff",
+                    border: "none",
+                    fontWeight: "600",
                   }}
-                  onClick={() => router.push('/a/changeRequests')}
+                  onClick={() => router.push("/a/changeRequests")}
                 >
                   Revisar Cambios
                 </Button>
@@ -149,19 +157,27 @@ const Home = () => {
             </Row>
           </Card>
         </motion.div>
-
       )}
-      <Title level={4} style={{ marginBottom: '24px' }}>Resumen General</Title>
+      <Title level={4} style={{ marginBottom: "24px" }}>
+        Resumen General
+      </Title>
       {/* banner de nuecvos cambios */}
       <Row gutter={[16, 16]}>
         {dashboardCards.map((card, index) => (
           <Col xs={24} sm={12} md={6} key={index}>
             <motion.div
-              whileHover={{ scale: 1.01, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+              whileHover={{
+                scale: 1.01,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+              }}
               whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1, ease: "easeInOut" }}
+              transition={{
+                duration: 0.3,
+                delay: index * 0.1,
+                ease: "easeInOut",
+              }}
               style={{ borderRadius: "12px", overflow: "hidden" }}
             >
               <Card
@@ -170,7 +186,7 @@ const Home = () => {
                   borderRadius: "12px",
                   overflow: "hidden",
                   border: `1px solid ${card.color}20`,
-                  height: '100%'
+                  height: "100%",
                 }}
               >
                 <Statistic
@@ -180,7 +196,7 @@ const Home = () => {
                   valueStyle={{
                     color: card.color,
                     fontSize: "32px",
-                    fontWeight: "700"
+                    fontWeight: "700",
                   }}
                   suffix={card.title === "Pagos Procesados" ? " COP" : ""}
                 />

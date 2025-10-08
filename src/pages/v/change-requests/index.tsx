@@ -1,12 +1,13 @@
 import React, { ReactElement, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Table, Button, Tag, Space, Divider } from "antd";
+import { Table, Button, Tag, Space, Divider, Typography } from "antd";
 import { useRouter } from "next/router";
 import { useChangeRequestAction } from "@/actions/changeRequest.action";
 import dayjs from "dayjs";
 import { ChangeRequest, ChangeRequestStatusOptions } from "@/constants/models";
 import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import { CHANGE_REQUEST_STATUS_LABEL } from "@/constants/labels";
+import { useVendorAction } from "@/actions/vendor.action";
 
 const searchFields: SearchFieldProps[] = [
   {
@@ -36,17 +37,30 @@ const ChangeRequestsPage = () => {
     page: pagination.current,
     status: search.value,
   });
+  const vendorActions = useVendorAction();
+  const vendorQueries = vendorActions.getVendorsById(
+    query.data?.data.data.map((cr) => cr.vendorId) || []
+  );
 
   const columns = [
     {
-      title: "Elemento",
-      key: "elementName",
-      render: (_: any, record: any) => {
-        // obtener nomrb desde newValues o oldValues
-        const newValues = record.requestedChanges?.newValues || {};
-        const oldValues = record.requestedChanges?.oldValues || {};
-        const name = newValues.name || oldValues.name || "No disponible";
-        return name;
+      title: "Remitente",
+      dataIndex: "vendorId",
+      key: "vendorId",
+      render: (id: string, record: ChangeRequest) => {
+        const vendor = vendorQueries.find((v) => v.data?.data.data.id === id)
+          ?.data?.data.data;
+        if (vendor) {
+          return (
+            <Space direction="vertical">
+              <Typography.Text strong>{vendor.fullName}</Typography.Text>
+              <Typography.Text type="secondary">
+                {vendor.email} - {vendor.internalCode}
+              </Typography.Text>
+            </Space>
+          );
+        }
+        return id;
       },
     },
     {
@@ -89,21 +103,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
-        </Space>
-      ),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (_: any, record: ChangeRequest) => (
-        <Space>
-          <Button
-            onClick={() => router.push(`/a/changeRequests/${record.id}`)}
-          >
-            Ver detalle
-          </Button>
-          {record.status === "PENDING" && <></>}
+          <a href={`/v/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },
