@@ -197,12 +197,7 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-        modal.success({
-          title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios se han registrado y están pendientes de aprobación por el administrador.`,
-          okText: "Entendido",
-          centered: true,
-        });
+        
       },
     }
   );
@@ -237,14 +232,6 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-
-        // Usar notification en lugar de message
-        modal.success({
-          title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios se han registrado y están pendientes de aprobación por el administrador.`,
-          okText: "Entendido",
-          centered: true,
-        });
       },
     }
   );

@@ -2,7 +2,7 @@ import useAuthAction from "@/actions/auth.action";
 import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestInfoModal";
-import { Space } from "antd";
+import { App, Space } from "antd";
 import dynamic from "next/dynamic";
 import React, { ReactElement } from "react";
 
@@ -14,11 +14,21 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   const actions = useBranchAction();
-  const create = actions.createBranch();
+  const { modal } = App.useApp();
+  const create = actions.createBranch({
+    onSuccess: (data, variables, context) => {
+      modal.success({
+        title: "Solicitud de cambios registrada exitosamente",
+        content: `Los cambios se han registrado y están pendientes de aprobación por el administrador.`,
+        okText: "Entendido",
+        centered: true,
+      });
+    },
+  });
   const auth = useAuthAction();
   const user = auth.userSession;
   const vendorId = user.data?.foreignPersonId || "";
-   const [showChangeRequestModal, closeChangeRequestModal] =
+  const [showChangeRequestModal, closeChangeRequestModal] =
     CreateChangeRequestInfoModal();
   return (
     <Space direction="vertical">
@@ -28,7 +38,7 @@ const Index = () => {
             onOk: async () => {
               await create.mutateAsync({ body: values, vendorId: vendorId });
             },
-          })
+          });
         }}
         loading={create.isPending}
         vendorId={vendorId}

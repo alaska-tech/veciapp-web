@@ -17,6 +17,7 @@ import {
   Input,
   Radio,
   App,
+  Modal,
 } from "antd";
 import {
   UserOutlined,
@@ -43,6 +44,7 @@ import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestI
 
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
+const { modal } = App.useApp();
 
 const Index = () => {
   const genderMap = {
@@ -60,8 +62,13 @@ const Index = () => {
   );
   const userData = (data as unknown as Vendor) ?? ({} as Vendor);
   const updateVendorMutation = vendorActions.updateVendor({
-    onSuccess: () => {
-      message.success("Solicitud de cambio de información enviada");
+    onSuccess: (data) => {
+      modal.success({
+        title: "Solicitud de cambios registrada exitosamente",
+        content: `Los cambios en el veci se han registrado y están pendientes de aprobación por el administrador.`,
+        okText: "Entendido",
+        centered: true,
+      });
       setIsEditing(false);
       form.resetFields();
     },

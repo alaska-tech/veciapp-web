@@ -6,7 +6,7 @@ import { useVendorAction } from "@/actions/vendor.action";
 import NewProductServiceForm from "@/components/forms/newProductServiceForm";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Result, Button, Space, Modal } from "antd";
+import { Result, Button, Space, Modal, App } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -14,9 +14,20 @@ import React, { ReactElement } from "react";
 const Index = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { modal } = App.useApp(); 
   const actions = useProductServiceAction();
   const queryResult = actions.getProductServiceById(id as string);
-  const update = actions.updateProductService();
+  const update = actions.updateProductService({
+    onSuccess: (data) => {
+      const productService = data.data.data;
+      modal.success({
+        title: "Solicitud de cambios registrada exitosamente",
+        content: `Los cambios para se han registrado y están pendientes de aprobación por el administrador.`,
+        okText: "Entendido",
+        centered: true,
+      });
+    }
+  });
   const authActions = useAuthAction();
   const user = authActions.userSession;
   if (queryResult.isLoading) {

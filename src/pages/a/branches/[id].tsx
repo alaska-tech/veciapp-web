@@ -3,22 +3,29 @@ import { useCustomerAction } from "@/actions/customer.action";
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Result, Button, Space } from "antd";
+import { Result, Button, Space, App } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 
 const NewFormDynamic = dynamic(
-  () => import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
+  () =>
+    import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
   { ssr: false }
 );
 
 const Index = () => {
   const router = useRouter();
+  const { message } = App.useApp();
   const { id } = router.query;
   const actions = useBranchAction();
   const queryResult = actions.getBranchById(id as string);
-  const update = actions.updateBranch();
+  const update = actions.updateBranch({
+    onSuccess: (data) => {
+      const branch = data.data.data;
+      message.success("Sucursal actualizada exitosamente");
+    },
+  });
   if (queryResult.isLoading) {
     return <LoadingOutlined />;
   }

@@ -225,13 +225,6 @@ export const useVendorAction = () => {
         });
       },
       onSuccess: async (data, variables, context) => {
-        const vendor = data.data.data;
-        modal.success({
-          title: "Solicitud de cambios registrada exitosamente",
-          content: `Los cambios en el veci se han registrado y están pendientes de aprobación por el administrador.`,
-          okText: "Entendido",
-          centered: true,
-        });
       },
     }
   );
