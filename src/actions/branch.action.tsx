@@ -85,8 +85,8 @@ export const useBranchAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/all?limit=${limit}&page=${page}`,{
-          params:{
+        >(`/branches/all?limit=${limit}&page=${page}`, {
+          params: {
             ...search
           }
         });
@@ -237,11 +237,15 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-        message.success({
-          content: `La tienda ${branch.name || ""} se actualizó correctamente`,
-          duration: 4,
+
+        // Usar notification en lugar de message
+        notification.success({
+          message: '✅ Cambios registrados',
+          description: `Los cambios en la tienda "${branch.name || ""}" están pendientes de aprobación por el administrador. Te notificaremos cuando sean revisados.`,
+          duration: 8,
+          placement: 'topRight',
         });
-      },
+      }
     }
   );
   return {
