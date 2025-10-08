@@ -8,7 +8,7 @@ import {
 } from "./action";
 import { BaseAttributes, PaginatedResult, Response, Branch } from "@models";
 import { apiClient } from "@/services/clients";
-import { App } from "antd";
+import { App, Modal } from "antd";
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 export const QUERY_KEY_BRANCH = "branch" as const;
@@ -239,11 +239,11 @@ export const useBranchAction = () => {
         const branch = data.data.data;
 
         // Usar notification en lugar de message
-        notification.success({
-          message: '✅ Cambios registrados',
-          description: `Los cambios en la tienda "${branch.name || ""}" están pendientes de aprobación por el administrador. Te notificaremos cuando sean revisados.`,
-          duration: 8,
-          placement: 'topRight',
+        Modal.success({
+          title: 'Cambios registrados exitosamente',
+          content: `Los cambios en la tienda "${branch.name || ""}" se han registrado y están pendientes de aprobación por el administrador. Te notificaremos cuando sean revisados.`,
+          okText: 'Entendido',
+          centered: true,
         });
       }
     }

@@ -37,9 +37,8 @@ const ChangeRequestDetailPage = () => {
 
   const request: ChangeRequest | undefined = requestQuery.data;
 
-  const [approveModalVisible, setApproveModalVisible] = useState(false);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
-
+  const [approveModalVisible, setApproveModalVisible] = useState(false);
   const [reason, setReason] = useState("");
 
   const handleApprove = async () => {
@@ -51,7 +50,7 @@ const ChangeRequestDetailPage = () => {
     try {
       await approveMutation.mutateAsync({
         id: id as string,
-        body: { reason: reason.trim() },
+        body: { reason: "Aprobado por el administrador" },
       });
       message.success("✅ Solicitud aprobada exitosamente");
       setApproveModalVisible(false);
@@ -82,18 +81,12 @@ const ChangeRequestDetailPage = () => {
     }
   };
 
-  const showApproveModal = () => {
-    setReason("");
-    setApproveModalVisible(true);
-  };
-
   const showRejectModal = () => {
     setReason("");
     setRejectModalVisible(true);
   };
 
   const handleCancel = () => {
-    setApproveModalVisible(false);
     setRejectModalVisible(false);
     setReason("");
   };
@@ -251,7 +244,8 @@ const ChangeRequestDetailPage = () => {
                 <Button
                   type="primary"
                   icon={<CheckCircleOutlined />}
-                  onClick={showApproveModal}
+                  onClick={handleApprove}
+                  loading={approveMutation.isPending}
                   size="large"
                 >
                   Aprobar
