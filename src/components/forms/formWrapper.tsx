@@ -20,7 +20,6 @@ export interface FormWrapperProps<T>
   loading?: boolean;
   preserveDataInCache?: boolean;
   highligthOnChange?: boolean;
-  hideSubmitButton?: boolean;
 }
 const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   formName,
@@ -28,7 +27,6 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
   initialValues,
   preserveDataInCache = true,
   highligthOnChange = false,
-  hideSubmitButton = false,
   ...formProps
 }: FormWrapperProps<T>) => {
   const [formValues, setFormValues] = useLocalStorage<T | null>(
@@ -135,19 +133,17 @@ const FormWrapper = <T extends Omit<object, keyof BaseAttributes>>({
         {typeof children === "function"
           ? children(formProps.form || form, setAsTouched)
           : children}
-        {!hideSubmitButton && (
-          <Form.Item style={{ textAlign: "center" }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={buttonStyles}
-              icon={<SaveOutlined />}
-              loading={formProps.loading}
-            >
-              Guardar
-            </Button>
-          </Form.Item>
-        )}
+        <Form.Item style={{ textAlign: "center" }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={buttonStyles}
+            icon={<SaveOutlined />}
+            loading={formProps.loading}
+          >
+            Guardar
+          </Button>
+        </Form.Item>
       </Form>
     </motion.div>
   );
