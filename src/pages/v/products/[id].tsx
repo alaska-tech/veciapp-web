@@ -6,7 +6,7 @@ import { useVendorAction } from "@/actions/vendor.action";
 import NewProductServiceForm from "@/components/forms/newProductServiceForm";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Result, Button, Space , Modal } from "antd";
+import { Result, Button, Space, Modal } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -44,31 +44,14 @@ const Index = () => {
   return (
     <Space direction="vertical">
       <NewProductServiceForm
-  onFinish={async (values) => {
-    try {
-      await update.mutateAsync({ body: values, id: id as string });
-
-      // modal personalizado
-      Modal.success({
-        title: "Producto/Servicio actualizado",
-        content: "Sus cambios se guardaron satisfactoriamente. Están pendientes de revisión y aprobación.",
-        okText: "Entendido",
-        centered: true,
-      });
-    } catch (error) {
-      Modal.error({
-        title: "Error",
-        content: "Hubo un problema al guardar los cambios. Por favor, intente nuevamente.",
-        okText: "Cerrar",
-        centered: true,
-      });
-    }
-  }}
-  loading={update.isPending}
-  initialValues={queryResult.data || ({} as any)}
-  branchId={queryResult.data?.branchId || ""}
-  userId={user.data?.id || ""}
-/>
+        onFinish={async (values) => {
+          await update.mutateAsync({ body: values, id: id as string });          
+        }}
+        loading={update.isPending}
+        initialValues={queryResult.data || ({} as any)}
+        branchId={queryResult.data?.branchId || ""}
+        userId={user.data?.id || ""}
+      />
     </Space>
   );
 };

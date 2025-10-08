@@ -8,13 +8,13 @@ import {
 } from "./action";
 import { BaseAttributes, PaginatedResult, Response, Branch } from "@models";
 import { apiClient } from "@/services/clients";
-import { App, Modal } from "antd";
+import { App } from "antd";
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 export const QUERY_KEY_BRANCH = "branch" as const;
 
 export const useBranchAction = () => {
-  const { notification, message } = App.useApp();
+  const { notification, message, modal } = App.useApp();
   const queryClient = useQueryClient();
   const getBranchs = queryEntity<
     AxiosResponse<
@@ -87,8 +87,8 @@ export const useBranchAction = () => {
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
         >(`/branches/all?limit=${limit}&page=${page}`, {
           params: {
-            ...search
-          }
+            ...search,
+          },
         });
         console.log(response);
         return response.data;
@@ -105,13 +105,11 @@ export const useBranchAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`,
-          {
-            params: {
-              ...search,
-            },
-          }
-        );
+        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`, {
+          params: {
+            ...search,
+          },
+        });
         console.log(response);
         return response.data;
       } catch (error) {
@@ -199,6 +197,14 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
+        modal.success({
+          title: "Solicitud de cambios registrada exitosamente",
+          content: `Los cambios en la tienda "${
+            branch.name || ""
+          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          okText: "Entendido",
+          centered: true,
+        });
       },
     }
   );
@@ -235,13 +241,15 @@ export const useBranchAction = () => {
         const branch = data.data.data;
 
         // Usar notification en lugar de message
-        Modal.success({
-          title: 'Cambios registrados exitosamente',
-          content: `Los cambios en la tienda "${branch.name || ""}" se han registrado y están pendientes de aprobación por el administrador. Te notificaremos cuando sean revisados.`,
-          okText: 'Entendido',
+        modal.success({
+          title: "Solicitud de cambios registrada exitosamente",
+          content: `Los cambios en la tienda "${
+            branch.name || ""
+          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          okText: "Entendido",
           centered: true,
         });
-      }
+      },
     }
   );
   return {

@@ -42,11 +42,6 @@ const ChangeRequestDetailPage = () => {
   const [reason, setReason] = useState("");
 
   const handleApprove = async () => {
-    if (!reason.trim()) {
-      message.warning("Por favor escribe una razón para la aprobación");
-      return;
-    }
-
     try {
       await approveMutation.mutateAsync({
         id: id as string,

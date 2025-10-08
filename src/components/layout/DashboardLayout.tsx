@@ -10,25 +10,11 @@ import {
   MenuOutlined,
   PullRequestOutlined,
   ReconciliationOutlined,
-  ShoppingCartOutlined,
   SettingOutlined,
   ShopOutlined,
   ShoppingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import {
-  Home,
-  PackageOpen, 
-  ShoppingCart,
-  Store,
-  GitCompareArrows,
-  Users,
-  Building2,
-  DollarSign,
-  Settings,
-  Settings2,
-
-} from "lucide-react";
 import Image from "next/image";
 import type { MenuProps } from "antd";
 import Link from "next/link";
@@ -59,30 +45,30 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   a: [
     {
       key: `/a/home`,
-      icon: React.createElement(Home),
+      icon: React.createElement(HomeOutlined),
       label: <Link href="/a/home">Inicio</Link>,
       children: undefined,
     },
     {
       key: `sub-users`,
-      label: "Usuarios",
+      label: "Veciproveedores",
       type: "group",
       children: [
         {
           key: `/a/vendors`,
-          icon: React.createElement(Store),
+          icon: React.createElement(ShopOutlined),
           label: <Link href="/a/vendors">Proveedores</Link>,
           children: undefined,
         },
         {
           key: `/a/branches`,
-          icon: React.createElement(Building2),
+          icon: React.createElement(AppstoreOutlined),
           label: <Link href="/a/branches">Tiendas</Link>,
           children: undefined,
         },
         {
           key: `/a/products`,
-          icon: React.createElement(PackageOpen),
+          icon: React.createElement(AppleOutlined),
           label: <Link href="/a/products">Productos y servicios</Link>,
           children: undefined,
         },
@@ -95,26 +81,26 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       children: [
         {
           key: `/a/users`,
-          icon: React.createElement(Users),
+          icon: React.createElement(TeamOutlined),
           label: <Link href="/a/users">Clientes</Link>,
           children: undefined,
         },
         {
           key: `/a/serviceOrders`,
-          icon: React.createElement(ShoppingCart),
+          icon: React.createElement(ShoppingOutlined),
           label: <Link href="/a/serviceOrders">Pedidos</Link>,
           children: undefined,
         },
         {
           key: `/a/payments`,
-          icon: React.createElement(DollarSign),
+          icon: React.createElement(DollarOutlined),
           label: <Link href="/a/payments">Pagos</Link>,
           children: undefined,
         },
         {
           key: `/a/changeRequests`,
-          icon: React.createElement(GitCompareArrows),
-          label: <Link href="/a/changeRequests">Solicitudes</Link>,
+          icon: React.createElement(PullRequestOutlined),
+          label: <Link href="/a/changeRequests">Solicitudes de cambio</Link>,
           children: undefined,
         },    
       ],
@@ -126,7 +112,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       children: [
         {
           key: `/a/configuration`,
-          icon: React.createElement(Settings),
+          icon: React.createElement(SettingOutlined),
           label: <Link href="/a/configuration">Parámetros</Link>,
           children: undefined,
         },
@@ -136,8 +122,9 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
   v: [
     {
       key: `/v/home`,
-      icon: React.createElement(Home),
-      label: <Link href="/v/home">Inicio</Link>
+      icon: React.createElement(HomeOutlined),
+      label: <Link href="/v/home">Inicio</Link>,
+      children: undefined,
     },
     {
       key: `sub-management`,
@@ -145,25 +132,23 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
       type: "group",
       children: [
         {
-          key: `/v/orders`,
-          icon: React.createElement(ShoppingCart),
-          label: <Link href="/v/orders">Pedidos</Link>
+          key: `/v/branches`,
+          icon: React.createElement(AppstoreOutlined),
+          label: <Link href="/v/branches">Tiendas</Link>,
+          children: undefined,
         },
         {
           key: `/v/products`,
-          icon: React.createElement(PackageOpen),
-          label: <Link href="/v/products">Productos y servicios</Link>
+          icon: React.createElement(AppleOutlined),
+          label: <Link href="/v/products">Productos y servicios</Link>,
+          children: undefined,
         },
         {
-          key: `/v/branches`,
-          icon: React.createElement(Store),
-          label: <Link href="/v/branches">Tiendas</Link>
-        },
-        {
-          key: `/v/change-requests`,
-          icon: React.createElement(GitCompareArrows),
-          label: <Link href="/v/change-requests">Cambios</Link> 
-        }
+          key: `/v/changeRequests`,
+          icon: React.createElement(PullRequestOutlined),
+          label: <Link href="/v/changeRequests">Solicitudes de cambio</Link>,
+          children: undefined,
+        },   
       ],
     },
   ],
@@ -171,7 +156,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
 
 const roleLabels: Record<string, string> = {
   a: "Administrador",
-  v: "Veci",
+  v: "Veciproveedor",
 };
 
 interface DashboardLayoutProps {
@@ -237,48 +222,32 @@ function DashboardLayout({
   const desktopLayout = (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
-        collapsed={sideMenuCollapsed}
+        collapsible
+        onCollapse={(collapsed) => setSideMenuCollapsed(collapsed)}
         theme="light"
         width={SIDER_WIDTH["EXPANDED"]}
         style={{
-          overflowY: "auto",
-          overflowX: "hidden",
-          height: "100vh",
+          overflow: "auto",
+          height: "calc(100vh - 50px)",
           position: "fixed",
           top: 0,
           left: 0,
-          minWidth: 120,
           zIndex: 1000,
         }}
       >
         <div>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: sideMenuCollapsed ? 'center' : 'space-between',
-            padding: '16px',
-            gap: '8px'
-          }}>
-            {!sideMenuCollapsed && (
-              <Image
-                src={"/images/logo.png"}
-                alt={"veciapp-logo"}
-                width={100}
-                height={60}
-                style={{
-                  width: "auto",
-                  objectFit: "cover",
-                  height: "40px"
-                }}
-              />
-              )}
-            <Button
-              type="text"
-              icon={<MenuOutlined />}
-              onClick={() => setSideMenuCollapsed(prev => !prev)}
-              style={{ padding: 0 }}
-            />
-          </div>
+          <Image
+            src={"/images/logo.png"}
+            alt={"veciapp-logo"}
+            width={100}
+            height={60}
+            style={{
+              width: "auto",
+              objectFit: "cover",
+              display: "flex",
+              margin: "16px auto",
+            }}
+          ></Image>
           {!sideMenuCollapsed && (
             <Typography.Title
               level={3}
@@ -289,27 +258,17 @@ function DashboardLayout({
           )}
           <AutoMenu items={lateralMenuItems[router.pathname.split("/")[1]]} />
         </div>
-        <div style={{ 
-          position: 'absolute', 
-          bottom: 0, 
-          left: 0,
-          width: '100%', 
-          padding: '16px',
-          background: 'white',
-          borderTop: '1px solid #f0f0f0'
-        }}>
-          <ProfileButton
-            width={
-              sideMenuCollapsed
-                ? SIDER_WIDTH["COLLAPSED"]
-                : SIDER_WIDTH["EXPANDED"]
-            }
-            user={userSession.data || ({} as User)}
-            dropdownProps={{
-              menu: dropdownMenu,
-            }}
-          />
-        </div>
+        <ProfileButton
+          width={
+            sideMenuCollapsed
+              ? SIDER_WIDTH["COLLAPSED"]
+              : SIDER_WIDTH["EXPANDED"]
+          }
+          user={userSession.data || ({} as User)}
+          dropdownProps={{
+            menu: dropdownMenu,
+          }}
+        />
       </Sider>
       <Layout
         style={{
@@ -381,7 +340,6 @@ function DashboardLayout({
         >
           {roleLabels[primaryUrlSegment]}
         </Typography.Title>
-       
         <AutoMenu
           items={lateralMenuItems[router.pathname.split("/")[1]]}
           style={{ width: "240px" }}

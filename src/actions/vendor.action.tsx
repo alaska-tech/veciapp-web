@@ -19,7 +19,7 @@ interface ValidateAccountForm {
 export const QUERY_KEY_VENDOR = "vendor" as const;
 
 export const useVendorAction = () => {
-  const { notification, message } = App.useApp();
+  const { notification, message, modal } = App.useApp();
   const validateAccount = mutateEntity<
     AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
@@ -226,11 +226,13 @@ export const useVendorAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const vendor = data.data.data;
-        message.success({
-          content: `Proveedor ${vendor.fullName || ""} ( ${
-            vendor.email
-          } ) se actualizó correctamente`,
-          duration: 4,
+        modal.success({
+          title: "Solicitud de cambios registrada exitosamente",
+          content: `Los cambios en el veci "${
+            vendor.fullName || ""
+          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          okText: "Entendido",
+          centered: true,
         });
       },
     }

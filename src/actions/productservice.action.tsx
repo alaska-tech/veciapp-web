@@ -19,7 +19,7 @@ import { QUERY_KEY_BRANCH } from "./branch.action";
 export const QUERY_KEY_PRODUCTSERVICE = "productService" as const;
 
 export const useProductServiceAction = () => {
-  const { notification, message } = App.useApp();
+  const { notification, message, modal } = App.useApp();
   const queryClient = useQueryClient();
   const getProductServices = queryEntity<
     AxiosResponse<
@@ -55,12 +55,13 @@ export const useProductServiceAction = () => {
               { status: "Success" }
             >
           >(
-            `/productservice/list?limit=${limit}&page=${page}${branch}${vendor}`
-          ,{
-            params: {
-              ...search,
-            },
-          });
+            `/productservice/list?limit=${limit}&page=${page}${branch}${vendor}`,
+            {
+              params: {
+                ...search,
+              },
+            }
+          );
           console.log(response);
           return response.data;
         } catch (error) {
@@ -72,29 +73,32 @@ export const useProductServiceAction = () => {
   const getProductServicesByBranchIdPaginated = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
-  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, ({ limit, page, branchId, search }) => {
-    return async function queryFn() {
-      try {
-        const response = await apiClient.get<
-          Extract<
-            Response<PaginatedResult<ProductService>>,
-            { status: "Success" }
-          >
-        >(
-          `/productservice/${branchId}/all-productservices?limit=${limit}&page=${page}`,
-          {
-            params: {
-              ...search,
-            },
-          }
-        );
-        console.log(response);
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    };
-  });
+  >(
+    [QUERY_KEY_PRODUCTSERVICE] as QueryKey,
+    ({ limit, page, branchId, search }) => {
+      return async function queryFn() {
+        try {
+          const response = await apiClient.get<
+            Extract<
+              Response<PaginatedResult<ProductService>>,
+              { status: "Success" }
+            >
+          >(
+            `/productservice/${branchId}/all-productservices?limit=${limit}&page=${page}`,
+            {
+              params: {
+                ...search,
+              },
+            }
+          );
+          console.log(response);
+          return response.data;
+        } catch (error) {
+          throw error;
+        }
+      };
+    }
+  );
   const getProductServicesByBranchId = queryEntityById<
     Extract<Response<PaginatedResult<ProductService>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
@@ -266,11 +270,13 @@ export const useProductServiceAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
-        message.success({
-          content: `ProductService ${
+        modal.success({
+          title: "Solicitud de cambios registrada exitosamente",
+          content: `Los cambios para "${
             productService.name || ""
-          } was created successfully`,
-          duration: 4,
+          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          okText: "Entendido",
+          centered: true,
         });
       },
     }
@@ -305,13 +311,15 @@ export const useProductServiceAction = () => {
         });
       },
       onSuccess: async (data, variables, context) => {
-        /* const productService = data.data.data;
-        message.success({
-          content: `Producto o servicio ${
+        const productService = data.data.data;
+        modal.success({
+          title: "Solicitud de cambios registrada exitosamente",
+          content: `Los cambios para "${
             productService.name || ""
-          } se actualizó correctamente`,
-          duration: 4,
-        }); */
+          }" se han registrado y están pendientes de aprobación por el administrador.`,
+          okText: "Entendido",
+          centered: true,
+        });
       },
     }
   );
