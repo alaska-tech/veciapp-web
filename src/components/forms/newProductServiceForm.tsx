@@ -49,6 +49,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   initialValues?: T;
   branchId: string;
   userId: string;
+  onSuccess?: () => void;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
   const [formInstance] = Form.useForm();
@@ -101,6 +102,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
       highligthOnChange={hasInitialValues} 
+      onSuccess={props.onSuccess}
     >
       {(formInstance, setAsTouched) => (
         <Row gutter={[24, 16]}>

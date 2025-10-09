@@ -42,6 +42,7 @@ const Index = () => {
         }}
         loading={create.isPending}
         vendorId={vendorId}
+        onSuccess={() => {}}
       />
     </Space>
   );

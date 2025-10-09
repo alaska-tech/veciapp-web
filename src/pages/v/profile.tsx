@@ -44,16 +44,15 @@ import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestI
 
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
-const { modal } = App.useApp();
 
 const Index = () => {
+  const { modal, message } = App.useApp();
   const genderMap = {
     M: "Hombre",
     F: "Mujer",
     O: "Otro",
   };
   const [form] = Form.useForm();
-  const { message } = App.useApp();
   const authActions = useAuthAction();
   const user = authActions.userSession;
   const vendorActions = useVendorAction();

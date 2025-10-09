@@ -75,6 +75,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
   loading?: boolean;
   initialValues?: T;
   vendorId: string;
+  onSuccess?: () => void;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
   const mapValues = (values: any) => {
@@ -144,6 +145,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               location: SANTA_MARTA_LOCATION_OBJECT,
             }
       }
+      onSuccess={props.onSuccess}
     >
       {(formInstance, setAsTouched) => (
         <div

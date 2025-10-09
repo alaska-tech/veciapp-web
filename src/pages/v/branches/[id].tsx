@@ -2,8 +2,9 @@ import { useBranchAction } from "@/actions/branch.action";
 import { useCustomerAction } from "@/actions/customer.action";
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestInfoModal";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Result, Button, Space, App } from "antd";
+import { Result, Button, Space, App, Form } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -16,22 +17,23 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   const router = useRouter();
-  const {modal } = App.useApp()
+  const { modal } = App.useApp();
   const { id } = router.query;
   const actions = useBranchAction();
   const queryResult = actions.getBranchById(id as string);
-  const update = actions.updateBranch(
-    {
-      onSuccess: (data, variables, context) => {
-        modal.success({
-          title: "Sucursal actualizada exitosamente",
-          content: `La sucursal ha sido actualizada con éxito.`,
-          okText: "Entendido",
-          centered: true,
-        });
-      },
-    }
-  );
+  const update = actions.updateBranch({
+    onSuccess: (data, variables, context) => {
+      modal.success({
+        title: "Solicitud de cambios registrada exitosamente",
+        content: `Los cambios en la sucursal se han registrado y están pendientes de aprobación por el administrador.`,
+        okText: "Entendido",
+        centered: true,
+      });
+    },
+  });
+  const [showChangeRequestModal, closeChangeRequestModal] =
+    CreateChangeRequestInfoModal();
+
   if (queryResult.isLoading) {
     return <LoadingOutlined />;
   }
@@ -58,11 +60,16 @@ const Index = () => {
     <Space direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
-          await update.mutateAsync({ body: values, id: id as string });
+          showChangeRequestModal({
+            onOk: () => {
+              return update.mutateAsync({ body: values, id: id as string });
+            },
+          });
         }}
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
         vendorId={queryResult.data?.vendorId || ""}
+        onSuccess={() => {}}
       />
     </Space>
   );
