@@ -1,9 +1,15 @@
 import {
+  AppleOutlined,
+  AppstoreOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  ShopOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
   BranchStateType,
+  ChangeRequestStatusOptionsType,
+  entityTypeOptionsType,
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentStatusType,
   VendorGendersType,
@@ -135,7 +141,7 @@ export const SERVICE_ORDER_ORDER_STATUS_LABELS: Record<
   ServiceOrderOrderStatusType[number],
   any
 > = {
-  received: <Tag color='yellow'>Recibido</Tag>,
+  received: <Tag color="yellow">Recibido</Tag>,
   preparing: <Tag color="orange">En preparación</Tag>,
   shipped: <Tag color="green">En ruta</Tag>,
   delivered: <Tag color="gray">Entregado</Tag>,
@@ -156,4 +162,34 @@ export const GENDER_LABELS: Record<VendorGendersType[number], string> = {
   M: "Hombre",
   F: "Mujer",
   O: "Otro",
+};
+
+export const CHANGE_REQUEST_STATUS_LABEL: Record<
+  ChangeRequestStatusOptionsType[number],
+  string
+> = {
+  PENDING: "Pendiente",
+  APPROVED: "Aprobado",
+  REJECTED: "Rechazado",
+};
+
+export const CHANGE_REQUEST_TYPE_LABEL: Record<
+  entityTypeOptionsType[number],
+  any
+> = {
+  PRODUCT_AND_SERVICE: (
+    <Tag icon={<AppleOutlined />} color="geekblue">
+      Producto/Servicio
+    </Tag>
+  ),
+  STORE: (
+    <Tag icon={<AppstoreOutlined />} color="geekblue">
+      Tienda
+    </Tag>
+  ),
+  VENDOR_PROFILE: (
+    <Tag icon={<UserOutlined />} color="geekblue">
+      Perfil de Vendedor
+    </Tag>
+  ),
 };

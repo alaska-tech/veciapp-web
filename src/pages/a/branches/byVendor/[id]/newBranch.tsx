@@ -1,6 +1,6 @@
 import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Space } from "antd";
+import { App, Space } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -13,12 +13,17 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   const actions = useBranchAction();
-  const create = actions.createBranch();
+  const { message } = App.useApp();
+  const create = actions.createBranch({
+    onSuccess: (data, variables, context) => {
+      const branch = data.data.data;
+      message.success("Sucursal creada exitosamente");
+    },
+  });
   const router = useRouter();
-  const { id : vendorId, } = router.query;
+  const { id: vendorId } = router.query;
   return (
     <Space direction="vertical">
-      
       <NewFormDynamic
         onFinish={async (values) => {
           await create.mutateAsync({

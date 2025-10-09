@@ -284,7 +284,7 @@ const NewProductButton = ({ totalBranches }: { totalBranches: number }) => {
   const form = Form.useFormInstance();
   const handleClick = () => {
     const modalRef = modal.info({
-      title: "Escoja un tienda",
+      title: "Escoja una tienda",
       okButtonProps: {
         style: {
           display: "none",
@@ -295,9 +295,9 @@ const NewProductButton = ({ totalBranches }: { totalBranches: number }) => {
         <Form
           form={form}
           onFinish={(values) => {
-            const [branchId, branchName] = values.branchId.split("/");
+            const [branchId, branchName, vendorId] = values.branchId.split("/");
             router.push(
-              `/a/products/byBranch/${branchId}/newProduct?name=${branchName}`
+              `/a/products/byBranch/${branchId}/newProduct?name=${branchName}&vendorId=${vendorId}`
             );
             modalRef.destroy();
           }}
@@ -310,7 +310,7 @@ const NewProductButton = ({ totalBranches }: { totalBranches: number }) => {
             <Select
               options={query.data?.data.data.map((branch) => ({
                 label: `${branch.name} (${branch.address})`,
-                value: `${branch.id}/${branch.name}`,
+                value: `${branch.id}/${branch.name}/${branch.vendorId}`,
               }))}
               showSearch
               filterOption={(input, option) =>

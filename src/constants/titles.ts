@@ -8,6 +8,7 @@ export const titles: Record<string, string> = {
   "profile": "Perfil de usuario",
   "users": "Clientes",
   "users/newUser": "Nuevo usuario",
+  "serviceOrders": "Historial de Pedidos",
   "branches": "Tiendas",
   "branches/byVendor/[id]/newBranch": "Crear nueva tienda para ${name}",
   "configuration": "Parámetros",
@@ -20,12 +21,16 @@ export const titles: Record<string, string> = {
   "products/[id]": "Detalles de ${name}",
   "products/byBranch/[id]": "Servicios y productos de la tienda '${name}'",
   "products/byBranch/[id]/newProduct": "Crear un nuevo producto o servicio para la tienda '${name}'",
+
+  "orders" : "Gestión de pedidos",
+  "changeRequests": "Solicitudes de cambio",
+  "changeRequests/[id]": "Detalle de solicitud de cambio",
 };
 export const subtitles: Record<string, string> = {
   "home": "Resumen general",
   "vendors": "Esta es la pagina de vendedores",
   "vendors/newVendor": "Esta es la pagina de creación de vendedores",
-  "vendors/[id]": "Estos son los detalles del veciproveedor",
+  "vendors/[id]": "Estos son los detalles del Veci",
   "branches/byVendor/[id]": "Listado de tiendas",
   "profile": "Esta es la pagina de perfil de usuario",
   "users": "Esta es la pagina de Clientes",
@@ -37,4 +42,6 @@ export const subtitles: Record<string, string> = {
   "payments": "Esta es la pagina de pagos",
   "products": "Esta es la pagina de servicios y productos",
   "products/byBranch/[id]/newProduct": "Esta es la pagina para crear un nuevo producto o servicio",
+  "orders": "Administra y monitorea todos los pedidos de tu tienda",
+  "changeRequests": "Solicitudes de cambio pendientes de revisión",
 };

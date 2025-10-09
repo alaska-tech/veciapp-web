@@ -14,7 +14,7 @@ import { QueryKey, useQueryClient } from "@tanstack/react-query";
 export const QUERY_KEY_BRANCH = "branch" as const;
 
 export const useBranchAction = () => {
-  const { notification, message } = App.useApp();
+  const { notification, message, modal } = App.useApp();
   const queryClient = useQueryClient();
   const getBranchs = queryEntity<
     AxiosResponse<
@@ -85,10 +85,10 @@ export const useBranchAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/all?limit=${limit}&page=${page}`,{
-          params:{
-            ...search
-          }
+        >(`/branches/all?limit=${limit}&page=${page}`, {
+          params: {
+            ...search,
+          },
         });
         console.log(response);
         return response.data;
@@ -105,13 +105,11 @@ export const useBranchAction = () => {
       try {
         const response = await apiClient.get<
           Extract<Response<PaginatedResult<Branch>>, { status: "Success" }>
-        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`,
-          {
-            params: {
-              ...search,
-            },
-          }
-        );
+        >(`/branches/${vendorId}/all-branches?limit=${limit}&page=${page}`, {
+          params: {
+            ...search,
+          },
+        });
         console.log(response);
         return response.data;
       } catch (error) {
@@ -199,10 +197,7 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-        message.success({
-          content: `Branch ${branch.name || ""} was created successfully`,
-          duration: 4,
-        });
+        
       },
     }
   );
@@ -237,10 +232,6 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
-        message.success({
-          content: `La tienda ${branch.name || ""} se actualizó correctamente`,
-          duration: 4,
-        });
       },
     }
   );
