@@ -246,11 +246,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
               <Select
                 mode="multiple"
                 options={[
-                  { value: "Efectivo" },
-                  { value: "Llaves" },
-                  { value: "Nequi" },
-                  { value: "Daviplata" },
-                  { value: "Transfiya" },
+                  { value: "Pago contraentrega - Efectivo" },
+                  { value: "Pago en linea - Wompi" },
                 ]}
               />
             </Form.Item>
