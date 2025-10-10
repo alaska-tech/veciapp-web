@@ -1,10 +1,7 @@
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  LoadingOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import { Button, Result, Space } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { App, Button, Result, Space } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -17,10 +14,16 @@ const NewFormDynamic = dynamic(
 
 const Index = () => {
   const router = useRouter();
+  const { message } = App.useApp();
   const { id } = router.query;
   const vendorActions = useVendorAction();
   const vendorQuery = vendorActions.getVendorById(id as string);
-  const updateVendor = vendorActions.updateVendor();
+  const updateVendor = vendorActions.updateVendor({
+    onSuccess: (data) => {
+      const vendor = data.data.data;
+      message.success("Veci actualizado exitosamente");
+    },
+  });
   if (vendorQuery.isLoading) {
     return <LoadingOutlined />;
   }
@@ -44,7 +47,7 @@ const Index = () => {
     );
   }
   return (
-    <Space direction="vertical">      
+    <Space direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
           await updateVendor.mutateAsync({ body: values, id: id as string });

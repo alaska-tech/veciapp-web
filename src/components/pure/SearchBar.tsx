@@ -52,7 +52,7 @@ export const SearchBar = ({
             setSearch({ ...search, value: value });
           }}
           value={search.value}
-          showSearch
+          showSearch={false}
           popupMatchSelectWidth={false}
           style={{ minWidth: 150 }}
           allowClear

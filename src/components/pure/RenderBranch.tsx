@@ -7,28 +7,17 @@ const RenderBranch = ({ branch, href }: { branch: Branch; href?: string }) => {
   const { name, address, location, description } = branch;
   return (
     <Space style={{ alignItems: "flex-start" }}>
-      <Image src={branch.logo} width={60} height={60} style={{ borderRadius: "2px" }} />
+      <Image
+        src={branch.logo}
+        width={60}
+        height={60}
+        style={{ borderRadius: "2px" }}
+      />
       <div>
-        <Collapse
-          style={{
-            borderRadius: "2px",
-          }}
-          items={[
-            {
-              key: name,
-              label: <Typography.Link href={href}>{name}</Typography.Link>,
-              children: <p>{description}</p>,
-              styles: {
-                body: {
-                  padding: "0 6px",
-                },
-                header: {
-                  padding: "0 0 0 6px",
-                },
-              },
-            },
-          ]}
-        />
+        <Typography.Link href={href}>
+          {name}
+        </Typography.Link>
+
         {address || location?.coordinates ? (
           <Typography.Link
             style={{
@@ -39,7 +28,11 @@ const RenderBranch = ({ branch, href }: { branch: Branch; href?: string }) => {
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
-            //href={`https://www.google.com/maps?q=${location.coordinates[1]},${location.coordinates[0]}`}
+            href={
+              location.coordinates?.at(0) && location.coordinates?.at(1)
+                ? `https://www.google.com/maps?q=${location.coordinates[1]},${location.coordinates[0]}`
+                : undefined
+            }
             target="_blank"
             rel="noopener noreferrer"
           >

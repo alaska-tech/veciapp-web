@@ -17,6 +17,7 @@ import {
   Input,
   Radio,
   App,
+  Modal,
 } from "antd";
 import {
   UserOutlined,
@@ -45,13 +46,13 @@ const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
 
 const Index = () => {
+  const { modal, message } = App.useApp();
   const genderMap = {
     M: "Hombre",
     F: "Mujer",
     O: "Otro",
   };
   const [form] = Form.useForm();
-  const { message } = App.useApp();
   const authActions = useAuthAction();
   const user = authActions.userSession;
   const vendorActions = useVendorAction();
@@ -59,33 +60,34 @@ const Index = () => {
     user.data?.foreignPersonId as string
   );
   const userData = (data as unknown as Vendor) ?? ({} as Vendor);
+  const updateVendorMutation = vendorActions.updateVendor({
+    onSuccess: (data) => {
+      modal.success({
+        title: "Solicitud de cambios registrada exitosamente",
+        content: `Los cambios en el veci se han registrado y están pendientes de aprobación por el administrador.`,
+        okText: "Entendido",
+        centered: true,
+      });
+      setIsEditing(false);
+      form.resetFields();
+    },
+    onError: () => {
+      message.error("Error al enviar la solicitud de cambio de información");
+    },
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [showChangeRequestModal, closeChangeRequestModal] =
-    CreateChangeRequestInfoModal({
-      modalProps: {
-        onOk: () => {
-          console.log(form.getFieldsValue());
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(true);
-            }, 2000);
-          }).then(
-            () => {
-              message.success("Solicitud de cambio de información enviada");
-              setIsEditing(false);
-              form.resetFields();
-            },
-            () => {
-              message.error(
-                "Error al enviar la solicitud de cambio de información"
-              );
-            }
-          );
-        },
+    CreateChangeRequestInfoModal();
+  const handleSubmit = (values: any) => {
+    showChangeRequestModal({
+      onOk: () => {
+        const values = form.getFieldsValue();
+        return updateVendorMutation.mutate({
+          id: userData.id,
+          body: values,
+        });
       },
     });
-  const handleSubmit = (values: any) => {
-    showChangeRequestModal();
   };
   const InfoCard = ({
     title,
