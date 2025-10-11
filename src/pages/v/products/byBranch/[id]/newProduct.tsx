@@ -49,8 +49,6 @@ const Index = () => {
           });
         }}
         loading={create.isPending}
-        branchId={(id as string) || ""}
-        userId={user.data?.id || ""}
         onSuccess={()=>{}}
       />
     </div>

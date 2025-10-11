@@ -39,7 +39,6 @@ const Index = () => {
           });
         }}
         loading={create.isPending}
-        branchId={(id as string) || ""}
       />
     </Space>
   );

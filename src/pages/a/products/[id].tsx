@@ -49,8 +49,6 @@ const Index = () => {
         }}
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
-        branchId={queryResult.data?.branchId || ""}
-        userId={user.data?.id || ""}
       />
     </Space>
   );

@@ -47,7 +47,6 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
   initialValues?: T;
-  branchId: string;
   onSuccess?: () => void;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
