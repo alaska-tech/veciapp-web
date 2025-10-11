@@ -220,7 +220,7 @@ const NewBranchButton = ({ totalVendors }: { totalVendors: number }) => {
   const form = Form.useFormInstance();
   const handleClick = () => {
     const modalRef = modal.info({
-      title: "Escoja un veciproveedor",
+      title: "Escoja un Veci",
       okButtonProps: {
         style: {
           display: "none",

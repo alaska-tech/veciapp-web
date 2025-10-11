@@ -94,11 +94,9 @@ export const branchesTableColumns: TableColumnsType<Branch> = [
           <Descriptions.Item label="Estado de activación">
             {BRANCH_IS_ACTIVE_LABELS[record.isActive.toString()]}
           </Descriptions.Item>
-          <Descriptions.Item label="Recogida en tienda">
-            {record.isPickupAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
-          </Descriptions.Item>
-          <Descriptions.Item label="Domicilio">
-            {record.isDeliveryAvailable ? <Tag>Si</Tag> : <Tag>No</Tag>}
+          <Descriptions.Item label="Método de entrega">
+            {record.isPickupAvailable && <Tag>Recogida en tienda</Tag>}
+            {record.isDeliveryAvailable && <Tag>Entrega a domicilio</Tag>}
           </Descriptions.Item>
           <Descriptions.Item label="Formas de pago">
             <Space wrap>
