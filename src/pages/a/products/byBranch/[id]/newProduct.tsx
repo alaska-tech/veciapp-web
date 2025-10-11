@@ -20,7 +20,7 @@ const Index = () => {
   const { message } = App.useApp();
   const create = actions.createProductService({
     onSuccess: (data, variables, context) => {
-      message.success("Solicitud de cambios registrada exitosamente");
+      message.success("Se creó el producto exitosamente");
     },
   });
   const router = useRouter();
@@ -40,7 +40,6 @@ const Index = () => {
         }}
         loading={create.isPending}
         branchId={(id as string) || ""}
-        userId={""}
       />
     </Space>
   );

@@ -6,13 +6,14 @@ import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 import {
   Branch,
   BranchBusiness,
+  ServiceOrderPaymentMethod,
   weekDay,
   WEEKDAY_LABEL,
 } from "@/constants/models";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
-import { BRANCH_TYPE_LABELS } from "@/constants/labels";
+import { BRANCH_TYPE_LABELS, SERVICE_ORDER_PAYMENT_METHOD_LABELS } from "@/constants/labels";
 
 dayjs.extend(customParseFormat);
 
@@ -247,10 +248,10 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
             >
               <Select
                 mode="multiple"
-                options={[
-                  { value: "Pago contraentrega - Efectivo" },
-                  { value: "Pago en linea - Wompi" },
-                ]}
+                options={ServiceOrderPaymentMethod.map((method) => ({
+                  value: method,
+                  label: SERVICE_ORDER_PAYMENT_METHOD_LABELS[method],
+                }))}
               />
             </Form.Item>
             <Form.Item

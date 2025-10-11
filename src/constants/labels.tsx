@@ -11,6 +11,7 @@ import {
   ChangeRequestStatusOptionsType,
   entityTypeOptionsType,
   ServiceOrderOrderStatusType,
+  ServiceOrderPaymentMethodType,
   ServiceOrderPaymentStatusType,
   VendorGendersType,
 } from "./models";
@@ -192,4 +193,12 @@ export const CHANGE_REQUEST_TYPE_LABEL: Record<
       Perfil de Vendedor
     </Tag>
   ),
+};
+
+export const SERVICE_ORDER_PAYMENT_METHOD_LABELS: Record<
+  ServiceOrderPaymentMethodType[number],
+  string
+> = {
+  cash: "Pago contraentrega - Efectivo",
+  transfer: "Pago en linea - Wompi",
 };

@@ -317,7 +317,7 @@ export interface Message extends BaseAttributes {
 
 export const ServiceOrderDeliveryType = ["pickup", "delivery"] as const;
 export type ServiceOrderDeliveryTypeType = typeof ServiceOrderDeliveryType;
-export const ServiceOrderPaymentMethod = ["cash", "card", "transfer"] as const;
+export const ServiceOrderPaymentMethod = ["cash", "transfer"] as const;
 export type ServiceOrderPaymentMethodType = typeof ServiceOrderPaymentMethod;
 export const ServiceOrderOrderStatus = [
   "received",
