@@ -107,7 +107,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
+          <a href={`/v/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },
