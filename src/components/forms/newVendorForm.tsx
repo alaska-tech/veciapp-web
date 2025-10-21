@@ -256,7 +256,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 >
                   <Radio.Group
                     options={VendorGenders.map((e) => {
-                      return GENDER_LABELS[e];
+                      return {label: GENDER_LABELS[e], value: e};
                     })}
                   />
                 </Form.Item>
