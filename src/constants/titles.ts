@@ -1,8 +1,8 @@
 
 export const titles: Record<string, string> = {
   "home": "Bienvenido",
-  "vendors": "Vendedores",
-  "vendors/newVendor": "Creación de nuevo vendedor",
+  "vendors": "Vecis",
+  "vendors/newVendor": "Creación de nuevo veci",
   "vendors/[id]": "Detalles de ${name}",
   "branches/byVendor/[id]": "Tiendas del vendedor ${name}",
   "profile": "Perfil de usuario",
@@ -28,8 +28,8 @@ export const titles: Record<string, string> = {
 };
 export const subtitles: Record<string, string> = {
   "home": "Resumen general",
-  "vendors": "Esta es la pagina de vendedores",
-  "vendors/newVendor": "Esta es la pagina de creación de vendedores",
+  "vendors": "Esta es la pagina de los vecis",
+  "vendors/newVendor": "Esta es la pagina de creación de un nuevo veci",
   "vendors/[id]": "Estos son los detalles del Veci",
   "branches/byVendor/[id]": "Listado de tiendas",
   "profile": "Esta es la pagina de perfil de usuario",

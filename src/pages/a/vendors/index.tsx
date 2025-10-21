@@ -158,7 +158,7 @@ const Users = () => {
       <Space style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
         <Button href="/a/vendors/newVendor" icon={<PlusOutlined />}>
-          Crear nuevo proveedor
+          Crear nuevo veci
         </Button>
       </Space>
       <Table<Vendor>

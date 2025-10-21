@@ -49,13 +49,13 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
     },
     {
       key: `sub-users`,
-      label: "Veciproveedores",
+      label: "Vecis",
       type: "group",
       children: [
         {
           key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/a/vendors">Proveedores</Link>,
+          label: <Link href="/a/vendors">Vecis</Link>,
           children: undefined,
         },
         {
@@ -154,7 +154,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
 
 const roleLabels: Record<string, string> = {
   a: "Administrador",
-  v: "Veciproveedor",
+  v: "Veci",
 };
 
 interface DashboardLayoutProps {

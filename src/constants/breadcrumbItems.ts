@@ -29,7 +29,7 @@ export const breadcrumItemTree: TreeStruct[] = [
       },
       {
         key: "vendors",
-        value: "Proveedores",
+        value: "Vecis",
         children: [
           {
             key: "[id]",
@@ -37,7 +37,7 @@ export const breadcrumItemTree: TreeStruct[] = [
           },
           {
             key: "newVendor",
-            value: "Nuevo proveedor",
+            value: "Nuevo veci",
           },
         ],
       },

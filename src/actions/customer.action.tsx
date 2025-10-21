@@ -169,7 +169,7 @@ export const useCustomerAction = () => {
       onSuccess: async (data, variables, context) => {
         const customer = data.data.data;
         message.success({
-          content: `Proveedor ${customer.fullName || ""} ( ${
+          content: `Veci ${customer.fullName || ""} ( ${
             customer.email
           } ) se actualizó correctamente`,
           duration: 4,
