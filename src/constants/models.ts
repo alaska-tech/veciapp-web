@@ -92,7 +92,7 @@ export type VendorStatesType = typeof VendorStates;
 export const VendorGenders = ["M", "F", "O"] as const;
 export type VendorGendersType = typeof VendorGenders;
 
-export const IdentificationOptions = ["C.C.", "P.P.T.", "C.E."] as const;
+export const IdentificationOptions = ["CC", "PPT", "CE"] as const;
 export type IdentificationOptionsType = typeof IdentificationOptions;
 
 export const EthnicityOptions = [
@@ -110,7 +110,7 @@ export interface Vendor extends BaseAttributes {
   internalCode: string; // max length 100
   fullName: string; // max length 255
   identification: string; // max length 100
-  typeOfIdentification: IdentificationOptionsType[number];
+  identificationType: IdentificationOptionsType[number];
   ethnicity?: EthnicityOptionsType[number]; // max length 100
   email: string; //max length 150
   isEmailVerified: boolean;
