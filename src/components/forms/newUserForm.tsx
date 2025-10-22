@@ -72,9 +72,6 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
                   pattern: /^[0-9]+$/,
                   message: "El número de identidad solo puede contener números",
                 },
-                {
-                  required: true,
-                },
               ]}
             >
               <Input
