@@ -403,3 +403,31 @@ export interface ChangeRequest extends BaseAttributes {
   adminId: string | null;
   reason: string | null;
 }
+
+export type PaymentState = ServiceOrderPaymentStatusType[number];
+export type PaymentType = string;
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  customerId: string;
+  vendorId: string;
+  paymentReference: string;
+  provider: string;
+  state: PaymentState;
+  amount: string;
+  currency: string;
+  type?: PaymentType | null;
+  transactionId?: string | null;
+  gatewayResponse?: any;
+  receiptUrl?: string | null;
+  failureReason?: string | null;
+  paymentDate?: Date | null;
+  metadata?: any;
+  service_fee_details?: {
+    rate: number;
+    amount: number;
+  } | null;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -44,10 +44,8 @@ const SuccessVerified = () => {
     >
       <Title level={4}>Todo listo</Title>
       <Text>
-        Muchas gracias, ahora seras dirigido al inicio de sesión en {countdown}{" "}
-        segundos.
-      </Text>
-      <Button loading={true} block type="primary" size="large" />
+        Muchas gracias, ya puedes cerrar esta ventana.
+      </Text>      
     </div>
   );
 };

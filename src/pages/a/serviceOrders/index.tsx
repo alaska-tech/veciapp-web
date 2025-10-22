@@ -9,9 +9,11 @@ import {
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentStatusType,
   Vendor,
+  Payment,
 } from "@models";
 import {
   SERVICE_ORDER_ORDER_STATUS_LABELS,
+  SERVICE_ORDER_PAYMENT_METHOD_LABELS,
   SERVICE_ORDER_PAYMENT_STATUS_LABELS,
 } from "@/constants/labels";
 import { useServiceOrderAction } from "@/actions/serviceOrder.action";
@@ -24,13 +26,14 @@ import RenderBranch from "@/components/pure/RenderBranch";
 import { useBranchAction } from "@/actions/branch.action";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import { usePaymenAction } from "@/actions/paymnet.action";
 dayjs.locale("es");
 type DataType = ServiceOrder;
 
 const searchFields: SearchFieldProps[] = [
   {
     label: "Estado",
-    fieldName: "status",
+    fieldName: "orderStatus",
     type: "options",
     options: Object.entries(ServiceOrderOrderStatus).map(([key, value]) => ({
       label: SERVICE_ORDER_ORDER_STATUS_LABELS[value],
@@ -50,7 +53,7 @@ const Index = () => {
   const query = actions.getServiceOrders({
     limit: pagination.pageSize,
     page: pagination.current,
-    status: search.value as ServiceOrderOrderStatusType[number],
+    orderStatus: search.value as ServiceOrderOrderStatusType[number],
   });
   const vendorQueries = useVendorAction();
   const vendorQuery = vendorQueries.getVendorsById(
@@ -64,6 +67,11 @@ const Index = () => {
   const branchQuery = branchQueries.getBranchesById(
     query.data?.data.data.map((order) => order.branchId) || []
   );
+  const paymentQueries = usePaymenAction();
+  const paymentQuery = paymentQueries.getPaymentsByOrderId(
+    query.data?.data.data.map((order) => order.id) || [],
+    { retry: 1 }
+  );
   const columns: TableColumnsType<DataType> = [
     {
       title: "Fecha",
@@ -71,7 +79,7 @@ const Index = () => {
       key: "createdAt",
       render: (value) => {
         return dayjs(value).format("DD/MMMM/YYYY HH:mm");
-      }
+      },
     },
     {
       title: "Número de pedido",
@@ -129,13 +137,53 @@ const Index = () => {
       },
     },
     {
-      title: "Estado del pago",
+      title: "Información del pago",
       dataIndex: "paymentStatus",
       key: "paymentStatus",
-      render: (status) => {
-        return SERVICE_ORDER_PAYMENT_STATUS_LABELS[
-          status as ServiceOrderPaymentStatusType[number]
-        ];
+      minWidth: 260,
+      render: (_status, record) => {
+        const payment = paymentQuery.find(
+          (query) => query.data?.data.data.orderId === record.id
+        );
+        const pay = payment?.data?.data.data as Payment | undefined;
+
+        return (
+          <Space direction="vertical" size={0}>
+            <div>
+              {
+                SERVICE_ORDER_PAYMENT_STATUS_LABELS[
+                  (pay?.state ||
+                    record.paymentStatus) as ServiceOrderPaymentStatusType[number]
+                ]
+              }
+            </div>
+            <div>
+              {`${pay?.currency || record.currency} ${
+                pay?.amount ?? record.totalAmount
+              }`}
+            </div>
+            <div>
+              Método de pago:{" "}
+              {SERVICE_ORDER_PAYMENT_METHOD_LABELS[record.paymentMethod] ||
+                record.paymentMethod ||
+                "No especificado"}
+            </div>
+            <div>Ref: {pay?.paymentReference || "-"}</div>
+            <div>Proveedor: {pay?.provider || "-"}</div>
+            {pay?.receiptUrl ? (
+              <a
+                href={pay.receiptUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver recibo
+              </a>
+            ) : null}
+            {pay?.failureReason ? (
+              <Tag color="red">{pay.failureReason}</Tag>
+            ) : null}
+          </Space>
+        );
       },
     },
     {
@@ -143,18 +191,16 @@ const Index = () => {
       key: "actions",
       render: (_text, record) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/serviceOrders/${record.id}`}>
-            Detalles
-          </a>
+          <a href={`/a/serviceOrders/${record.id}`}>Detalles</a>
         </Space>
       ),
     },
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-start" }}>
+      {/* <Space style={{ width: "100%", justifyContent: "flex-start" }}>
         {SearchComponent}
-      </Space>
+      </Space> */}
       <Table<DataType>
         columns={columns}
         rowKey={(record) => record.id}
