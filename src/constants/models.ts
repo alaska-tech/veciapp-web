@@ -364,7 +364,11 @@ export interface ServiceOrder extends BaseAttributes {
     changedBy: string; //foreignPersonId
   }>; //el ultimo es el mas reciete
   deliveryType: ServiceOrderDeliveryTypeType[number];
-  deliveryAddress?: string; //not a string
+  deliveryAddress?: {
+    alias: string;
+    address: string;
+    coordinates: [number, number];
+  };
   isRated: boolean /* 
   status: string;
   timeline: Array<string>;
