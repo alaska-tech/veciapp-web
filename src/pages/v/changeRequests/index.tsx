@@ -15,6 +15,7 @@ import {
   CHANGE_REQUEST_TYPE_LABEL,
 } from "@/constants/labels";
 import { useVendorAction } from "@/actions/vendor.action";
+import useAuthAction from "@/actions/auth.action";
 
 const searchFields: SearchFieldProps[] = [
   {
@@ -31,7 +32,7 @@ const searchFields: SearchFieldProps[] = [
 ];
 
 const ChangeRequestsPage = () => {
-  const router = useRouter();
+  const {userSession} = useAuthAction()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -39,10 +40,11 @@ const ChangeRequestsPage = () => {
   });
   const actions = useChangeRequestAction();
   const { SearchComponent, search } = SearchBar({ searchFields });
-  const query = actions.getChangeRequstByVendorId({
+  const query = actions.getChangeRequests({
     limit: pagination.pageSize,
     page: pagination.current,
     status: search.value,
+    vendorId: userSession.data?.foreignPersonId,
   });
   const vendorActions = useVendorAction();
   const vendorQueries = vendorActions.getVendorsById(
@@ -105,7 +107,7 @@ const ChangeRequestsPage = () => {
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
         <Space split={<Divider type="vertical" />}>
-          <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
+          <a href={`/v/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
     },

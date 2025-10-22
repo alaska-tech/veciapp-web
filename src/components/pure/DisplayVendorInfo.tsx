@@ -40,7 +40,7 @@ const DisplayVendorInfo: React.FC<DisplayVendorInfoProps> = ({ vendor }) => {
             <div style={{ flex: '1 1 300px', minWidth: '0' }}>
               {renderField('Código interno', vendor.internalCode)}
               {renderField('Nombre completo', vendor.fullName)}
-              {renderField('Tipo de identificación', vendor.typeOfIdentification)}
+              {renderField('Tipo de identificación', vendor.identificationType)}
               {renderField('Número de identidad', vendor.identification)}
               {renderField('E-mail', vendor.email)}
               {renderField('Teléfono celular', vendor.cellphone)}

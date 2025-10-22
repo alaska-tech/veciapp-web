@@ -17,7 +17,7 @@ export interface PaginationParams {
   page: number;
 }
 export interface ServiceOrderSearchParams extends PaginationParams {
-  status?: ServiceOrderOrderStatusType[number];
+  orderStatus?: ServiceOrderOrderStatusType[number];
 }
 export const useServiceOrderAction = () => {
   const { notification, message } = App.useApp();

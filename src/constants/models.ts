@@ -92,7 +92,7 @@ export type VendorStatesType = typeof VendorStates;
 export const VendorGenders = ["M", "F", "O"] as const;
 export type VendorGendersType = typeof VendorGenders;
 
-export const IdentificationOptions = ["C.C.", "P.P.T.", "C.E."] as const;
+export const IdentificationOptions = ["CC", "PPT", "CE"] as const;
 export type IdentificationOptionsType = typeof IdentificationOptions;
 
 export const EthnicityOptions = [
@@ -110,7 +110,7 @@ export interface Vendor extends BaseAttributes {
   internalCode: string; // max length 100
   fullName: string; // max length 255
   identification: string; // max length 100
-  typeOfIdentification: IdentificationOptionsType[number];
+  identificationType: IdentificationOptionsType[number];
   ethnicity?: EthnicityOptionsType[number]; // max length 100
   email: string; //max length 150
   isEmailVerified: boolean;
@@ -364,7 +364,11 @@ export interface ServiceOrder extends BaseAttributes {
     changedBy: string; //foreignPersonId
   }>; //el ultimo es el mas reciete
   deliveryType: ServiceOrderDeliveryTypeType[number];
-  deliveryAddress?: string; //not a string
+  deliveryAddress?: {
+    alias: string;
+    address: string;
+    coordinates: [number, number];
+  };
   isRated: boolean /* 
   status: string;
   timeline: Array<string>;
@@ -398,4 +402,32 @@ export interface ChangeRequest extends BaseAttributes {
   status: ChangeRequestStatusOptionsType[number];
   adminId: string | null;
   reason: string | null;
+}
+
+export type PaymentState = ServiceOrderPaymentStatusType[number];
+export type PaymentType = string;
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  customerId: string;
+  vendorId: string;
+  paymentReference: string;
+  provider: string;
+  state: PaymentState;
+  amount: string;
+  currency: string;
+  type?: PaymentType | null;
+  transactionId?: string | null;
+  gatewayResponse?: any;
+  receiptUrl?: string | null;
+  failureReason?: string | null;
+  paymentDate?: Date | null;
+  metadata?: any;
+  service_fee_details?: {
+    rate: number;
+    amount: number;
+  } | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

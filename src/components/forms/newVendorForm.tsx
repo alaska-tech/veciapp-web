@@ -24,7 +24,7 @@ const nonEditableFields = [
   "internalCode",
   "fullName",
   "identification",
-  "typeOfIdentification",
+  "identificationType",
   "commercialRegistry",
   "rut",
   "email",
@@ -109,7 +109,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
               </Col>
               <Col xs={24} md={12}>
                 <Form.Item
-                  name="typeOfIdentification"
+                  name="identificationType"
                   label="Tipo de identificación"
                   rules={[
                     {
@@ -256,7 +256,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
                 >
                   <Radio.Group
                     options={VendorGenders.map((e) => {
-                      return GENDER_LABELS[e];
+                      return {label: GENDER_LABELS[e], value: e};
                     })}
                   />
                 </Form.Item>

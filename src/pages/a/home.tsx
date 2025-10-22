@@ -52,7 +52,7 @@ const Home = () => {
 
   const dashboardCards = [
     {
-      title: "Total Veci Proveedores",
+      title: "Total Vecis",
       value: totalVendors,
       icon: <ShopOutlined style={{ fontSize: "24px", color: "#1890ff" }} />,
       color: "#1890ff",
@@ -139,7 +139,7 @@ const Home = () => {
                 </Title>
                 <Paragraph style={{ margin: "8px 0 16px 0", color: "#666" }}>
                   Haz clic aquí para revisar y aprobar los cambios enviados por
-                  los proveedores.
+                  los vecis.
                 </Paragraph>
                 <Button
                   type="primary"

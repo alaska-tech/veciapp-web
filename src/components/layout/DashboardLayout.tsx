@@ -23,9 +23,7 @@ import useAuthAction from "@/actions/auth.action";
 import { User } from "@/constants/models";
 import GoBackButton from "../pure/goBackButton";
 import { subtitles, titles } from "@/constants/titles";
-import {
-  clearAllInfoFromLocalStorage,
-} from "@/actions/localStorage.actions";
+import { clearAllInfoFromLocalStorage } from "@/actions/localStorage.actions";
 import { AutoTitle } from "../pure/AutoTitle";
 import { AutoMenu } from "../pure/AutoMenu";
 import { ProfileButton } from "../pure/ProfileButton";
@@ -51,13 +49,13 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
     },
     {
       key: `sub-users`,
-      label: "Veciproveedores",
+      label: "Vecis",
       type: "group",
       children: [
         {
           key: `/a/vendors`,
           icon: React.createElement(ShopOutlined),
-          label: <Link href="/a/vendors">Proveedores</Link>,
+          label: <Link href="/a/vendors">Vecis</Link>,
           children: undefined,
         },
         {
@@ -102,7 +100,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           icon: React.createElement(PullRequestOutlined),
           label: <Link href="/a/changeRequests">Solicitudes de cambio</Link>,
           children: undefined,
-        },    
+        },
       ],
     },
     {
@@ -148,7 +146,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           icon: React.createElement(PullRequestOutlined),
           label: <Link href="/v/changeRequests">Solicitudes de cambio</Link>,
           children: undefined,
-        },   
+        },
       ],
     },
   ],
@@ -156,7 +154,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
 
 const roleLabels: Record<string, string> = {
   a: "Administrador",
-  v: "Veciproveedor",
+  v: "Veci",
 };
 
 interface DashboardLayoutProps {
@@ -391,7 +389,13 @@ function DashboardLayout({
   return (
     <AuthVerifier
       requireAuth={true}
-      roles={["admin", "vendor"]}
+      roles={
+        primaryUrlSegment === "a"
+          ? ["admin"]
+          : primaryUrlSegment === "v"
+          ? ["vendor"]
+          : []
+      }
       user={userSession.data || undefined}
       isLoading={userSession.isLoading}
     >

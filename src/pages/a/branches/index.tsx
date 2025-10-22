@@ -240,7 +240,7 @@ const NewBranchButton = ({ totalVendors }: { totalVendors: number }) => {
         >
           <Form.Item
             name="vendorId"
-            label="Proveedor"
+            label="Veci"
             rules={[{ required: true }]}
           >
             <Select

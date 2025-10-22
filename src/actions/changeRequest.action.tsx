@@ -77,7 +77,7 @@ export const useChangeRequestAction = () => {
           queryKey: [QUERY_KEY_CHANGE_REQUEST],
         });
         message.success({
-          content: "Solicitud aprovada correctamente",
+          content: "Solicitud aprobada correctamente",
           duration: 4,
         });
       },
