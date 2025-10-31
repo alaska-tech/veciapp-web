@@ -24,6 +24,7 @@ const Index = () => {
     onSuccess: (data) => {
       const branch = data.data.data;
       message.success("Sucursal actualizada exitosamente");
+      queryResult.refetch();
     },
   });
   if (queryResult.isLoading) {
