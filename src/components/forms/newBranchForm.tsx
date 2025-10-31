@@ -55,8 +55,8 @@ function parseInitialValues(values: Branch) {
   // Parse location
   const parsedLocation = location?.coordinates
     ? {
-        lat: location.coordinates[1],
-        lng: location.coordinates[0],
+        lat: location.coordinates[0],
+        lng: location.coordinates[1],
       }
     : SANTA_MARTA_LOCATION_OBJECT;
 
@@ -116,7 +116,7 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
       managerPhone: managerPhonePrefix + " " + managerPhone,
       location: {
         type: "Point",
-        coordinates: [location.lng, location.lat],
+        coordinates: [location.lat,location.lng],
       },
       vendorId: hasInitialValues ? undefined : props.vendorId,
       operatingHours: mappedOperatingHours,
@@ -224,8 +224,8 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 initialPosition={
                   hasInitialValues && props.initialValues?.location?.coordinates
                     ? {
-                        lat: props.initialValues.location.coordinates[1],
-                        lng: props.initialValues.location.coordinates[0],
+                        lat: props.initialValues.location.coordinates[0],
+                        lng: props.initialValues.location.coordinates[1],
                       }
                     : undefined
                 }

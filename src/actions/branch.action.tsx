@@ -197,6 +197,7 @@ export const useBranchAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const branch = data.data.data;
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_BRANCH] });
         
       },
     }

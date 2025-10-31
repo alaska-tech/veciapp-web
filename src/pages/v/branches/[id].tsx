@@ -1,9 +1,10 @@
-import { useBranchAction } from "@/actions/branch.action";
+import { QUERY_KEY_BRANCH, useBranchAction } from "@/actions/branch.action";
 import { useCustomerAction } from "@/actions/customer.action";
 import { useVendorAction } from "@/actions/vendor.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateChangeRequestInfoModal from "@/components/pure/CreateChangeRequestInfoModal";
 import { LoadingOutlined } from "@ant-design/icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { Result, Button, Space, App, Form } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -19,6 +20,7 @@ const Index = () => {
   const router = useRouter();
   const { modal } = App.useApp();
   const { id } = router.query;
+  const queryClient = useQueryClient();
   const actions = useBranchAction();
   const queryResult = actions.getBranchById(id as string);
   const update = actions.updateBranch({
@@ -29,7 +31,8 @@ const Index = () => {
         okText: "Entendido",
         centered: true,
       });
-    },
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY_BRANCH, id] });
+    },    
   });
   const [showChangeRequestModal, closeChangeRequestModal] =
     CreateChangeRequestInfoModal();
@@ -69,7 +72,8 @@ const Index = () => {
         loading={update.isPending}
         initialValues={queryResult.data || ({} as any)}
         vendorId={queryResult.data?.vendorId || ""}
-        onSuccess={() => {}}
+        onSuccess={() => {
+        }}
       />
     </Space>
   );

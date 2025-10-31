@@ -9,12 +9,6 @@ import DisplayVendorInfo from "./DisplayVendorInfo";
 import DisplayProductServiceInfo from "./DisplayProductServiceInfo";
 const { Title } = Typography;
 
-const NewBranchFormDynamic = dynamic(
-  () =>
-    import("@/components/forms/newBranchForm").then((mod) => mod.FormElement),
-  { ssr: false }
-);
-
 const RenderChangeRequestInstance = (prop: {
   type: ChangeRequest["entityType"];
   value: ChangeRequest["requestedChanges"];
