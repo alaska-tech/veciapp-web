@@ -97,12 +97,6 @@ export default function useAuthAction() {
           duration: 0,
         });
       },
-      onSuccess(data, _variables, _context) {
-        message.success({
-          content: "Te has logueado correctamente",
-          duration: 5,
-        });
-      },
     }
   );
   const recoverPassword = mutateEntity<

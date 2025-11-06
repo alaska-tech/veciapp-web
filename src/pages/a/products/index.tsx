@@ -158,7 +158,19 @@ const Users = () => {
       key: "finalPrice",
       dataIndex: "finalPrice",
       render: (value: string, record, index) => {
-        return <>{Number(value).toLocaleString("es-CO")}</>;
+        return (
+          <Space direction="vertical">
+            {Number(record.discount) > 0 && (
+              <Typography.Text type="secondary">
+                {Number(record.price).toLocaleString("es-CO")}
+              </Typography.Text>
+            )}
+            {Number(record.discount) > 0 && (
+              <div>- {Number(record.discount)}%</div>
+            )}
+            {Number(value).toLocaleString("es-CO")}
+          </Space>
+        );
       },
     },
     {
