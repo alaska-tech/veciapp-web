@@ -122,10 +122,6 @@ const Index = () => {
               branch={branch || ({} as Branch)}
               href={`/a/branches/${record.branchId}?name=${branch?.name}`}
             />
-            <RenderVendor
-              vendor={vendor || ({} as Vendor)}
-              href={`/a/vendors/${value}?name=${vendor?.fullName}`}
-            />
           </Space>
         );
       },

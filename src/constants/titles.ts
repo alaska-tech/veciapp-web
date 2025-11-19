@@ -9,6 +9,7 @@ export const titles: Record<string, string> = {
   "users": "Clientes",
   "users/newUser": "Nuevo usuario",
   "serviceOrders": "Historial de Pedidos",
+  "serviceOrders/[id]": "Detalle del pedido",
   "branches": "Tiendas",
   "branches/byVendor/[id]/newBranch": "Crear nueva tienda para ${name}",
   "configuration": "Parámetros",

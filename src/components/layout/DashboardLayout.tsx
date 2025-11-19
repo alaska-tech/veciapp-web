@@ -138,7 +138,7 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
         {
           key: `/v/serviceOrders`,
           icon: React.createElement(ShoppingOutlined),
-          label: <Link href="/a/serviceOrders">Pedidos</Link>,
+          label: <Link href="/v/serviceOrders">Pedidos</Link>,
           children: undefined,
         },
         {
