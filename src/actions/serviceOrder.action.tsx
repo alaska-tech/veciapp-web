@@ -54,7 +54,7 @@ export const useServiceOrderAction = () => {
             Response<PaginatedResult<ServiceOrder>>,
             { status: "Success" }
           >
-        >(`/orders/${vendorId}/list`, {
+        >(`/orders/vendor/${vendorId}`, {
           params: rest,
         });
         return response.data;
