@@ -114,7 +114,7 @@ const Users = () => {
       title: "Acciones",
       key: "actions",
       render: (_text, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <a href={`/a/branches/byVendor/${record.id}?name=${record.fullName}`}>
             Tiendas
           </a>
@@ -155,7 +155,7 @@ const Users = () => {
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
         <Button href="/a/vendors/newVendor" icon={<PlusOutlined />}>
           Crear nuevo veci

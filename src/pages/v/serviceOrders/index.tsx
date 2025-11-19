@@ -148,7 +148,7 @@ const Index = () => {
         const pay = payment?.data?.data.data as Payment | undefined;
 
         return (
-          <Space direction="vertical" size={0}>
+          <Space wrap direction="vertical" size={0}>
             <div>
               {
                 SERVICE_ORDER_PAYMENT_STATUS_LABELS[
@@ -190,7 +190,7 @@ const Index = () => {
       title: "Acciones",
       key: "actions",
       render: (_text, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <a href={`/v/serviceOrders/${record.id}`}>Detalles</a>
         </Space>
       ),

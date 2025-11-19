@@ -71,7 +71,7 @@ const Index = () => {
   };
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button href="/a/newParameter" icon={<AppstoreAddOutlined />}>
           Nuevo parámetro
         </Button>

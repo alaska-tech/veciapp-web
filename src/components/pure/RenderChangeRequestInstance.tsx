@@ -19,7 +19,7 @@ const RenderChangeRequestInstance = (prop: {
 
   if (type === "STORE") {
     return (
-      <Space>
+      <Space wrap>
         <Space direction="vertical" style={{ textAlign: "center" }}>
           <Title level={4}>Valores Antiguos</Title>
           <DisplayBranchInfo branch={oldValues as any} />
@@ -33,7 +33,7 @@ const RenderChangeRequestInstance = (prop: {
   }
   if (type === "VENDOR_PROFILE") {
     return (
-      <Space>
+      <Space wrap>
         <Space direction="vertical" style={{ textAlign: "center" }}>
           <Title level={4}>Valores Antiguos</Title>
           <DisplayVendorInfo vendor={oldValues as any} />
@@ -47,7 +47,7 @@ const RenderChangeRequestInstance = (prop: {
   }
   if (type === "PRODUCT_AND_SERVICE") {
     return (
-      <Space>
+      <Space wrap>
         <Space direction="vertical" style={{ textAlign: "center" }}>
           <Title level={4}>Valores Antiguos</Title>
           <DisplayProductServiceInfo productService={oldValues as any} />

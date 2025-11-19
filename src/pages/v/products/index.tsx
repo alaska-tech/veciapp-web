@@ -36,6 +36,7 @@ import {
   PRODUCT_STATE_TAG,
   PRODUCT_TYPE_TAG,
 } from "@/constants/labels";
+import ChangeProductVisibilityModal from "@/components/changeProductVisibilityModal";
 
 type DataType = ProductService;
 const searchFields: SearchFieldProps[] = [
@@ -201,10 +202,36 @@ const Users = () => {
       },
     },
     {
+      title: "Visibilidad",
+      key: "isActive",
+      dataIndex: "isActive",
+      render(value, record, index) {
+        const stateTag = value ? (
+          <Tag bordered={false} color="blue">
+            Visible en la app
+          </Tag>
+        ) : (
+          <Tag bordered={false} color="yellow">
+            Oculto
+          </Tag>
+        );
+
+        return (
+          <Space wrap>
+            {stateTag}
+            <ChangeProductVisibilityModal
+              productId={record.id}
+              currentState={value}
+            />
+          </Space>
+        );
+      },
+    },
+    {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <Link href={`/v/products/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
@@ -231,7 +258,7 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
         <NewProductButton totalBranches={totalBranches} />
       </Space>

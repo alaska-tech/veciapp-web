@@ -156,7 +156,7 @@ export default function useAuthAction() {
           }
           const response = await apiClient.post<
             Extract<Response<null>, { status: "Success" }>
-          >(`/set-new-password`, body);
+          >(`/auth/set-new-password`, body);
           return response;
         } catch (error) {
           throw error;

@@ -190,7 +190,7 @@ const Index = () => {
       title: "Acciones",
       key: "actions",
       render: (_text, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <a href={`/a/serviceOrders/${record.id}`}>Detalles</a>
         </Space>
       ),

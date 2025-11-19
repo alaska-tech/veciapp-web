@@ -59,7 +59,7 @@ const ChangeRequestsPage = () => {
           ?.data?.data.data;
         if (vendor) {
           return (
-            <Space direction="vertical">
+            <Space wrap direction="vertical">
               <Typography.Text strong>{vendor.fullName}</Typography.Text>
               <Typography.Text type="secondary">
                 {vendor.email} - {vendor.internalCode}
@@ -106,7 +106,7 @@ const ChangeRequestsPage = () => {
       title: "Acciones",
       key: "actions",
       render: (_: any, record: ChangeRequest) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <a href={`/a/changeRequests/${record.id}`}>Detalles</a>
         </Space>
       ),
@@ -114,7 +114,7 @@ const ChangeRequestsPage = () => {
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
       </Space>
       <Table<ChangeRequest>
