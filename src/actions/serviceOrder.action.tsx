@@ -42,6 +42,26 @@ export const useServiceOrderAction = () => {
         throw error;
       }
     };
+  });const getServiceOrdersForVendor = queryEntityWithParameters<
+    Extract<Response<PaginatedResult<ServiceOrder>>, { status: "Success" }>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_SERVICE_ORDER] as QueryKey, (search) => {
+    return async function queryFn() {
+      const {vendorId, ...rest} = search
+      try {
+        const response = await apiClient.get<
+          Extract<
+            Response<PaginatedResult<ServiceOrder>>,
+            { status: "Success" }
+          >
+        >(`/orders/${vendorId}/list`, {
+          params: rest,
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
   });
     const getServiceOrderById = queryEntityById<
       ServiceOrder,
@@ -61,6 +81,7 @@ export const useServiceOrderAction = () => {
     });
   return {
     getServiceOrders,
-    getServiceOrderById
+    getServiceOrderById,
+    getServiceOrdersForVendor
   };
 };

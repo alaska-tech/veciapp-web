@@ -90,12 +90,6 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           children: undefined,
         },
         {
-          key: `/a/payments`,
-          icon: React.createElement(DollarOutlined),
-          label: <Link href="/a/payments">Pagos</Link>,
-          children: undefined,
-        },
-        {
           key: `/a/changeRequests`,
           icon: React.createElement(PullRequestOutlined),
           label: <Link href="/a/changeRequests">Solicitudes de cambio</Link>,
@@ -139,6 +133,12 @@ const lateralMenuItems: Record<string, MenuProps["items"]> = {
           key: `/v/products`,
           icon: React.createElement(AppleOutlined),
           label: <Link href="/v/products">Productos y servicios</Link>,
+          children: undefined,
+        },
+        {
+          key: `/v/serviceOrders`,
+          icon: React.createElement(ShoppingOutlined),
+          label: <Link href="/a/serviceOrders">Pedidos</Link>,
           children: undefined,
         },
         {
