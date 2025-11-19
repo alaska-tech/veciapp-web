@@ -1,4 +1,4 @@
-import { Divider, Form, Input, Radio, Select, TimePicker } from "antd";
+import { Divider, Form, Input, Radio, Select, Space, TimePicker } from "antd";
 import React from "react";
 import FormWrapper from "./formWrapper";
 import dynamic from "next/dynamic";
@@ -13,7 +13,10 @@ import {
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SANTA_MARTA_LOCATION_OBJECT } from "@/components/pure/LocationPicker";
-import { BRANCH_TYPE_LABELS, SERVICE_ORDER_PAYMENT_METHOD_LABELS } from "@/constants/labels";
+import {
+  BRANCH_TYPE_LABELS,
+  SERVICE_ORDER_PAYMENT_METHOD_LABELS,
+} from "@/constants/labels";
 
 dayjs.extend(customParseFormat);
 
@@ -71,6 +74,15 @@ function parseInitialValues(values: Branch) {
   };
 }
 const nonEditableFields = ["vendorId", "rank", "state"] as const;
+const FULL_TIME_OPERATING_HOURS = {
+  monday: ["00:00", "23:59"],
+  tuesday: ["00:00", "23:59"],
+  wednesday: ["00:00", "23:59"],
+  thursday: ["00:00", "23:59"],
+  friday: ["00:00", "23:59"],
+  saturday: ["00:00", "23:59"],
+  sunday: ["00:00", "23:59"],
+};
 export const FormElement = <T extends entityWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
   loading?: boolean;
@@ -79,6 +91,10 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
   onSuccess?: () => void;
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
+  const isOpen247 = Object.values(
+    props.initialValues?.operatingHours || {}
+  ).every((hours) => hours?.[0] === "00:00" && hours?.[1] === "23:59");
+  const [isOpen24Hours, setIsOpen24Hours] = React.useState<boolean>(isOpen247);
   const mapValues = (values: any) => {
     const {
       cellphonePrefix,
@@ -99,24 +115,26 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
     } else {
       mappedRest = { ...rest };
     }
-    const mappedOperatingHours = Object.entries(operatingHours).reduce(
-      (acc, [key, value]: [string, any]) => ({
-        ...acc,
-        [key]: value
-          ? [
-              value[0].format(TIME_PICKER_FORMAT),
-              value[1].format(TIME_PICKER_FORMAT),
-            ]
-          : null,
-      }),
-      {}
-    );
+    const mappedOperatingHours = isOpen24Hours
+      ? FULL_TIME_OPERATING_HOURS
+      : Object.entries(operatingHours).reduce(
+          (acc, [key, value]: [string, any]) => ({
+            ...acc,
+            [key]: value
+              ? [
+                  value[0].format(TIME_PICKER_FORMAT),
+                  value[1].format(TIME_PICKER_FORMAT),
+                ]
+              : null,
+          }),
+          {}
+        );
     const mappedValues = {
       phone: cellphonePrefix + " " + cellphone,
       managerPhone: managerPhonePrefix + " " + managerPhone,
       location: {
         type: "Point",
-        coordinates: [location.lat,location.lng],
+        coordinates: [location.lat, location.lng],
       },
       vendorId: hasInitialValues ? undefined : props.vendorId,
       operatingHours: mappedOperatingHours,
@@ -286,21 +304,36 @@ export const FormElement = <T extends entityWithAuxProps>(props: {
                 ]}
               />
             </Form.Item>
-            {weekDay.map((day: string) => {
-              return (
-                <Form.Item
-                  name={["operatingHours", day]}
-                  label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
-                  key={day}
-                >
-                  <TimePicker.RangePicker
-                    format={TIME_PICKER_FORMAT}
-                    minuteStep={10}
-                    onCalendarChange={setAsTouched}
-                  />
-                </Form.Item>
-              );
-            })}
+            <Form.Item label="Abierto 24/7">
+              <Radio.Group
+                name="isOpen24Hours"
+                onChange={(value) => {
+                  setIsOpen24Hours(value.target.value);
+                }}
+                value={isOpen24Hours}
+              >
+                <Space.Compact>
+                  <Radio value={true}>Sí</Radio>
+                  <Radio value={false}>No</Radio>
+                </Space.Compact>
+              </Radio.Group>
+            </Form.Item>
+            {!isOpen24Hours &&
+              weekDay.map((day: string) => {
+                return (
+                  <Form.Item
+                    name={["operatingHours", day]}
+                    label={WEEKDAY_LABEL[day as (typeof weekDay)[number]]}
+                    key={day}
+                  >
+                    <TimePicker.RangePicker
+                      format={TIME_PICKER_FORMAT}
+                      minuteStep={10}
+                      onCalendarChange={setAsTouched}
+                    />
+                  </Form.Item>
+                );
+              })}
           </div>
           <div
             style={{ flex: `1 1 ${columnMinWidth}`, maxWidth: columnMaxWidth }}
