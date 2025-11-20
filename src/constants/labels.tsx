@@ -118,12 +118,12 @@ export const PRODUCT_TYPE_TAG: Record<string, any> = {
 export const PRODUCT_STATE_TAG: Record<string, any> = {
   available: (
     <Tag bordered={false} color="blue">
-      Disponible
+      Disponible en la app
     </Tag>
   ),
   unavailable: (
     <Tag bordered={false} color="default">
-      No disponible
+      No disponible en la app
     </Tag>
   ),
   out_of_stock: (

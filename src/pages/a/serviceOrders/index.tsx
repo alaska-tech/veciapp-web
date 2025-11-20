@@ -143,9 +143,9 @@ const Index = () => {
       minWidth: 260,
       render: (_status, record) => {
         const payment = paymentQuery.find(
-          (query) => query.data?.data.data.orderId === record.id
+          (query) => query.data?.data.data.at(0)?.orderId === record.id
         );
-        const pay = payment?.data?.data.data as Payment | undefined;
+        const pay = payment?.data?.data.data.at(0) as Payment | undefined;
 
         return (
           <Space direction="vertical" size={0}>

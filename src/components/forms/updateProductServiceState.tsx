@@ -17,11 +17,11 @@ export const FormElement = (props: {
         <Select
           options={[
             {
-              label: <Tag color="blue">Disponible</Tag>,
+              label: <Tag color="blue">Disponible en la app</Tag>,
               value: "available",
             },
             {
-              label: <Tag color="default">No Disponible</Tag>,
+              label: <Tag color="default">No Disponible en la app</Tag>,
               value: "unavailable",
             },
           ]}

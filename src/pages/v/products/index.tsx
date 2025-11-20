@@ -202,32 +202,6 @@ const Users = () => {
       },
     },
     {
-      title: "Visibilidad",
-      key: "isActive",
-      dataIndex: "isActive",
-      render(value, record, index) {
-        const stateTag = value ? (
-          <Tag bordered={false} color="blue">
-            Visible en la app
-          </Tag>
-        ) : (
-          <Tag bordered={false} color="yellow">
-            Oculto
-          </Tag>
-        );
-
-        return (
-          <Space wrap>
-            {stateTag}
-            <ChangeProductVisibilityModal
-              productId={record.id}
-              currentState={value}
-            />
-          </Space>
-        );
-      },
-    },
-    {
       title: "Action",
       key: "action",
       render: (_, record) => (

@@ -336,6 +336,7 @@ export const useProductServiceAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
+        queryClient.invalidateQueries({queryKey:[QUERY_KEY_PRODUCTSERVICE]})
         message.success({
           content: `Producto o servicio ${
             productService.name || ""

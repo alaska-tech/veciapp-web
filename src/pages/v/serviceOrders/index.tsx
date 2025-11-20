@@ -143,9 +143,9 @@ const Index = () => {
       minWidth: 260,
       render: (_status, record) => {
         const payment = paymentQuery.find(
-          (query) => query.data?.data.data.orderId === record.id
+          (query) => query.data?.data.data.at(0)?.orderId === record.id
         );
-        const pay = payment?.data?.data.data as Payment | undefined;
+        const pay = payment?.data?.data.data.at(0) as Payment | undefined;
 
         return (
           <Space wrap direction="vertical" size={0}>
@@ -170,7 +170,7 @@ const Index = () => {
             </div>
             <div>Ref: {pay?.paymentReference || "-"}</div>
             <div>Proveedor: {pay?.provider || "-"}</div>
-            {pay?.receiptUrl ? (
+            {/* {pay?.receiptUrl ? (
               <a
                 href={pay.receiptUrl}
                 target="_blank"
@@ -178,7 +178,7 @@ const Index = () => {
               >
                 Ver recibo
               </a>
-            ) : null}
+            ) : null} */}
             {pay?.failureReason ? (
               <Tag color="red">{pay.failureReason}</Tag>
             ) : null}
