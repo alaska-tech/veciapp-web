@@ -258,6 +258,8 @@ export interface ProductService extends BaseAttributes {
   description: string;
   shortDescription: string;
   price: string;
+  finalPrice: string;
+  discount: string;
   currency: string;
   inventory: number;
   mainImage: string;

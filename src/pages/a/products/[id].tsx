@@ -42,7 +42,7 @@ const Index = () => {
     );
   }
   return (
-    <Space direction="vertical">
+    <Space wrap direction="vertical">
       <NewProductServiceForm
         onFinish={async (values) => {
           await update.mutateAsync({ body: values, id: id as string });

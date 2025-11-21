@@ -16,14 +16,14 @@ export const usePaymenAction = <T extends object>() => {
   const { notification, message } = App.useApp();
 
   const getPaymentsByOrderId = queryMultipleEntitiesById<
-    AxiosResponse<Extract<Response<Payment>, { status: "Success" }>>,
+    AxiosResponse<Extract<Response<Payment[]>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
   >([QUERY_KEY_PAYMENT] as QueryKey, (id) => {
     return async function queryFn() {
       try {
         const response = await apiClient.get<
-          Extract<Response<Payment>, { status: "Success" }>
-        >(`payment/order/${id}`);
+          Extract<Response<Payment[]>, { status: "Success" }>
+        >(`payments/order/${id}`);
         return response;
       } catch (error) {
         throw error;

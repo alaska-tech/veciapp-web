@@ -60,7 +60,7 @@ const Index = () => {
     );
   }
   return (
-    <Space direction="vertical">
+    <Space wrap direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
           showChangeRequestModal({

@@ -10,6 +10,7 @@ import {
   BranchStateType,
   ChangeRequestStatusOptionsType,
   entityTypeOptionsType,
+  ServiceOrderDeliveryTypeType,
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentMethodType,
   ServiceOrderPaymentStatusType,
@@ -117,12 +118,12 @@ export const PRODUCT_TYPE_TAG: Record<string, any> = {
 export const PRODUCT_STATE_TAG: Record<string, any> = {
   available: (
     <Tag bordered={false} color="blue">
-      Disponible
+      Disponible en la app
     </Tag>
   ),
   unavailable: (
     <Tag bordered={false} color="default">
-      No disponible
+      No disponible en la app
     </Tag>
   ),
   out_of_stock: (
@@ -202,3 +203,12 @@ export const SERVICE_ORDER_PAYMENT_METHOD_LABELS: Record<
   cash: "Pago contraentrega - Efectivo",
   transfer: "Pago en linea - Wompi",
 };
+
+export const SERVICE_ORDER_DELIVERY_METHOD_LABELS: Record<
+  ServiceOrderDeliveryTypeType[number],
+  string
+> = {
+  pickup: "Recogida en tienda",
+  delivery: "Envío a domicilio",
+};
+

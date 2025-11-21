@@ -22,7 +22,7 @@ const OrderDetailPage = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Space wrap direction="vertical" size="large" style={{ width: '100%' }}>
         <Button 
           icon={<ArrowLeft size={16} />} 
           onClick={() => router.push('/v/orders')}

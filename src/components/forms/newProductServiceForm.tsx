@@ -6,6 +6,8 @@ import {
   TimePicker,
   Row,
   Col,
+  Typography,
+  Card,
 } from "antd";
 import React from "react";
 import { ProductService, weekDay, WEEKDAY_LABEL } from "@models";
@@ -14,7 +16,6 @@ import { getUserInfo } from "@/actions/localStorage.actions";
 import dayjs from "dayjs";
 
 type productServiceWithAuxProps = ProductService;
-
 
 function parseInitialValues(values: ProductService) {
   const { serviceScheduling, ...rest } = values;
@@ -52,6 +53,8 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   const hasInitialValues: boolean = !!props.initialValues;
   const [formInstance] = Form.useForm();
   const type = Form.useWatch("type", formInstance);
+  const price = Form.useWatch("price", formInstance);
+  const discount = Form.useWatch("discount", formInstance);
 
   const handleFinish = async (values: T) => {
     const { serviceScheduling, ...rest } = values;
@@ -99,7 +102,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
       requiredMark={false}
       loading={props.loading}
       preserveDataInCache={!hasInitialValues}
-      highligthOnChange={hasInitialValues} 
+      highligthOnChange={hasInitialValues}
       onSuccess={props.onSuccess}
     >
       {(formInstance, setAsTouched) => (
@@ -210,7 +213,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
                   label="Personas por servicio"
                   name={["serviceScheduling", "attentionLimitPerSlot"]}
                 >
-                  <InputNumber min={1} style={{ width: '100%' }} />
+                  <InputNumber min={1} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
               {/* Horarios de la semana - cada día en su propia fila */}
@@ -225,7 +228,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
                         format={TIME_PICKER_FORMAT}
                         minuteStep={10}
                         onCalendarChange={setAsTouched}
-                        style={{ width: '100%' }}
+                        style={{ width: "100%" }}
                       />
                     </Form.Item>
                   </Col>
@@ -235,7 +238,7 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
           )}
 
           {/* Última fila - Precio y Cantidad (mitad cada uno) */}
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="price"
               label="Precio"
@@ -245,7 +248,34 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
                 },
               ]}
             >
-              <InputNumber min={0} style={{ width: '100%' }} />
+              <InputNumber min={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item
+              name="discount"
+              label="Descuento"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                style={{ width: "100%" }}
+                suffix="%"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item label="Precio final">
+              <Card style={{ width: "100%" }} styles={{body: {padding: 11}}}>
+                <Typography.Text>
+                  {price * ((100 - discount) / 100)}
+                </Typography.Text>
+              </Card>
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -258,7 +288,11 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
                 },
               ]}
             >
-              <InputNumber min={0} style={{ width: '100%' }} />
+              <InputNumber
+                min={0}
+                style={{ width: "100%" }}
+                disabled={hasInitialValues}
+              />
             </Form.Item>
           </Col>
           {/* <Form.Item>
@@ -294,4 +328,3 @@ export const FormElement = <T extends productServiceWithAuxProps>(props: {
   );
 };
 export default FormElement;
-

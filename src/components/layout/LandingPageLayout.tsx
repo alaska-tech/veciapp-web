@@ -161,6 +161,11 @@ const titles: Record<string, [string, string, string]> = {
     "Bienvenido, crea tu contraseña",
     "Todo listo, ahora crea tu contraseña para acceder a tu cuenta",
   ],
+  "/p/forgotPassword": [
+    "",
+    "Recupera tu contraseña",
+    "Ingresa tu nueva contraseña para continuar",
+  ],
 };
 const AutoTitle = () => {
   const router = useRouter();

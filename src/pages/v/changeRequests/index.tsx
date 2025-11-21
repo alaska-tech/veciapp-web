@@ -114,7 +114,7 @@ const ChangeRequestsPage = () => {
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
       </Space>
       <Table<ChangeRequest>

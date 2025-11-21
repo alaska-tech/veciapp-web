@@ -27,6 +27,7 @@ import { useBranchAction } from "@/actions/branch.action";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { usePaymenAction } from "@/actions/paymnet.action";
+import useAuthAction from "@/actions/auth.action";
 dayjs.locale("es");
 type DataType = ServiceOrder;
 
@@ -48,12 +49,15 @@ const Index = () => {
     pageSize: 10,
     total: 0,
   });
+  const authActions = useAuthAction();
+  const { userSession } = authActions;
   const { SearchComponent, search } = SearchBar({ searchFields });
   const actions = useServiceOrderAction();
-  const query = actions.getServiceOrders({
+  const query = actions.getServiceOrdersForVendor({
     limit: pagination.pageSize,
     page: pagination.current,
     orderStatus: search.value as ServiceOrderOrderStatusType[number],
+    vendorId: userSession.data?.foreignPersonId || "",
   });
   const vendorQueries = useVendorAction();
   const vendorQuery = vendorQueries.getVendorsById(
@@ -118,10 +122,6 @@ const Index = () => {
               branch={branch || ({} as Branch)}
               href={`/a/branches/${record.branchId}?name=${branch?.name}`}
             />
-            <RenderVendor
-              vendor={vendor || ({} as Vendor)}
-              href={`/a/vendors/${value}?name=${vendor?.fullName}`}
-            />
           </Space>
         );
       },
@@ -148,7 +148,7 @@ const Index = () => {
         const pay = payment?.data?.data.data.at(0) as Payment | undefined;
 
         return (
-          <Space direction="vertical" size={0}>
+          <Space wrap direction="vertical" size={0}>
             <div>
               {
                 SERVICE_ORDER_PAYMENT_STATUS_LABELS[
@@ -170,7 +170,7 @@ const Index = () => {
             </div>
             <div>Ref: {pay?.paymentReference || "-"}</div>
             <div>Proveedor: {pay?.provider || "-"}</div>
-            {pay?.receiptUrl ? (
+            {/* {pay?.receiptUrl ? (
               <a
                 href={pay.receiptUrl}
                 target="_blank"
@@ -178,7 +178,7 @@ const Index = () => {
               >
                 Ver recibo
               </a>
-            ) : null}
+            ) : null} */}
             {pay?.failureReason ? (
               <Tag color="red">{pay.failureReason}</Tag>
             ) : null}
@@ -191,7 +191,7 @@ const Index = () => {
       key: "actions",
       render: (_text, record) => (
         <Space wrap split={<Divider type="vertical" />}>
-          <a href={`/a/serviceOrders/${record.id}`}>Detalles</a>
+          <a href={`/v/serviceOrders/${record.id}`}>Detalles</a>
         </Space>
       ),
     },

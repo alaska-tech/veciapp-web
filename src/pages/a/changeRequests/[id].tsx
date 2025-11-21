@@ -135,7 +135,7 @@ const ChangeRequestDetailPage = () => {
       <Card style={{ marginBottom: 24, borderRadius: 12 }}>
         <Row justify="space-between" align="middle">
           <Col>
-            <Space direction="vertical" size={0}>
+            <Space wrap direction="vertical" size={0}>
               <Text type="secondary">Solicitud de Cambio</Text>
               <Title level={2} style={{ margin: 0 }}>
                 #{request.id.slice(0, 8)}
@@ -200,7 +200,7 @@ const ChangeRequestDetailPage = () => {
       {/* Comparación de Cambios */}
       <Card
         title={
-          <Space>
+          <Space wrap>
             <span>Comparación de Cambios</span>
             <Tag color="orange">
               {Object.keys(request.requestedChanges.newValues).length} campos
@@ -225,7 +225,7 @@ const ChangeRequestDetailPage = () => {
               <Text strong>¿Qué deseas hacer con esta solicitud?</Text>
             </Col>
             <Col>
-              <Space size="middle">
+              <Space wrap size="middle">
                 <Button
                   danger
                   icon={<CloseCircleOutlined />}
@@ -266,7 +266,7 @@ const ChangeRequestDetailPage = () => {
         okButtonProps={{ size: "large" }}
         cancelButtonProps={{ size: "large" }}
       >
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Space wrap direction="vertical" size="middle" style={{ width: "100%" }}>
           <Text>
             Al aprobar esta solicitud, los cambios se aplicarán inmediatamente.
           </Text>
@@ -298,7 +298,7 @@ const ChangeRequestDetailPage = () => {
         cancelButtonProps={{ size: "large" }}
         cancelText="Cancelar"
       >
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Space wrap direction="vertical" size="middle" style={{ width: "100%" }}>
           <Text strong>¿Por qué rechazas esta solicitud?</Text>
           <TextArea
             rows={4}

@@ -76,7 +76,13 @@ export default function Home() {
         setToken(token);
         setRefreshToken(user.refreshToken);
         queryClient.invalidateQueries({ queryKey: [LOGGED_USER_INFO_KEY] });
-        if (user.role !== "admin" && user.role !== "vendor") {
+        if (user.role === "admin" || user.role === "vendor") {
+          message.success({
+            content: "Te has logueado correctamente",
+            duration: 5,
+          });
+          return;
+        } else {
           message.error(
             "Usted no cuenta con los permisos suficientes para acceder a esta sección",
             6
