@@ -9,20 +9,20 @@ export const FormElement = (props: {
 }) => {
   return (
     <Form
-      name="updateProductServiceState"
+      name="updateProductServiceVisibility"
       onFinish={props.onFinish}
       initialValues={props.initialValues}
     >
-      <Form.Item label="Estado" name="state" required={true}>
+      <Form.Item label="Visible" name="isActive" required={true}>
         <Select
           options={[
             {
-              label: <Tag color="blue">Disponible en la app</Tag>,
-              value: "available",
+              label: <Tag color="blue">Si</Tag>,
+              value: true,
             },
             {
-              label: <Tag color="default">No Disponible en la app</Tag>,
-              value: "unavailable",
+              label: <Tag color="default">No</Tag>,
+              value: false,
             },
           ]}
         />

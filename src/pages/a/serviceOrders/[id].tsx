@@ -101,7 +101,7 @@ const Index = () => {
     return <Empty />;
   }
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space wrap direction="vertical" style={{ width: "100%" }}>
       <>
         <Descriptions
           title={`Pedido ${order?.orderNumber}`}

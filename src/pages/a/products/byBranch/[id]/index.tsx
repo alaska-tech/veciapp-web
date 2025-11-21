@@ -131,7 +131,7 @@ const Users = () => {
       dataIndex: "serviceScheduling",
       render(value: ProductService["serviceScheduling"], record, index) {
         return (
-          <Space direction="vertical" size="small">
+          <Space wrap direction="vertical" size="small">
             {Object.entries(value?.availableHours ?? {}).map(([day, hours]) => {
               const isOpen = hours.open !== "00:00" && hours.close !== "00:00";
               return (
@@ -197,7 +197,7 @@ const Users = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <Link href={`/a/products/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
@@ -234,7 +234,7 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
         <Button
           href={`/a/products/byBranch/${id}/newProduct?vendorId=${vendorId}&name=${branchQuery.data?.name}`}

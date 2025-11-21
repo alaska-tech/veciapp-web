@@ -302,8 +302,7 @@ export const useProductServiceAction = () => {
           duration: 0,
         });
       },
-      onSuccess: async (data, variables, context) => {
-      },
+      onSuccess: async (data, variables, context) => {},
     }
   );
   const updateProductServiceState = mutateEntity<
@@ -337,10 +336,48 @@ export const useProductServiceAction = () => {
       },
       onSuccess: async (data, variables, context) => {
         const productService = data.data.data;
+        queryClient.invalidateQueries({queryKey:[QUERY_KEY_PRODUCTSERVICE]})
         message.success({
           content: `Producto o servicio ${
             productService.name || ""
           } se actualizó correctamente`,
+          duration: 4,
+        });
+      },
+    }
+  );
+  const updateProductServiceVisibility = mutateEntity<
+    AxiosResponse<unknown>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string; body: { isActive: boolean } }
+  >(
+    () => {
+      return async function mutationFn({ body, id }) {
+        try {
+          if (!body) {
+            throw new Error("No body provided");
+          }
+          const response = await apiClient.patch<
+            Extract<Response<ProductService>, { status: "Success" }>
+          >(`/productservice/${id}/status`, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error, variables, context) => {
+        notification.error({
+          message: "Error",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: async (data, variables, context) => {
+        message.success({
+          content: `Producto o servicio actualizado correctamente`,
           duration: 4,
         });
       },
@@ -406,5 +443,6 @@ export const useProductServiceAction = () => {
     updateProductServiceInventory,
     getProductServicesPaginated,
     getProductServicesByBranchIdPaginated,
+    updateProductServiceVisibility,
   };
 };

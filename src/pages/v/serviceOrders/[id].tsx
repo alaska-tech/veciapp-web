@@ -108,7 +108,7 @@ const Index = () => {
     return <Empty />;
   }
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space wrap direction="vertical" style={{ width: "100%" }}>
       <>
         <Descriptions
           title={`Pedido ${order?.orderNumber}`}
@@ -141,7 +141,7 @@ const Index = () => {
 
           <Descriptions.Item label="Dirección de entrega" span={2}>
             {order.deliveryType === "delivery" && order.deliveryAddress ? (
-              <Space direction="vertical" size={0}>
+              <Space wrap direction="vertical" size={0}>
                 <div>{order.deliveryAddress.alias}</div>
                 <div>{order.deliveryAddress.address}</div>
                 <div>

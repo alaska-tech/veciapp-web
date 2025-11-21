@@ -211,7 +211,7 @@ const Users = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           <Link href={`/a/products/${record.id}?name=${record.name}`}>
             Detalles
           </Link>
@@ -248,7 +248,7 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         {SearchComponent}
         <NewProductButton totalBranches={totalBranches} />
       </Space>

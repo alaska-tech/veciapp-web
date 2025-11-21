@@ -80,7 +80,7 @@ const Users = () => {
   }
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+      <Space wrap style={{ width: "100%", justifyContent: "flex-end" }}>
         <Button
           href={`/v/branches/newBranch?name=${user?.fullName}`}
           icon={<AppstoreAddOutlined />}

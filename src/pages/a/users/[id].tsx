@@ -40,7 +40,7 @@ const Index = () => {
     );
   }
   return (
-    <Space direction="vertical">
+    <Space wrap direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
           await update.mutateAsync({ body: values, id: id as string });

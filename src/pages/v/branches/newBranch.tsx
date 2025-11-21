@@ -31,7 +31,7 @@ const Index = () => {
   const [showChangeRequestModal, closeChangeRequestModal] =
     CreateChangeRequestInfoModal();
   return (
-    <Space direction="vertical">
+    <Space wrap direction="vertical">
       <NewFormDynamic
         onFinish={async (values) => {
           showChangeRequestModal({
