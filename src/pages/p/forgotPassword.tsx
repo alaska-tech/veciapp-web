@@ -22,7 +22,7 @@ const Index = () => {
     try {
       await recoverPassword.mutateAsync({ body: newBody }).then(
         () => {
-          router.push("/");
+          router.push("/p/successVerified");
         },
         () => {}
       );
@@ -45,14 +45,14 @@ const Index = () => {
               required: true,
             },
             {
-              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
               message: "La contraseña no cumple con las reglas de seguridad",
             },
           ]}
           hasFeedback
           help="La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número"
         >
-          <Input.Password />
+          <Input.Password  placeholder="Escribe tu Contraseña"/>
         </Form.Item>
         <Form.Item
           label="Confirma tu contraseña "
