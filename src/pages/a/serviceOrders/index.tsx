@@ -1,5 +1,16 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Table, Space, TableColumnsType, Divider, Tag } from "antd";
+import {
+  Table,
+  Space,
+  TableColumnsType,
+  Divider,
+  Tag,
+  Button,
+  Modal,
+  Form,
+  DatePicker,
+  message,
+} from "antd";
 import React, { ReactElement, useState } from "react";
 import {
   Branch,
@@ -10,6 +21,7 @@ import {
   ServiceOrderPaymentStatusType,
   Vendor,
   Payment,
+  PaginatedResult,
 } from "@models";
 import {
   SERVICE_ORDER_ORDER_STATUS_LABELS,
@@ -26,8 +38,12 @@ import RenderBranch from "@/components/pure/RenderBranch";
 import { useBranchAction } from "@/actions/branch.action";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import utc from "dayjs/plugin/utc";
 import { usePaymenAction } from "@/actions/paymnet.action";
+import { apiClient } from "@/services/clients";
+import search from "antd/es/transfer/search";
 dayjs.locale("es");
+dayjs.extend(utc);
 type DataType = ServiceOrder;
 
 const searchFields: SearchFieldProps[] = [
@@ -198,9 +214,10 @@ const Index = () => {
   ];
   return (
     <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      {/* <Space style={{ width: "100%", justifyContent: "flex-start" }}>
-        {SearchComponent}
-      </Space> */}
+      <Space style={{ width: "100%", justifyContent: "flex-start" }}>
+        {/* {SearchComponent} */}
+        <ServiceOrderReport />
+      </Space>
       <Table<DataType>
         columns={columns}
         rowKey={(record) => record.id}
@@ -233,4 +250,180 @@ export default Index;
 
 Index.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout>{page}</DashboardLayout>;
+};
+import { Response } from "@models";
+
+const ServiceOrderReport = () => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const [reportData, setReportData] = useState<ServiceOrder[]>([]);
+  const [csvUrl, setCsvUrl] = useState<string | undefined>(undefined);
+  const [csvFileName, setCsvFileName] = useState<string>("orders_report.csv");
+
+  const buildCsv = (orders: ServiceOrder[]) => {
+    const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const headers = [
+      "ID",
+      "Número",
+      "Fecha",
+      "Estado",
+      "Estado Pago",
+      "Moneda",
+      "Total",
+      "Entrega",
+      "Cliente",
+      "Vendedor",
+      "Sucursal",
+    ];
+    const rows = orders.map((o) => [
+      o.id,
+      o.orderNumber,
+      dayjs(o.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+      o.orderStatus,
+      o.paymentStatus,
+      o.currency,
+      o.totalAmount,
+      o.deliveryType,
+      o.customerId,
+      o.vendorId,
+      o.branchId,
+    ]);
+    const csv = [
+      headers.map(escape).join(","),
+      ...rows.map((r) => r.map(escape).join(",")),
+    ].join("\n");
+    return csv;
+  };
+  const getOrders = async (start: string, end: string) => {
+    const res = await apiClient.get<
+      Extract<Response<PaginatedResult<ServiceOrder>>, { status: "Success" }>
+    >("/orders/list", {
+      params: {
+        start,
+        end,
+        limit: 9999,
+        page: 1,
+      },
+    });
+    return res;
+  };
+  return (
+    <div>
+      <Button onClick={() => setOpen(true)}>Generar reporte de órdenes de servicio</Button>
+      {open && (
+        <Modal
+          title="Reportar orden de servicio"
+          open={open}
+          onCancel={() => {
+            if (csvUrl) URL.revokeObjectURL(csvUrl);
+            setCsvUrl(undefined);
+            setOpen(false);
+            form.resetFields();
+          }}
+          footer={null}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={async (values: {
+              start: dayjs.Dayjs;
+              end: dayjs.Dayjs;
+            }) => {
+              try {
+                setLoading(true);
+                if (
+                  !values.start ||
+                  !values.end ||
+                  !dayjs(values.start).isBefore(values.end)
+                ) {
+                  message.warning(
+                    "La fecha de inicio debe ser anterior a la fecha de fin"
+                  );
+                  return;
+                }
+                const startStr = dayjs(values.start)
+                  .utc()
+                  .format("YYYY-MM-DDTHH:mm:ssZ");
+                const endStr = dayjs(values.end)
+                  .utc()
+                  .format("YYYY-MM-DDTHH:mm:ssZ");
+                const res = await getOrders(startStr, endStr);
+                const orders = res.data.data.data ?? [];
+                setReportData(orders);
+                const csv = buildCsv(orders);
+                if (csvUrl) URL.revokeObjectURL(csvUrl);
+                const blob = new Blob([csv], {
+                  type: "text/csv;charset=utf-8;",
+                });
+                const url = URL.createObjectURL(blob);
+                setCsvUrl(url);
+                setCsvFileName(`orders_${startStr}_${endStr}.csv`);
+                const total = res.data.data.meta.total ?? 0;
+                message.success(
+                  `Consulta realizada. Total de órdenes: ${total}`
+                );
+              } catch (err) {
+                message.error("Error consultando órdenes. Intenta nuevamente.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            <Form.Item
+              label="Fecha de inicio"
+              name="start"
+              rules={[
+                { required: true, message: "Selecciona la fecha de inicio" },
+              ]}
+            >
+              <DatePicker
+                showTime={{ format: "HH:mm:ss" }}
+                style={{ width: "100%" }}
+                placeholder="Selecciona fecha y hora de inicio"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Fecha de fin"
+              name="end"
+              dependencies={["start"]}
+              rules={[
+                { required: true, message: "Selecciona la fecha de fin" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const start = getFieldValue("start");
+                    if (!start || !value) return Promise.resolve();
+                    return dayjs(value).isAfter(dayjs(start))
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error(
+                            "La fecha de fin debe ser posterior a la de inicio"
+                          )
+                        );
+                  },
+                }),
+              ]}
+            >
+              <DatePicker
+                showTime={{ format: "HH:mm:ss" }}
+                style={{ width: "100%" }}
+                placeholder="Selecciona fecha y hora de fin"
+              />
+            </Form.Item>
+            <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+              {csvUrl ? (
+                <a href={csvUrl} download={csvFileName}>
+                  <Button type="primary">Descargar CSV</Button>
+                </a>
+              ) : (
+                <Button htmlType="submit" loading={loading}>
+                  Consultar órdenes
+                </Button>
+              )}
+            </Space>
+          </Form>
+        </Modal>
+      )}
+    </div>
+  );
 };

@@ -29,7 +29,7 @@ const Index = () => {
   const customerActions = useCustomerAction();
   const customersQuery = customerActions.getCustomers({
     limit: pagination.pageSize,
-    page: pagination.current - 1,
+    page: pagination.current ,
   });
   const deleteCustomer = customerActions.deleteCustomer();
   const columns: TableColumnsType<DataType> = [
