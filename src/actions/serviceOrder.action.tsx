@@ -1,10 +1,13 @@
 import { AxiosError } from "axios";
 import { queryEntityById, queryEntityWithParameters } from "./action";
 import {
+  Branch,
+  Customer,
   PaginatedResult,
   Response,
   ServiceOrder,
   ServiceOrderOrderStatusType,
+  Vendor,
 } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
@@ -19,11 +22,22 @@ export interface PaginationParams {
 export interface ServiceOrderSearchParams extends PaginationParams {
   orderStatus?: ServiceOrderOrderStatusType[number];
 }
+type GetServiceOrdersDataType = Omit<
+  ServiceOrder,
+  "branchId" | "vendorId" | "customerId"
+> & {
+  branch: Pick<Branch, "id" | "name" | "address">;
+  vendor: Pick<Vendor, "id" | "email"> & { name: string };
+  customer: Pick<Customer, "id" | "fullName" | "email" | "cellphone">;
+};
 export const useServiceOrderAction = () => {
   const { notification, message } = App.useApp();
 
   const getServiceOrders = queryEntityWithParameters<
-    Extract<Response<PaginatedResult<ServiceOrder>>, { status: "Success" }>,
+    Extract<
+      Response<PaginatedResult<GetServiceOrdersDataType>>,
+      { status: "Success" }
+    >,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
     ServiceOrderSearchParams
   >([QUERY_KEY_SERVICE_ORDER] as QueryKey, (search) => {
@@ -31,7 +45,7 @@ export const useServiceOrderAction = () => {
       try {
         const response = await apiClient.get<
           Extract<
-            Response<PaginatedResult<ServiceOrder>>,
+            Response<PaginatedResult<GetServiceOrdersDataType>>,
             { status: "Success" }
           >
         >("/orders/list", {
@@ -42,12 +56,13 @@ export const useServiceOrderAction = () => {
         throw error;
       }
     };
-  });const getServiceOrdersForVendor = queryEntityWithParameters<
+  });
+  const getServiceOrdersForVendor = queryEntityWithParameters<
     Extract<Response<PaginatedResult<ServiceOrder>>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
   >([QUERY_KEY_SERVICE_ORDER] as QueryKey, (search) => {
     return async function queryFn() {
-      const {vendorId, ...rest} = search
+      const { vendorId, ...rest } = search;
       try {
         const response = await apiClient.get<
           Extract<
@@ -63,25 +78,25 @@ export const useServiceOrderAction = () => {
       }
     };
   });
-    const getServiceOrderById = queryEntityById<
-      ServiceOrder,
-      AxiosError<Extract<Response<null>, { status: "Error" }>>
-    >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, (id) => {
-      return async function queryFn() {
-        try {
-          const response = await apiClient.get<
-            Extract<Response<ServiceOrder>, { status: "Success" }>
-          >(`/orders/get-detail/${id}`);
-          console.log(response);
-          return response.data.data;
-        } catch (error) {
-          throw error;
-        }
-      };
-    });
+  const getServiceOrderById = queryEntityById<
+    ServiceOrder,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>
+  >([QUERY_KEY_PRODUCTSERVICE] as QueryKey, (id) => {
+    return async function queryFn() {
+      try {
+        const response = await apiClient.get<
+          Extract<Response<ServiceOrder>, { status: "Success" }>
+        >(`/orders/get-detail/${id}`);
+        console.log(response);
+        return response.data.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  });
   return {
     getServiceOrders,
     getServiceOrderById,
-    getServiceOrdersForVendor
+    getServiceOrdersForVendor,
   };
 };
