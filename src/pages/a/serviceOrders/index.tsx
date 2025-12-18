@@ -31,8 +31,6 @@ import {
 import { useServiceOrderAction } from "@/actions/serviceOrder.action";
 import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import RenderVendor from "@/components/pure/RenderVendor";
-import { useVendorAction } from "@/actions/vendor.action";
-import { useCustomerAction } from "@/actions/customer.action";
 import RenderCustomer from "@/components/pure/RenderCustomer";
 import RenderBranch from "@/components/pure/RenderBranch";
 import { useBranchAction } from "@/actions/branch.action";
@@ -41,9 +39,9 @@ import "dayjs/locale/es";
 import utc from "dayjs/plugin/utc";
 import { usePaymenAction } from "@/actions/paymnet.action";
 import { apiClient } from "@/services/clients";
-import search from "antd/es/transfer/search";
 dayjs.locale("es");
 dayjs.extend(utc);
+
 type DataType = Omit<ServiceOrder, "branchId" | "vendorId" | "customerId"> & {
   branch: Pick<Branch, "id" | "name" | "address">;
   vendor: Pick<Vendor, "id" | "email"> & { name: string };
@@ -243,18 +241,17 @@ Index.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout>{page}</DashboardLayout>;
 };
 import { Response } from "@models";
+import * as XLSX from 'xlsx';
 
 const ServiceOrderReport = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<{start: dayjs.Dayjs; end: dayjs.Dayjs}>();
-  const formValues = Form.useForm(form)
   const [reportData, setReportData] = useState<DataType[]>([]);
   const [csvUrl, setCsvUrl] = useState<string | undefined>(undefined);
   const [csvFileName, setCsvFileName] = useState<string>("orders_report.csv");
 
-  const buildCsv = (orders: DataType[]) => {
-    const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const buildExcel = (orders: DataType[]) => {
     const headers = [
       "ID",
       "Número",
@@ -275,6 +272,7 @@ const ServiceOrderReport = () => {
       "Nombre Sucursal",
       "Direccion Sucursal",
     ];
+
     const rows = orders.map((o) => [
       o.id,
       o.orderNumber,
@@ -284,6 +282,7 @@ const ServiceOrderReport = () => {
       o.currency,
       o.totalAmount,
       o.deliveryType,
+      o.customer?.id,
       o.customer?.fullName,
       o.customer?.email,
       o.customer?.cellphone,
@@ -294,11 +293,13 @@ const ServiceOrderReport = () => {
       o.branch?.name,
       o.branch?.address,
     ]);
-    const csv = [
-      headers.map(escape).join(","),
-      ...rows.map((r) => r.map(escape).join(",")),
-    ].join("\n");
-    return csv;
+
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    return new Blob([excelBuffer], { type: "application/octet-stream" });
   };
   const getOrders = async (start: string, end: string) => {
     const res = await apiClient.get<
@@ -358,7 +359,7 @@ const ServiceOrderReport = () => {
                 const res = await getOrders(startStr, endStr);
                 const orders = res.data.data.data ?? [];
                 setReportData(orders);
-                const csv = buildCsv(orders);
+                const csv = buildExcel(orders);
                 if (csvUrl) URL.revokeObjectURL(csvUrl);
                 const blob = new Blob([csv], {
                   type: "text/csv;charset=utf-8;",
