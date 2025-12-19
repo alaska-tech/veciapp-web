@@ -256,7 +256,7 @@ const ServiceOrderReport = () => {
       "ID",
       "Número",
       "Fecha",
-      "Estado",
+      "Estado Pedido",
       "Estado Pago",
       "Moneda",
       "Total",
@@ -308,7 +308,7 @@ const ServiceOrderReport = () => {
       params: {
         start,
         end,
-        limit: 9999,
+        limit: 9999999999,
         page: 1,
       },
     });
