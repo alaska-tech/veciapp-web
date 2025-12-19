@@ -5,13 +5,13 @@ import FormWrapper from "./formWrapper";
 import CustomSelectWithInput from "../pure/CustomSelectWithInput";
 
 interface customerWithAuxProps extends Customer {
-  prefix: string;
+  cellphone: string;
 }
 function parseInitialValues(values: Customer) {
-  const [prefix, cellphone] = values.cellphone
-    ? (values.cellphone as string).split(" ")
-    : ["", ""];
-  return { ...values, prefix, cellphone };
+  const cellphone = values.cellphone
+    ? (values.cellphone as string).replace(/^57\s*/, "")
+    : "";
+  return { ...values, cellphone };
 }
 export const FormElement = <T extends customerWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
@@ -20,9 +20,8 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
 }) => {
   const hasInitialValues: boolean = !!props.initialValues;
   const handleFinish = async (values: T) => {
-    const { cellphone, prefix, ...rest } = values;
-    const mappedCellphone =
-      !!prefix && !!cellphone ? prefix + " " + cellphone : "";
+    const { cellphone, ...rest } = values;
+    const mappedCellphone = !!cellphone ? "57 " + cellphone : "";
     const mappedValues = {
       ...rest,
       cellphone: mappedCellphone,
@@ -39,9 +38,7 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
       initialValues={
         hasInitialValues
           ? parseInitialValues(props.initialValues || ({} as Customer))
-          : {
-              prefix: "57",
-            }
+          : {}
       }
       requiredMark={false}
       loading={props.loading}
@@ -115,28 +112,8 @@ export const FormElement = <T extends customerWithAuxProps>(props: {
               ]}
             >
               <Input
-                addonBefore={
-                  <Form.Item name="prefix" rules={[{ required: true }]} noStyle>
-                    <CustomSelectWithInput
-                      selectProps={{
-                        options: [
-                          {
-                            value: "57",
-                            label: "+57",
-                          },
-                        ],
-                        style: { width: 75 },
-                        popupMatchSelectWidth: false,
-                      }}
-                      inputProps={{
-                        placeholder: "Escriba...",
-                        style: {
-                          width: 65,
-                        },
-                      }}
-                    />
-                  </Form.Item>
-                }
+                addonBefore="+57"
+                placeholder="Escriba el número de celular"
                 style={{ width: "100%" }}
               />
             </Form.Item>
