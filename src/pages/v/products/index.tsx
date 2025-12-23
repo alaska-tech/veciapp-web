@@ -37,6 +37,7 @@ import {
   PRODUCT_TYPE_TAG,
 } from "@/constants/labels";
 import ChangeProductVisibilityModal from "@/components/changeProductVisibilityModal";
+import AsyncButton from "@/components/pure/AsyncButton";
 
 type DataType = ProductService;
 const searchFields: SearchFieldProps[] = [
@@ -79,6 +80,7 @@ const Users = () => {
     vendorId: user?.foreignPersonId,
   });
   const totalBranches = branchesData?.data.meta.total || 0;
+  const deleteProductMutation = actions.deleteProductService();
   const columns: TableColumnsType<DataType> = [
     {
       title: "Tienda",
@@ -215,7 +217,17 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Eliminar",
+                  label: (
+                    <AsyncButton
+                      onClick={() => {
+                        deleteProductMutation.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                      type="text"
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}

@@ -34,6 +34,7 @@ import {
   PRODUCT_STATE_TAG,
   PRODUCT_TYPE_TAG,
 } from "@/constants/labels";
+import AsyncButton from "@/components/pure/AsyncButton";
 
 type DataType = ProductService;
 const searchFields: SearchFieldProps[] = [
@@ -92,6 +93,7 @@ const Users = () => {
         }
       : {},
   });
+  const deleteProductMutation = actions.deleteProductService();
   const branchQuery = branchActions.getBranchById(id as string);
   const columns: TableColumnsType<DataType> = [
     {
@@ -204,7 +206,17 @@ const Users = () => {
               items: [
                 {
                   key: "2",
-                  label: "Delete",
+                  label: (
+                    <AsyncButton
+                      onClick={() => {
+                        deleteProductMutation.mutateAsync({ id: record.id });
+                      }}
+                      popConfirm
+                      type="text"
+                    >
+                      Eliminar
+                    </AsyncButton>
+                  ),
                 },
               ],
             }}
