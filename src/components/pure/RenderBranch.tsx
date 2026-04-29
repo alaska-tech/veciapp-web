@@ -29,7 +29,7 @@ const RenderBranch = ({ branch, href }: { branch: Branch; href?: string }) => {
               textOverflow: "ellipsis",
             }}
             href={
-              location.coordinates?.at(0) && location.coordinates?.at(1)
+              location?.coordinates?.at(0) && location?.coordinates?.at(1)
                 ? `https://www.google.com/maps?q=${location.coordinates[1]},${location.coordinates[0]}`
                 : undefined
             }

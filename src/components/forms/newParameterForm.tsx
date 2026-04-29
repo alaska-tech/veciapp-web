@@ -70,36 +70,33 @@ export const FormElement = <T extends Parameter>(props: {
       loading={props.loading}
     >
       <Row gutter={[24, 16]}>
-        {/* Primera fila - Name y Display Name (mitad cada uno) */}
         <Col xs={24} md={12}>
-          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input placeholder="Nombre" />
+          <Form.Item label="Nombre interno" name="name" rules={[{ required: true }]}>
+            <Input placeholder="ej: comission" />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
           <Form.Item
-            label="Display Name"
+            label="Nombre en pantalla"
             name="displayName"
             rules={[{ required: true }]}
           >
-            <Input placeholder="Nombre en pantalla" />
+            <Input placeholder="ej: Comisión de la plataforma" />
           </Form.Item>
         </Col>
 
-        {/* Segunda fila - Description (ancho completo) */}
         <Col span={24}>
           <Form.Item
-            label="Description"
+            label="Descripción"
             name="description"
             rules={[{ required: true }]}
           >
-            <Input.TextArea placeholder="Descripción" rows={4} />
+            <Input.TextArea placeholder="Describe para qué sirve este parámetro" rows={3} />
           </Form.Item>
         </Col>
 
-        {/* Tercera fila - Type y Value (mitad cada uno) */}
         <Col xs={24} md={12}>
-          <Form.Item label="Type" name="type" rules={[{ required: true }]}>
+          <Form.Item label="Tipo" name="type" rules={[{ required: true }]}>
             <Select
               placeholder="Selecciona un tipo"
               onChange={() => {
@@ -109,32 +106,30 @@ export const FormElement = <T extends Parameter>(props: {
                 }
               }}
             >
-              <Select.Option value="string">String</Select.Option>
-              <Select.Option value="number">Number</Select.Option>
-              <Select.Option value="boolean">Boolean</Select.Option>
+              <Select.Option value="string">Texto</Select.Option>
+              <Select.Option value="number">Número</Select.Option>
+              <Select.Option value="boolean">Booleano</Select.Option>
               <Select.Option value="json">Array</Select.Option>
             </Select>
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label="Value" name="value" rules={[{ required: true }]}>
+          <Form.Item label="Valor" name="value" rules={[{ required: true }]}>
             {valueInput[selectedParameterType] || (
-              <Input placeholder="Value" disabled={!selectedParameterType} />
+              <Input placeholder="Selecciona primero el tipo" disabled={!selectedParameterType} />
             )}
           </Form.Item>
         </Col>
 
-        {/* Cuarta fila - Is Active (ancho completo) */}
         <Col span={24}>
-          <Form.Item label="Is Active" name="isActive" valuePropName="checked">
+          <Form.Item label="Activo" name="isActive" valuePropName="checked">
             <Switch defaultChecked />
           </Form.Item>
         </Col>
 
-        {/* Quinta fila - Data (ancho completo) */}
         <Col span={24}>
-          <Form.Item label="data" name="data">
-            <Input.TextArea placeholder="data" rows={4} />
+          <Form.Item label="Datos adicionales (JSON)" name="data">
+            <Input.TextArea placeholder="Opcional" rows={3} />
           </Form.Item>
         </Col>
       </Row>

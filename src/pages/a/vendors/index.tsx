@@ -20,13 +20,13 @@ import {
   Tag,
   Typography,
 } from "antd";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useMemo } from "react";
 
 const searchFields: SearchFieldProps[] = [
   { label: "Código", fieldName: "internalCode", type: "text" },
   {
     label: "Nombre",
-    fieldName: "name",
+    fieldName: "fullName",
     type: "text",
   },
   {
@@ -56,12 +56,19 @@ const Users = () => {
   const vendorQuery = vendorActions.getVendors({
     limit: pagination.pageSize,
     page: pagination.current - 1,
-    search: search.value
-      ? {
-          [search.fieldName]: search.value,
-        }
-      : {},
+    search: {},
   });
+
+  const filteredVendors = useMemo(() => {
+    const vendors = vendorQuery.data?.data?.data || [];
+    if (!search.value) return vendors;
+    const key = search.fieldName as keyof Vendor;
+    return vendors.filter((v) =>
+      String(v[key] ?? "")
+        .toLowerCase()
+        .includes(search.value!.toLowerCase())
+    );
+  }, [vendorQuery.data?.data?.data, search.fieldName, search.value]);
   const deleteVendor = vendorActions.deleteVendor();
   const columns: TableColumnsType<Vendor> = [
     {
@@ -163,7 +170,7 @@ const Users = () => {
       </Space>
       <Table<Vendor>
         columns={columns}
-        dataSource={vendorQuery.data?.data?.data}
+        dataSource={filteredVendors}
         loading={vendorQuery.isLoading}
         onChange={(pag, _filters, _sorter) => {
           setPagination({

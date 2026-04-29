@@ -1,9 +1,9 @@
-import { useParameterAction } from "@/actions/parameter.action";
 import { Parameter } from "@/constants/models";
 import {
   SaveOutlined,
   MinusCircleOutlined,
   CheckCircleOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import {
   Form,
@@ -15,7 +15,9 @@ import {
   Collapse,
   Descriptions,
   CardProps,
+  Tooltip,
 } from "antd";
+import dayjs from "dayjs";
 import React, { useState } from "react";
 import { valueInput } from "../forms/newParameterForm";
 import { motion } from "framer-motion";
@@ -29,6 +31,7 @@ interface ParameterCardProps extends CardProps {
   onClickOnToggle?: (parameter: Parameter) => Promise<void>;
   loading?: boolean;
 }
+
 const ParameterCard = ({
   parameter,
   onClickOnSave,
@@ -38,71 +41,53 @@ const ParameterCard = ({
   const [form] = Form.useForm();
   const value = Form.useWatch("value", form);
   const [hasNewValue, setHasNewValue] = useState(false);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 24 }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
-      whileHover={{ scale: 1.02, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
-      whileTap={{ scale: 0.98 }}
-      style={{ maxWidth: "450px", margin: "0 auto" }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
     >
       <Card
         title={
-          <Space direction="vertical" style={{ rowGap: 0, margin: "8px 0px" }}>
-            {parameter.displayName}
+          <Space direction="vertical" style={{ rowGap: 2, margin: "6px 0" }}>
+            <Space size={6}>
+              <Typography.Text strong>{parameter.displayName}</Typography.Text>
+              {!parameter.isActive && (
+                <Tag icon={<MinusCircleOutlined />} color="default">
+                  Inactivo
+                </Tag>
+              )}
+            </Space>
             <Typography.Text
               type="secondary"
-              style={{ margin: 0, textWrap: "wrap" }}
+              style={{ fontSize: 12, fontWeight: "normal", whiteSpace: "normal" }}
             >
               {parameter.description}
             </Typography.Text>
           </Space>
         }
         extra={
-          parameter.isActive ? (
+          hasNewValue ? (
             <Button
               type="primary"
-              htmlType="submit"
+              size="small"
               icon={<SaveOutlined />}
               onClick={async () => {
                 await onClickOnSave?.(value, parameter);
                 setHasNewValue(false);
               }}
-              style={{
-                opacity: hasNewValue ? 1 : 0,
-                transform: hasNewValue ? "translateY(0)" : "translateY(-4px)",
-                transition: "visibility 0.3s ease, transform 0.3s ease",
-                visibility: hasNewValue ? "visible" : "hidden",
-                marginLeft: "1rem",
-              }}
               loading={cardProps.loading}
             >
               Guardar
             </Button>
-          ) : (
-            <Tag
-              icon={<MinusCircleOutlined />}
-              color="default"
-              style={{
-                marginLeft: "1rem",
-              }}
-            >
-              Inactivo
-            </Tag>
-          )
+          ) : null
         }
         style={{
-          background: hasNewValue ? "#ffd406" : "#ffffff",
-          maxWidth: "450px",
+          borderLeft: hasNewValue ? "3px solid #1677ff" : undefined,
+          transition: "border-left 0.2s ease",
         }}
-        styles={{
-          body: {
-            margin: 0,
-            padding: 0,
-          },
-        }}
+        styles={{ body: { padding: 0 } }}
         {...cardProps}
       >
         <Collapse
@@ -114,25 +99,16 @@ const ParameterCard = ({
               key: "1",
               label: (
                 <Form
-                  initialValues={{
-                    value: parameter.value,
-                  }}
+                  initialValues={{ value: parameter.value }}
                   form={form}
-                  /* onChange={(e) => {
-                  console.log(e);
-                }} */
-                  style={{
-                    padding: 0,
-                  }}
+                  style={{ padding: 0 }}
                 >
                   <Form.Item noStyle name="value">
                     {React.cloneElement(
                       (valueInput[parameter.type] || (
                         <React.Fragment />
                       )) as React.ReactElement<{
-                        onChange?: (
-                          e: React.ChangeEvent<HTMLInputElement>
-                        ) => void;
+                        onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
                         style?: React.CSSProperties;
                         disabled?: boolean;
                       }>,
@@ -140,9 +116,7 @@ const ParameterCard = ({
                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                           setHasNewValue(e?.target?.value !== parameter.value);
                         },
-                        style: {
-                          width: "100%",
-                        },
+                        style: { width: "100%" },
                         disabled: !parameter.isActive,
                       }
                     )}
@@ -150,27 +124,18 @@ const ParameterCard = ({
                 </Form>
               ),
               styles: {
-                header: {
-                  padding: "8px 12px",
-                },
-                body: {
-                  padding: "8px 12px",
-                },
+                header: { padding: "8px 12px" },
+                body: { padding: "8px 12px" },
               },
               children: (
                 <Descriptions size="small" column={1} layout="vertical">
-                  <Descriptions.Item label="Nombre interno" span={3}>
-                    {parameter.name}
+                  <Descriptions.Item label="Nombre interno">
+                    <Typography.Text code>{parameter.name}</Typography.Text>
                   </Descriptions.Item>
-                  <Descriptions.Item label="Creado" span={3}>
-                    {JSON.stringify(parameter.createdAt)} por{" "}
-                    {parameter.createdBy || "Desconocido"}
+                  <Descriptions.Item label="Tipo">
+                    <Tag>{parameter.type}</Tag>
                   </Descriptions.Item>
-                  <Descriptions.Item label="Actualizado por última vez" span={3}>
-                    {JSON.stringify(parameter.updatedAt)} por{" "}
-                    {parameter.updatedBy || "Desconocido"}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Estado" span={3}>
+                  <Descriptions.Item label="Estado">
                     {parameter.isActive ? (
                       <Tag color="success" icon={<CheckCircleOutlined />}>
                         Activo
@@ -182,16 +147,26 @@ const ParameterCard = ({
                     )}
                     <Button
                       type="link"
+                      size="small"
                       onClick={async () => {
                         await onClickOnToggle?.(parameter);
                         setHasNewValue(false);
                       }}
-                      style={{ marginLeft: "1rem" }}
                       loading={cardProps.loading}
                     >
                       {parameter.isActive ? "Desactivar" : "Activar"}
                     </Button>
                   </Descriptions.Item>
+                  <Descriptions.Item label="Creado">
+                    {dayjs(parameter.createdAt).format("DD/MM/YYYY HH:mm")}{" "}
+                    {parameter.createdBy ? `por ${parameter.createdBy}` : ""}
+                  </Descriptions.Item>
+                  {parameter.updatedAt && (
+                    <Descriptions.Item label="Última actualización">
+                      {dayjs(parameter.updatedAt).format("DD/MM/YYYY HH:mm")}{" "}
+                      {parameter.updatedBy ? `por ${parameter.updatedBy}` : ""}
+                    </Descriptions.Item>
+                  )}
                 </Descriptions>
               ),
             },

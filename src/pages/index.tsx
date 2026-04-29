@@ -121,10 +121,7 @@ export default function Home() {
           width: "100%",
           maxWidth: 400,
         }}
-        initialValues={{
-          email: "julianangulop@gmail.com",
-          password: "123456",
-        }}
+
       >
         <Form.Item<LogInForm>
           name="email"

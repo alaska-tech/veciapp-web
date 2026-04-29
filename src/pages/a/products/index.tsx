@@ -71,9 +71,6 @@ const Users = () => {
       : {},
   });
   const branchActions = useBranchAction();
-  const branchesQuery = branchActions.getBranchesById(
-    productsQuery.data?.data.data.map((e) => e.branchId)
-  );
   const { data: branchesData } = branchActions.getBranchesPaginated({
     limit: 0,
     page: 0,
@@ -84,16 +81,12 @@ const Users = () => {
       title: "Tienda",
       key: "branchId",
       dataIndex: "branchId",
-      render: (branchId: string) => {
-        const vendorQuery = branchesQuery.find((queryResult) => {
-          return queryResult.data?.data?.data?.id === branchId;
-        });
-        const { name = "", address = "" } =
-          vendorQuery?.data?.data?.data || ({} as Branch);
+      render: (branchId: string, record: any) => {
+        const branchInfo = record.branchInfo;
         return (
           <RenderBranch
-            branch={vendorQuery?.data?.data?.data || ({} as Branch)}
-            href={`/a/branches/${branchId}?name=${name}`}
+            branch={branchInfo || ({} as Branch)}
+            href={`/a/branches/${branchId}?name=${branchInfo?.name}`}
           />
         );
       },
