@@ -100,9 +100,6 @@ const Users = () => {
       : {},
   });
   const vendorActions = useVendorAction();
-  const vendorQueries = vendorActions.getVendorsById(
-    branchQuery.data?.data.data.map((branch) => branch.vendorId)
-  );
   const { data: vendorData } = vendorActions.getVendors({
     limit: 0,
     page: 0,
@@ -113,14 +110,12 @@ const Users = () => {
       title: "Gerente",
       key: "vendorId",
       dataIndex: "vendorId",
-      render: (value) => {
-        const vendorQuery = vendorQueries.find((queryResult) => {
-          return queryResult.data?.data?.data?.id === value;
-        });
+      render: (value, record: any) => {
+        const vendorInfo = record.vendorInfo;
         return (
           <RenderVendor
-            vendor={vendorQuery?.data?.data?.data || ({} as Vendor)}
-            href={`/a/vendors/${value}?name=${vendorQuery?.data?.data?.data?.fullName}`}
+            vendor={vendorInfo || ({} as Vendor)}
+            href={`/a/vendors/${value}?name=${vendorInfo?.fullName}`}
           />
         );
       },

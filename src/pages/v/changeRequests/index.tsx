@@ -14,7 +14,6 @@ import {
   CHANGE_REQUEST_STATUS_LABEL,
   CHANGE_REQUEST_TYPE_LABEL,
 } from "@/constants/labels";
-import { useVendorAction } from "@/actions/vendor.action";
 import useAuthAction from "@/actions/auth.action";
 
 const searchFields: SearchFieldProps[] = [
@@ -46,19 +45,13 @@ const ChangeRequestsPage = () => {
     status: search.value,
     vendorId: userSession.data?.foreignPersonId,
   });
-  const vendorActions = useVendorAction();
-  const vendorQueries = vendorActions.getVendorsById(
-    query.data?.data.data.map((cr) => cr.vendorId) || []
-  );
-
   const columns = [
     {
       title: "Remitente",
       dataIndex: "vendorId",
       key: "vendorId",
-      render: (id: string, record: ChangeRequest) => {
-        const vendor = vendorQueries.find((v) => v.data?.data.data.id === id)
-          ?.data?.data.data;
+      render: (id: string, record: any) => {
+        const vendor = record.vendorInfo;
         if (vendor) {
           return (
             <Space direction="vertical">
