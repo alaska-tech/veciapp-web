@@ -9,7 +9,7 @@ import {
 import { BaseAttributes, PaginatedResult, Response, Vendor } from "@models";
 import { apiClient } from "@/services/clients";
 import { App } from "antd";
-import { QueryKey } from "@tanstack/react-query";
+import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 interface ValidateAccountForm {
   pass: string;
@@ -20,6 +20,7 @@ export const QUERY_KEY_VENDOR = "vendor" as const;
 
 export const useVendorAction = () => {
   const { notification, message, modal } = App.useApp();
+  const queryClient = useQueryClient();
   const validateAccount = mutateEntity<
     AxiosResponse<Extract<Response<null>, { status: "Success" }>>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>,
@@ -148,8 +149,9 @@ export const useVendorAction = () => {
         });
       },
       onSuccess(data, variables, context) {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_VENDOR] });
         message.success({
-          content: `Vendor was deleted successfully`,
+          content: `Vendor eliminado exitosamente`,
           duration: 4,
         });
       },
@@ -178,18 +180,23 @@ export const useVendorAction = () => {
     {
       onMutate: (res) => res,
       onError: (error, variables, context) => {
+        const errorData = (error.response?.data as any)?.error;
+        if (errorData?.code === "VENDOR_REACTIVATION_REQUIRED") return;
+        const raw = errorData?.message || error.message || "";
+        const isDuplicate = raw.toLowerCase().includes("duplicate key");
         notification.error({
-          message: "Error",
-          description: error.response?.data.error.message || error.message,
+          message: "Error al crear veci",
+          description: isDuplicate
+            ? "Ya existe un veci registrado con ese número de identificación o código interno. Verifica los datos e intenta de nuevo."
+            : raw,
           duration: 0,
         });
       },
       onSuccess: async (data, variables, context) => {
         const vendor = data.data.data;
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_VENDOR] });
         message.success({
-          content: `Vendor ${vendor.fullName || ""} ( ${
-            vendor.email
-          } ) was created successfully`,
+          content: `Veci ${vendor.fullName || ""} (${vendor.email}) creado exitosamente`,
           duration: 4,
         });
       },
@@ -228,6 +235,39 @@ export const useVendorAction = () => {
       },
     }
   );
+  const reactivateVendor = mutateEntity<
+    AxiosResponse<Extract<Response<{ id: string; message: string }>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string; body: Omit<Vendor, keyof BaseAttributes & "id"> }
+  >(
+    () => {
+      return async function mutationFn({ id, body }) {
+        try {
+          const response = await apiClient.put<
+            Extract<Response<{ id: string; message: string }>, { status: "Success" }>
+          >(`/vendors/reactivate/${id}`, body);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error) => {
+        notification.error({
+          message: "Error al reactivar veci",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY_VENDOR] });
+        message.success({ content: "Veci reactivado exitosamente", duration: 4 });
+      },
+    }
+  );
+
   return {
     validateAccount,
     getVendors,
@@ -236,5 +276,6 @@ export const useVendorAction = () => {
     createVendor,
     updateVendor,
     getVendorsById,
+    reactivateVendor,
   };
 };

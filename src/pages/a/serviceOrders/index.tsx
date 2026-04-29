@@ -20,7 +20,6 @@ import {
   ServiceOrderOrderStatusType,
   ServiceOrderPaymentStatusType,
   Vendor,
-  Payment,
   PaginatedResult,
 } from "@models";
 import {
@@ -33,11 +32,9 @@ import SearchBar, { SearchFieldProps } from "@/components/pure/SearchBar";
 import RenderVendor from "@/components/pure/RenderVendor";
 import RenderCustomer from "@/components/pure/RenderCustomer";
 import RenderBranch from "@/components/pure/RenderBranch";
-import { useBranchAction } from "@/actions/branch.action";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import utc from "dayjs/plugin/utc";
-import { usePaymenAction } from "@/actions/paymnet.action";
 import { apiClient } from "@/services/clients";
 dayjs.locale("es");
 dayjs.extend(utc);
@@ -73,15 +70,6 @@ const Index = () => {
     page: pagination.current,
     orderStatus: search.value as ServiceOrderOrderStatusType[number],
   });
-  const branchQueries = useBranchAction();
-  const branchQuery = branchQueries.getBranchesById(
-    query.data?.data?.data.map((order) => order.branch.id) || []
-  );
-  const paymentQueries = usePaymenAction();
-  const paymentQuery = paymentQueries.getPaymentsByOrderId(
-    query.data?.data?.data.map((order) => order.id) || [],
-    { retry: 1 }
-  );
   const columns: TableColumnsType<DataType> = [
     {
       title: "Fecha",
@@ -109,23 +97,21 @@ const Index = () => {
       dataIndex: "vendor",
       key: "vendor",
       minWidth: 200,
-      render: (value, record) => {
+      render: (value, record: any) => {
         const vendor = value;
-        const branch = branchQuery.find(
-          (query) => query.data?.data?.data?.id === record.branch.id
-        )?.data?.data?.data;
+        const branch = record.branch;
         return (
           <Space
             direction="vertical"
             split={<Divider style={{ margin: 0, padding: 0 }} />}
           >
             <RenderBranch
-              branch={branch || ({} as Branch)}
-              href={`/a/branches/${record.branch.id}?name=${branch?.name}`}
+              branch={(branch || {}) as Branch}
+              href={`/a/branches/${branch?.id}?name=${branch?.name}`}
             />
             <RenderVendor
-              vendor={vendor || ({} as Vendor)}
-              href={`/a/vendors/${vendor.id}?name=${vendor?.fullName}`}
+              vendor={(vendor || {}) as Vendor}
+              href={`/a/vendors/${vendor?.id}?name=${vendor?.name}`}
             />
           </Space>
         );
@@ -146,41 +132,28 @@ const Index = () => {
       dataIndex: "paymentStatus",
       key: "paymentStatus",
       minWidth: 260,
-      render: (_status, record) => {
-        const payment = paymentQuery.find(
-          (query) => query.data?.data?.data?.at(0)?.orderId === record.id
-        );
-        const pay = payment?.data?.data?.data?.at(0) as Payment | undefined;
-
+      render: (_status, record: any) => {
+        const pay = record.payment;
         return (
           <Space direction="vertical" size={0}>
             <div>
-              {
-                SERVICE_ORDER_PAYMENT_STATUS_LABELS[
-                  (pay?.state ||
-                    record.paymentStatus) as ServiceOrderPaymentStatusType[number]
-                ]
-              }
+              {SERVICE_ORDER_PAYMENT_STATUS_LABELS[
+                (pay?.state || record.paymentStatus) as ServiceOrderPaymentStatusType[number]
+              ]}
             </div>
             <div>
-              {`${pay?.currency || record.currency} ${
-                pay?.amount ?? record.totalAmount
-              }`}
+              {`${pay?.currency || record.currency} ${pay?.amount ?? record.totalAmount}`}
             </div>
             <div>
               Método de pago:{" "}
-              {SERVICE_ORDER_PAYMENT_METHOD_LABELS[record.paymentMethod] ||
+              {SERVICE_ORDER_PAYMENT_METHOD_LABELS[record.paymentMethod as keyof typeof SERVICE_ORDER_PAYMENT_METHOD_LABELS] ||
                 record.paymentMethod ||
                 "No especificado"}
             </div>
             <div>Ref: {pay?.paymentReference || "-"}</div>
             <div>Proveedor: {pay?.provider || "-"}</div>
             {pay?.receiptUrl ? (
-              <a
-                href={pay.receiptUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={pay.receiptUrl} target="_blank" rel="noopener noreferrer">
                 Ver recibo
               </a>
             ) : null}

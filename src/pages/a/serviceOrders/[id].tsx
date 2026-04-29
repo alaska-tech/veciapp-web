@@ -1,7 +1,4 @@
 import { useServiceOrderAction } from "@/actions/serviceOrder.action";
-import { useVendorAction } from "@/actions/vendor.action";
-import { useCustomerAction } from "@/actions/customer.action";
-import { useBranchAction } from "@/actions/branch.action";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Result, Button, Space, Descriptions, Divider, Table, Empty } from "antd";
@@ -15,7 +12,7 @@ import {
   SERVICE_ORDER_PAYMENT_STATUS_LABELS,
   SERVICE_ORDER_PAYMENT_METHOD_LABELS,
 } from "@/constants/labels";
-import { ServiceOrder, Customer, Vendor, Branch } from "@models";
+import { Customer, Vendor, Branch } from "@models";
 import RenderCustomer from "@/components/pure/RenderCustomer";
 import RenderVendor from "@/components/pure/RenderVendor";
 import RenderBranch from "@/components/pure/RenderBranch";
@@ -26,28 +23,11 @@ const Index = () => {
   const actions = useServiceOrderAction();
   const queryResult = actions.getServiceOrderById(id as string);
 
-  // Hooks para obtener datos de entidades relacionadas
-  const vendorQueries = useVendorAction();
-  const customerQueries = useCustomerAction();
-  const branchQueries = useBranchAction();
-
-  const vendorQuery = vendorQueries.getVendorById(
-    queryResult.data?.vendorId,
-    { enabled: !!queryResult.data?.vendorId }
-  );
-  const customerQuery = customerQueries.getCustomerById(
-    queryResult.data?.customerId,
-    { enabled: !!queryResult.data?.customerId }
-  );
-  const branchQuery = branchQueries.getBranchById(
-    queryResult.data?.branchId,
-    { enabled: !!queryResult.data?.branchId }
-  );
-  const order = queryResult.data as ServiceOrder;
+  const order = queryResult.data as any;
 
   const productsData =
-    order?.productsSnapshots?.map((ps) => {
-      const p = order.products?.find((x) => x.productId === ps.id);
+    order?.productsSnapshots?.map((ps: any) => {
+      const p = order.products?.find((x: any) => x.productId === ps.id);
       const unit = p?.price ?? Number(ps.price ?? 0);
       const qty = p?.quantity ?? 1;
       return {
@@ -114,22 +94,22 @@ const Index = () => {
           </Descriptions.Item>
 
           <Descriptions.Item label="Cliente" span={1}>
-            <RenderCustomer 
-              customer={customerQuery.data || ({} as Customer)} 
-              href={`/a/users/${order.customerId}?name=${customerQuery.data?.fullName}`}
+            <RenderCustomer
+              customer={order.customer || ({} as Customer)}
+              href={`/a/users/${order.customerId}?name=${order.customer?.fullName}`}
             />
           </Descriptions.Item>
           <Descriptions.Item label="Vendedor" span={1}>
-            <RenderVendor 
-              vendor={vendorQuery.data || ({} as Vendor)} 
-              href={`/a/vendors/${order.vendorId}?name=${vendorQuery.data?.fullName}`}
+            <RenderVendor
+              vendor={order.vendor || ({} as Vendor)}
+              href={`/a/vendors/${order.vendorId}?name=${order.vendor?.name}`}
             />
           </Descriptions.Item>
 
           <Descriptions.Item label="Tienda" span={1}>
-            <RenderBranch 
-              branch={branchQuery.data || ({} as Branch)} 
-              href={`/a/branches/${order.branchId}?name=${branchQuery.data?.name}`}
+            <RenderBranch
+              branch={order.branch || ({} as Branch)}
+              href={`/a/branches/${order.branchId}?name=${order.branch?.name}`}
             />
           </Descriptions.Item>
           <Descriptions.Item label="Tipo de entrega" span={1}>
@@ -157,14 +137,14 @@ const Index = () => {
           </Descriptions.Item>
 
           <Descriptions.Item label="Estado del pedido" span={1}>
-            {SERVICE_ORDER_ORDER_STATUS_LABELS[order.orderStatus]}
+            {SERVICE_ORDER_ORDER_STATUS_LABELS[order.orderStatus as keyof typeof SERVICE_ORDER_ORDER_STATUS_LABELS]}
           </Descriptions.Item>
           <Descriptions.Item label="Estado del pago" span={1}>
-            {SERVICE_ORDER_PAYMENT_STATUS_LABELS[order.paymentStatus] || order.paymentStatus || "No especificado"}
+            {SERVICE_ORDER_PAYMENT_STATUS_LABELS[order.paymentStatus as keyof typeof SERVICE_ORDER_PAYMENT_STATUS_LABELS] || order.paymentStatus || "No especificado"}
           </Descriptions.Item>
 
           <Descriptions.Item label="Método de pago" span={2}>
-            {SERVICE_ORDER_PAYMENT_METHOD_LABELS[order.paymentMethod] ||order.paymentMethod|| "No especificado"}
+            {SERVICE_ORDER_PAYMENT_METHOD_LABELS[order.paymentMethod as keyof typeof SERVICE_ORDER_PAYMENT_METHOD_LABELS] || order.paymentMethod || "No especificado"}
           </Descriptions.Item>
         </Descriptions>
 

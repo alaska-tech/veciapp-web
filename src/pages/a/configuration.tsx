@@ -5,11 +5,10 @@ import {
   QUERY_KEY_PARAMETER,
   useParameterAction,
 } from "@/actions/parameter.action";
-import { App, Button, Pagination, Space } from "antd";
+import { App, Button, Col, Pagination, Row, Space, Typography } from "antd";
 import { Parameter } from "@models";
 import ParameterCard from "@/components/pure/ParameterCard";
 import { useQueryClient } from "@tanstack/react-query";
-import { Card } from "antd/lib";
 
 const DEFAULT_PARAMETER_NAMES = [
   "comission", //number
@@ -70,48 +69,39 @@ const Index = () => {
     }
   };
   return (
-    <div style={{ gap: "1rem", display: "flex", flexDirection: "column" }}>
-      <Space wrap style={{ width: "100%", justifyContent: "flex-end" }}>
-        <Button href="/a/newParameter" icon={<AppstoreAddOutlined />}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <Space style={{ width: "100%", justifyContent: "space-between" }} wrap>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Parámetros del sistema
+        </Typography.Title>
+        <Button href="/a/newParameter" icon={<AppstoreAddOutlined />} type="primary">
           Nuevo parámetro
         </Button>
       </Space>
-      <Pagination
-        onChange={(page, pageSize) => {
-          setPagination({
-            ...pagination,
-            current: page || 1,
-            pageSize: pageSize || 2,
-          });
-        }}
-        current={pagination.current}
-        pageSize={pagination.pageSize}
-        total={parametersQuery.data?.data.meta.total || 0}
-        showSizeChanger={true}
-        pageSizeOptions={[10, 20, 50]}
-      />
-      <Space wrap style={{ gap: "1rem" }}>
-        {parametersQuery.data?.data.data.map((parameter, index) => {
-          if (!parameter) {
-            return (
-              <Card
-                style={{ textAlign: "center" }}
-                key={`unavailable-${index}`}
-              >
-                <p>El parámetro no esta disponible</p>
-              </Card>
-            );
-          }
-          return (
+
+      <Row gutter={[16, 16]}>
+        {parametersQuery.data?.data.data.map((parameter, index) => (
+          <Col xs={24} sm={12} xl={8} key={parameter?.id ?? `unavailable-${index}`}>
             <ParameterCard
               parameter={parameter}
               onClickOnSave={handleClickOnSave}
               onClickOnToggle={handleClickOnToggle}
-              key={parameter.id}
             />
-          );
-        })}
-      </Space>
+          </Col>
+        ))}
+      </Row>
+
+      <Pagination
+        onChange={(page, pageSize) => {
+          setPagination({ ...pagination, current: page || 1, pageSize: pageSize || 10 });
+        }}
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={parametersQuery.data?.data.meta.total || 0}
+        showSizeChanger
+        pageSizeOptions={[10, 20, 50]}
+        style={{ alignSelf: "flex-end" }}
+      />
     </div>
   );
 };

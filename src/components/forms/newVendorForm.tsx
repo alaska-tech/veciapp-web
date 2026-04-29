@@ -31,6 +31,7 @@ const nonEditableFields = [
 ] as const;
 export const FormElement = <T extends vendorWithAuxProps>(props: {
   onFinish?: (values: T) => Promise<void>;
+  onSuccess?: () => void;
   loading?: boolean;
   initialValues?: T;
 }) => {
@@ -65,6 +66,7 @@ export const FormElement = <T extends vendorWithAuxProps>(props: {
     <FormWrapper
       formName={"newVendor"}
       onFinish={handleFinish}
+      onSuccess={props.onSuccess}
       initialValues={
         hasInitialValues
           ? parseInitialValues(props.initialValues)
