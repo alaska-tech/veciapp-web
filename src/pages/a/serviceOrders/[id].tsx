@@ -26,8 +26,8 @@ const Index = () => {
   const order = queryResult.data as any;
 
   const productsData =
-    order?.productsSnapshots?.map((ps) => {
-      const p = order.products?.find((x) => x.productId === ps.id);
+    order?.productsSnapshots?.map((ps: any) => {
+      const p = order.products?.find((x: any) => x.productId === ps.id);
       const unit = p?.price ?? Number(ps.price ?? 0);
       const qty = p?.quantity ?? 1;
       return {
@@ -137,14 +137,14 @@ const Index = () => {
           </Descriptions.Item>
 
           <Descriptions.Item label="Estado del pedido" span={1}>
-            {SERVICE_ORDER_ORDER_STATUS_LABELS[order.orderStatus]}
+            {SERVICE_ORDER_ORDER_STATUS_LABELS[order.orderStatus as keyof typeof SERVICE_ORDER_ORDER_STATUS_LABELS]}
           </Descriptions.Item>
           <Descriptions.Item label="Estado del pago" span={1}>
-            {SERVICE_ORDER_PAYMENT_STATUS_LABELS[order.paymentStatus] || order.paymentStatus || "No especificado"}
+            {SERVICE_ORDER_PAYMENT_STATUS_LABELS[order.paymentStatus as keyof typeof SERVICE_ORDER_PAYMENT_STATUS_LABELS] || order.paymentStatus || "No especificado"}
           </Descriptions.Item>
 
           <Descriptions.Item label="Método de pago" span={2}>
-            {SERVICE_ORDER_PAYMENT_METHOD_LABELS[order.paymentMethod] ||order.paymentMethod|| "No especificado"}
+            {SERVICE_ORDER_PAYMENT_METHOD_LABELS[order.paymentMethod as keyof typeof SERVICE_ORDER_PAYMENT_METHOD_LABELS] || order.paymentMethod || "No especificado"}
           </Descriptions.Item>
         </Descriptions>
 
