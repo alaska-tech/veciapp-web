@@ -26,7 +26,7 @@ type GetServiceOrdersDataType = Omit<
   ServiceOrder,
   "branchId" | "vendorId" | "customerId"
 > & {
-  branch: Pick<Branch, "id" | "name" | "address">;
+  branch: Pick<Branch, "id" | "name" | "address" | "logo">;
   vendor: Pick<Vendor, "id" | "email"> & { name: string };
   customer: Pick<Customer, "id" | "fullName" | "email" | "cellphone">;
 };

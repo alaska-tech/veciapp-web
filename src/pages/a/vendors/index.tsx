@@ -70,6 +70,7 @@ const Users = () => {
     );
   }, [vendorQuery.data?.data?.data, search.fieldName, search.value]);
   const deleteVendor = vendorActions.deleteVendor();
+  const resendVerificationEmail = vendorActions.resendVerificationEmail();
   const columns: TableColumnsType<Vendor> = [
     {
       title: "Código",
@@ -116,6 +117,25 @@ const Users = () => {
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "Enviar correo",
+      key: "sendEmail",
+      render: (_text, record) =>
+        record.state === "created" ? (
+          <AsyncButton
+            onClick={() => resendVerificationEmail.mutateAsync({ id: record.id })}
+            popConfirm
+            type="default"
+            size="small"
+          >
+            Enviar correo
+          </AsyncButton>
+        ) : (
+          <Tag icon={<CheckCircleOutlined />} color="success" bordered={false}>
+            Verificado
+          </Tag>
+        ),
     },
     {
       title: "Acciones",
