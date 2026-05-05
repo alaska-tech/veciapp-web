@@ -268,6 +268,34 @@ export const useVendorAction = () => {
     }
   );
 
+  const resendVerificationEmail = mutateEntity<
+    AxiosResponse<Extract<Response<{ message: string }>, { status: "Success" }>>,
+    AxiosError<Extract<Response<null>, { status: "Error" }>>,
+    { id: string }
+  >(
+    () => {
+      return async function mutationFn({ id }) {
+        const response = await apiClient.post<
+          Extract<Response<{ message: string }>, { status: "Success" }>
+        >(`/vendors/resend-verification-email/${id}`);
+        return response;
+      };
+    },
+    {
+      onMutate: (res) => res,
+      onError: (error) => {
+        notification.error({
+          message: "Error al reenviar correo",
+          description: error.response?.data.error.message || error.message,
+          duration: 0,
+        });
+      },
+      onSuccess: () => {
+        message.success({ content: "Correo de verificación enviado exitosamente", duration: 4 });
+      },
+    }
+  );
+
   return {
     validateAccount,
     getVendors,
@@ -277,5 +305,6 @@ export const useVendorAction = () => {
     updateVendor,
     getVendorsById,
     reactivateVendor,
+    resendVerificationEmail,
   };
 };
