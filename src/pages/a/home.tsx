@@ -2,9 +2,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, Typography, Statistic, Row, Col, Button } from "antd";
 import React, { ReactElement } from "react";
 import { motion } from "framer-motion";
-import { useVendorAction } from "@/actions/vendor.action";
-import { useCustomerAction } from "@/actions/customer.action";
-import { useBranchAction } from "@/actions/branch.action";
+import { useDashboardAdminAction } from "@/actions/dashboardAdmin.action";
 import { useChangeRequestAction } from "@/actions/changeRequest.action";
 import {
   ShopOutlined,
@@ -12,72 +10,54 @@ import {
   AppstoreOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
-import { Heading, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useRouter } from "next/router";
 
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
   const router = useRouter();
-  const vendorActions = useVendorAction();
-  const customerActions = useCustomerAction();
-  const branchActions = useBranchAction();
+  const { getDashboardStats } = useDashboardAdminAction();
   const changeRequestActions = useChangeRequestAction();
 
-  // Obtener datos de proveedores
-  const vendorsQuery = vendorActions.getVendors({ limit: 1, page: 0 });
-  const totalVendors = vendorsQuery.data?.data.meta.total || 0;
+  const statsQuery = getDashboardStats();
+  const stats = statsQuery.data?.data;
 
-  // Obtener datos de clientes
-  const customersQuery = customerActions.getCustomers({ limit: 1, page: 0 });
-  const totalCustomers = customersQuery.data?.data.meta.total || 0;
-
-  // Obtener datos de tiendas
-  const branchesQuery = branchActions.getBranchesPaginated({
-    limit: 1,
-    page: 0,
-  });
-  const totalBranches = branchesQuery.data?.data.meta.total || 0;
-  // Obtener cambios pendientes
   const changeRequestsQuery = changeRequestActions.getChangeRequests({
     status: "PENDING",
     limit: 10,
     page: 1,
   });
-
-  // Contar los cambios pendientes
   const pendingChangesCount = changeRequestsQuery.data?.data.meta.total || 0;
-
-  const totalPayments = 0; // TODO: Implementar cuando esté disponible
 
   const dashboardCards = [
     {
       title: "Total Vecis",
-      value: totalVendors,
+      value: stats?.vendors.total ?? 0,
       icon: <ShopOutlined style={{ fontSize: "24px", color: "#1890ff" }} />,
       color: "#1890ff",
-      loading: vendorsQuery.isLoading,
+      loading: statsQuery.isLoading,
     },
     {
       title: "Total Clientes",
-      value: totalCustomers,
+      value: stats?.customers.total ?? 0,
       icon: <TeamOutlined style={{ fontSize: "24px", color: "#52c41a" }} />,
       color: "#52c41a",
-      loading: customersQuery.isLoading,
+      loading: statsQuery.isLoading,
     },
     {
       title: "Tiendas Activas",
-      value: totalBranches,
+      value: stats?.branches.active ?? 0,
       icon: <AppstoreOutlined style={{ fontSize: "24px", color: "#722ed1" }} />,
       color: "#722ed1",
-      loading: branchesQuery.isLoading,
+      loading: statsQuery.isLoading,
     },
     {
       title: "Pagos Procesados",
-      value: totalPayments,
+      value: stats?.orders.completed ?? 0,
       icon: <DollarOutlined style={{ fontSize: "24px", color: "#fa8c16" }} />,
       color: "#fa8c16",
-      loading: false,
+      loading: statsQuery.isLoading,
     },
   ];
 
@@ -89,7 +69,6 @@ const Home = () => {
         margin: "0 auto",
       }}
     >
-      {/* Banner de Cambios Pendientes Solo se muestra si hay cambios pendientes  */}
       {pendingChangesCount > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -107,7 +86,6 @@ const Home = () => {
             }}
           >
             <Row align="middle" gutter={[16, 16]}>
-              {/* Columna del icono */}
               <Col
                 xs={24}
                 sm={2}
@@ -127,8 +105,6 @@ const Home = () => {
                   <Bell size={24} color="#ff8c42" />
                 </div>
               </Col>
-
-              {/* Columna del contenido */}
               <Col xs={24} sm={22}>
                 <Title level={4} style={{ margin: 0, color: "#333" }}>
                   {pendingChangesCount}{" "}
@@ -161,7 +137,6 @@ const Home = () => {
       <Title level={4} style={{ marginBottom: "24px" }}>
         Resumen General
       </Title>
-      {/* banner de nuecvos cambios */}
       <Row gutter={[16, 16]}>
         {dashboardCards.map((card, index) => (
           <Col xs={24} sm={12} md={6} key={index}>
@@ -198,7 +173,7 @@ const Home = () => {
                     fontSize: "32px",
                     fontWeight: "700",
                   }}
-                  suffix={card.title === "Pagos Procesados" ? " COP" : ""}
+                  suffix=""
                 />
               </Card>
             </motion.div>
