@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import { queryEntity } from "./action";
 import { Response } from "@models";
 import { apiClient } from "@/services/clients";
-import { App } from "antd";
 import { QueryKey } from "@tanstack/react-query";
 
 export const QUERY_KEY_DASHBOARD_ADMIN = "dashboardAdmin" as const;
@@ -15,8 +14,6 @@ export interface AdminDashboardStats {
 }
 
 export const useDashboardAdminAction = () => {
-  const { notification } = App.useApp();
-
   const getDashboardStats = queryEntity<
     Extract<Response<AdminDashboardStats>, { status: "Success" }>,
     AxiosError<Extract<Response<null>, { status: "Error" }>>
@@ -27,15 +24,6 @@ export const useDashboardAdminAction = () => {
         Extract<Response<AdminDashboardStats>, { status: "Success" }>
       >("/dashboard-admin/stats");
       return response.data;
-    },
-    {
-      onError: (error: any) => {
-        notification.error({
-          message: "Error al cargar estadísticas",
-          description: error?.response?.data?.error?.message || error?.message,
-          duration: 4,
-        });
-      },
     }
   );
 
